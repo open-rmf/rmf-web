@@ -13,8 +13,8 @@ import {
 import React from 'react';
 import { base } from 'react-components';
 
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { AppControllerContext } from './app-contexts';
-import { RmfApiContext } from './rmf-dashboard';
 import { TaskCancelButton } from './tasks/task-cancellation';
 import { TaskInspector } from './tasks/task-inspector';
 
@@ -53,7 +53,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const [newTaskState, setNewTaskState] = React.useState<TaskState | null>(null);
   const [openTaskInspector, setOpenTaskInspector] = React.useState(false);
   const appController = React.useContext(AppControllerContext);
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   React.useEffect(() => {
@@ -63,11 +63,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   }, [deliveryAlert]);
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      console.error('Tasks api not available.');
-      setNewTaskState(null);
-      return;
-    }
     if (!taskState) {
       setNewTaskState(null);
       return;
@@ -457,7 +452,7 @@ interface DeliveryAlertData {
 }
 
 export const DeliveryAlertStore = React.memo(() => {
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const [alerts, setAlerts] = React.useState<Record<string, DeliveryAlertData>>({});
   const appController = React.useContext(AppControllerContext);
 
@@ -493,9 +488,6 @@ export const DeliveryAlertStore = React.memo(() => {
   };
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     const sub = rmfApi.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
       // DEBUG
       console.log(
@@ -519,9 +511,6 @@ export const DeliveryAlertStore = React.memo(() => {
   const onOverride = React.useCallback<Required<DeliveryWarningDialogProps>['onOverride']>(
     async (delivery_alert) => {
       try {
-        if (!rmfApi) {
-          throw new Error('delivery alert api not available');
-        }
         await rmfApi.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
           delivery_alert.id,
           delivery_alert.category,
@@ -560,9 +549,6 @@ export const DeliveryAlertStore = React.memo(() => {
   const onResume = React.useCallback<Required<DeliveryWarningDialogProps>['onResume']>(
     async (delivery_alert) => {
       try {
-        if (!rmfApi) {
-          throw new Error('delivery alert api not available');
-        }
         await rmfApi.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
           delivery_alert.id,
           delivery_alert.category,

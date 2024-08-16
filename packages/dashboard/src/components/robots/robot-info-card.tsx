@@ -4,19 +4,15 @@ import React from 'react';
 import { RobotInfo } from 'react-components';
 import { combineLatest, EMPTY, mergeMap, of, switchMap, throttleTime } from 'rxjs';
 
+import { useRmfApi } from '../../hooks/rmf-api';
 import { AppEvents } from '../app-events';
-import { createMicroApp } from '../micro-app';
-import { RmfApiContext } from '../rmf-dashboard';
 
-export const RobotInfoApp = createMicroApp('Robot Info', () => {
-  const rmfApi = React.useContext(RmfApiContext);
+export const RobotInfoCard = () => {
+  const rmfApi = useRmfApi();
 
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
   const [taskState, setTaskState] = React.useState<TaskStateOutput | null>(null);
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     const sub = AppEvents.robotSelect
       .pipe(
         switchMap((data) => {
@@ -87,4 +83,6 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
       )}
     </CardContent>
   );
-});
+};
+
+export default RobotInfoCard;

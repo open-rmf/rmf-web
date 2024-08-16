@@ -19,7 +19,7 @@ import {
 import React from 'react';
 import { base, getTaskBookingLabelFromTaskState, TaskBookingLabels } from 'react-components';
 
-import { RmfApiContext } from '../rmf-dashboard';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { TaskCancelButton } from './task-cancellation';
 import { TaskInspector } from './task-inspector';
 
@@ -65,7 +65,7 @@ export interface TaskSummaryProps {
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
 
   const { onClose, task } = props;
 
@@ -94,7 +94,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   }, [taskState]);
 
   React.useEffect(() => {
-    if (!rmfApi || !task) {
+    if (!task) {
       return;
     }
     const sub = rmfApi.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {
@@ -108,6 +108,8 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     });
     return () => sub.unsubscribe();
   }, [rmfApi, task]);
+
+  const theme = useTheme();
 
   const returnDialogContent = () => {
     const contents = [
@@ -131,8 +133,6 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         });
       }
     }
-
-    const theme = useTheme();
 
     return (
       <>

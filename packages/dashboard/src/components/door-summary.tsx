@@ -5,8 +5,8 @@ import { doorModeToOpModeString } from 'react-components';
 import { base, doorModeToString, DoorTableData, doorTypeToString } from 'react-components';
 import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { getApiErrorMessage } from '../utils/api';
-import { RmfApiContext } from './rmf-dashboard';
 
 interface DoorSummaryProps {
   onClose: () => void;
@@ -15,7 +15,7 @@ interface DoorSummaryProps {
 }
 
 export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Element => {
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const [doorData, setDoorData] = React.useState<DoorTableData>({
     index: 0,
     doorName: '',
@@ -25,10 +25,6 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
   });
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
-
     const fetchDataForDoor = async () => {
       try {
         const sub = rmfApi.getDoorStateObs(door.name).subscribe((doorState) => {

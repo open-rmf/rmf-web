@@ -20,15 +20,14 @@ import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { EMPTY, merge, scan, Subscription, switchMap, throttleTime } from 'rxjs';
 import { Box3, TextureLoader, Vector3 } from 'three';
 
-import { FleetResource, ResourcesContext } from '../app-config';
-import { useNonNullableContext } from '../hooks';
-import { AuthenticatorContext } from '../services/authenticator';
+import { useAuthenticator } from '../hooks/use-authenticator';
+import { FleetResource, useResources } from '../hooks/use-resources';
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { TrajectoryData } from '../services/robot-trajectory-manager';
 import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { DoorSummary } from './door-summary';
 import { LiftSummary } from './lift-summary';
-import { RmfApiContext } from './rmf-dashboard';
 import { RobotSummary } from './robots/robot-summary';
 import { CameraControl, Door, LayersController, Lifts, RobotThree } from './three-fiber';
 
@@ -53,11 +52,10 @@ export interface MapProps {
 }
 
 export const Map = styled((props: MapProps) => {
-  const authenticator = useNonNullableContext(AuthenticatorContext);
-  const resources = React.useContext(ResourcesContext);
+  const authenticator = useAuthenticator();
+  const { fleets: fleetResources } = useResources();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const rmfApi = React.useContext(RmfApiContext);
-  const resourceManager = React.useContext(ResourcesContext);
+  const rmfApi = useRmfApi();
   const { showAlert } = React.useContext(AppControllerContext);
   const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
   const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({
@@ -146,13 +144,9 @@ export const Map = styled((props: MapProps) => {
       clearInterval(interval);
       debug(`cleared interval ${interval}`);
     };
-  }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale]);
+  }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale, authenticator.token]);
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
-
     const levelByName = (map: BuildingMap, levelName?: string) => {
       if (!levelName) {
         return null;
@@ -196,7 +190,7 @@ export const Map = styled((props: MapProps) => {
         sub.unsubscribe();
       }
     };
-  }, [rmfApi, resourceManager]);
+  }, [rmfApi, props.defaultMapLevel]);
 
   const [imageUrl, setImageUrl] = React.useState<string | null>(null);
   // Since the configurable zoom level is for supporting the lowest resolution
@@ -271,7 +265,7 @@ export const Map = styled((props: MapProps) => {
         const fleetName = fleetState.name;
         return robotKey.map(async (r) => {
           const robotId = getRobotId(fleetName, r);
-          const fleetResource: FleetResource | undefined = resources.fleets[fleetName];
+          const fleetResource: FleetResource | undefined = fleetResources[fleetName];
           if (robotId in robotsStore) return;
           robotsStore[robotId] = {
             fleet: fleetName,
@@ -300,16 +294,13 @@ export const Map = styled((props: MapProps) => {
       });
       setRobots(newRobots);
     })();
-  }, [fleets, robotsStore, resourceManager, currentLevel, currentLevelOfRobots]);
+  }, [fleets, fleetResources, robotsStore, currentLevel, currentLevelOfRobots]);
 
   const { current: robotLocations } = React.useRef<
     Record<string, [number, number, number, string]>
   >({});
   // updates the robot location
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     const sub = rmfApi.fleetsObs
       .pipe(
         switchMap((fleets) =>
@@ -478,7 +469,7 @@ export const Map = styled((props: MapProps) => {
         sub.unsubscribe();
       }
     };
-  }, [robotLocations, sceneBoundingBox, buildingMap]);
+  }, [robotLocations, sceneBoundingBox, buildingMap, props.defaultRobotZoom]);
 
   React.useEffect(() => {
     if (!sceneBoundingBox) {

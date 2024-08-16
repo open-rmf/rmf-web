@@ -1,45 +1,21 @@
-import React from 'react';
-import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
-
 import testConfig from '../app-config.json';
+import { Resources } from './hooks/use-resources';
 import { Authenticator } from './services/authenticator';
 import { KeycloakAuthenticator } from './services/keycloak';
 import { StubAuthenticator } from './services/stub-authenticator';
 
-export interface RobotResource {
-  /**
-   * Path to an image to be used as the robot's icon.
-   */
-  icon?: string;
+export interface StubAuthConfig {}
 
-  /**
-   * Scale of the image to match the robot's dimensions.
-   */
-  scale?: number;
-}
-
-export interface FleetResource {
-  // TODO(koonpeng): configure robot resources based on robot model, this will require https://github.com/open-rmf/rmf_api_msgs/blob/main/rmf_api_msgs/schemas/robot_state.json to expose the robot model.
-  // [robotModel: string]: RobotResource;
-  default: RobotResource;
-}
-
-export interface LogoResource {
-  /**
-   * Path to an image to be used as the logo on the app bar.
-   */
-  header: string;
-}
-
-export interface Resources {
-  fleets: { [fleetName: string]: FleetResource };
-  logos: LogoResource;
+export interface KeycloakAuthConfig {
+  url: string;
+  realm: string;
+  clientId: string;
 }
 
 /**
  * Configuration for task definitions.
  */
-export interface TaskResource {
+export interface AllowedTask {
   /**
    * The task definition to configure.
    */
@@ -49,14 +25,6 @@ export interface TaskResource {
    * Configure the display name for the task definition.
    */
   displayName?: string;
-}
-
-export interface StubAuthConfig {}
-
-export interface KeycloakAuthConfig {
-  url: string;
-  realm: string;
-  clientId: string;
 }
 
 /**
@@ -118,15 +86,13 @@ export interface RuntimeConfig {
   /**
    * List of allowed tasks that can be requested
    */
-  allowedTasks: TaskResource[];
+  allowedTasks: AllowedTask[];
 
   /**
    * Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.
    */
   resources: { [theme: string]: Resources; default: Resources };
 
-  // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
-  // system is implemented.
   cartIds: string[];
 }
 
@@ -181,22 +147,3 @@ export const authenticator: Authenticator = (() => {
     throw new Error('unknown auth provider');
   }
 })();
-
-export const ResourcesContext = React.createContext<Resources>(appConfig.resources.default);
-
-// FIXME(koonepng): This should be fully definition in app config when the dashboard actually
-// supports configurating all the fields.
-export const allowedTasks: TaskDefinition[] = appConfig.allowedTasks.map((taskResource) => {
-  const defaultTaskDefinition = getDefaultTaskDefinition(taskResource.taskDefinitionId);
-  if (!defaultTaskDefinition) {
-    throw Error(`Invalid tasks configured for dashboard: [${taskResource.taskDefinitionId}]`);
-  }
-  if (taskResource.displayName !== undefined) {
-    return {
-      ...defaultTaskDefinition,
-      taskDisplayName: taskResource.displayName,
-    };
-  } else {
-    return defaultTaskDefinition;
-  }
-});

@@ -2,14 +2,13 @@ import { TableContainer, Typography } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-components';
 
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppControllerContext } from '../app-contexts';
-import { createMicroApp } from '../micro-app';
-import { RmfApiContext } from '../rmf-dashboard';
 
 const RefreshMutexGroupTableInterval = 5000;
 
-export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
-  const rmfApi = React.useContext(RmfApiContext);
+export const RobotMutexGroupsTable = () => {
+  const rmfApi = useRmfApi();
   const appController = React.useContext(AppControllerContext);
 
   const [mutexGroups, setMutexGroups] = React.useState<Record<string, MutexGroupData>>({});
@@ -40,11 +39,6 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
   };
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      console.error('Unable to get latest robot information, fleets API unavailable');
-      return;
-    }
-
     const refreshMutexGroupTable = async () => {
       const fleets = (await rmfApi.fleetsApi.getFleetsFleetsGet()).data;
       const updatedMutexGroups: Record<string, MutexGroupData> = {};
@@ -125,10 +119,6 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
     }
 
     try {
-      if (!rmfApi) {
-        throw new Error('fleets api not available');
-      }
-
       await rmfApi.fleetsApi?.unlockMutexGroupFleetsNameUnlockMutexGroupPost(
         fleet,
         robot,
@@ -150,7 +140,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
   }, [selectedMutexGroup, rmfApi, appController]);
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ height: '100%' }}>
       <MutexGroupTable
         mutexGroups={Object.values(mutexGroups)}
         onMutexGroupClick={(_ev, mutexGroup) => {
@@ -177,4 +167,6 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
       </ConfirmationDialog>
     </TableContainer>
   );
-});
+};
+
+export default RobotMutexGroupsTable;

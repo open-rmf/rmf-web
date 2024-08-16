@@ -11,8 +11,8 @@ import { Lift } from 'api-client';
 import React from 'react';
 import { base, doorStateToString, liftModeToString, LiftTableData } from 'react-components';
 
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { getApiErrorMessage } from '../utils/api';
-import { RmfApiContext } from './rmf-dashboard';
 
 interface LiftSummaryProps {
   onClose: () => void;
@@ -21,7 +21,7 @@ interface LiftSummaryProps {
 
 export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element => {
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const [liftData, setLiftData] = React.useState<LiftTableData>({
     index: 0,
     name: '',
@@ -35,10 +35,6 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
   });
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
-
     const fetchDataForLift = async () => {
       try {
         const sub = rmfApi.getLiftStateObs(lift.name).subscribe((liftState) => {

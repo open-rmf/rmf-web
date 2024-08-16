@@ -20,9 +20,9 @@ import React from 'react';
 import { base } from 'react-components';
 import { Subscription } from 'rxjs';
 
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
-import { RmfApiContext } from './rmf-dashboard';
 import { TaskCancelButton } from './tasks/task-cancellation';
 
 interface AlertDialogProps {
@@ -34,15 +34,11 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
   const { alertRequest, onDismiss } = props;
   const [isOpen, setIsOpen] = React.useState(true);
   const { showAlert } = React.useContext(AppControllerContext);
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const [additionalAlertMessage, setAdditionalAlertMessage] = React.useState<string | null>(null);
 
   const respondToAlert = async (alert_id: string, response: string) => {
-    if (!rmfApi) {
-      return;
-    }
-
     try {
       const resp = (
         await rmfApi.alertsApi.respondToAlertAlertsRequestAlertIdRespondPost(alert_id, response)
@@ -87,9 +83,6 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
 
   React.useEffect(() => {
     if (alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Info || !alertRequest.task_id) {
-      return;
-    }
-    if (!rmfApi) {
       return;
     }
 
@@ -254,19 +247,11 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
 });
 
 export const AlertManager = React.memo(() => {
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const [openAlerts, setOpenAlerts] = React.useState<Record<string, AlertRequest>>({});
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
-
     const pushAlertsToBeDisplayed = async (alertRequest: AlertRequest) => {
-      if (!rmfApi) {
-        console.error('Alerts API not available');
-        return;
-      }
       if (!alertRequest.display) {
         setOpenAlerts((prev) => {
           const filteredAlerts = Object.fromEntries(

@@ -2,19 +2,15 @@ import { CardContent } from '@mui/material';
 import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
-import { createMicroApp } from '../micro-app';
-import { RmfApiContext } from '../rmf-dashboard';
 import { TaskLogs } from './task-logs';
 
-export const TaskLogsApp = createMicroApp('Task Logs', () => {
-  const rmfApi = React.useContext(RmfApiContext);
+export const TaskLogsCard = () => {
+  const rmfApi = useRmfApi();
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     const sub = AppEvents.taskSelect.subscribe((task) => {
       if (!task) {
         setTaskState(null);
@@ -47,4 +43,6 @@ export const TaskLogsApp = createMicroApp('Task Logs', () => {
       <TaskLogs taskLog={taskLogs} taskState={taskState} />
     </CardContent>
   );
-});
+};
+
+export default TaskLogsCard;

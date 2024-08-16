@@ -5,22 +5,18 @@ import { TaskInfo } from 'react-components';
 // import { UserProfileContext } from 'rmf-auth';
 import { of, switchMap } from 'rxjs';
 
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { createMicroApp } from '../micro-app';
 // import { Enforcer } from '../permissions';
-import { RmfApiContext } from '../rmf-dashboard';
 
-export const TaskDetailsApp = createMicroApp('Task Details', () => {
+export const TaskDetailsCard = () => {
   const theme = useTheme();
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const appController = React.useContext(AppControllerContext);
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     const sub = AppEvents.taskSelect
       .pipe(
         switchMap((selectedTask) =>
@@ -43,9 +39,6 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
       return;
     }
     try {
-      if (!rmfApi) {
-        throw new Error('tasks api not available');
-      }
       await rmfApi.tasksApi?.postCancelTaskTasksCancelTaskPost({
         type: 'cancel_task_request',
         task_id: taskState.booking.id,
@@ -89,4 +82,6 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
       )}
     </Grid>
   );
-});
+};
+
+export default TaskDetailsCard;

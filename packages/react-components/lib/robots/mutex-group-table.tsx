@@ -68,7 +68,6 @@ export function MutexGroupTable({
 
   return (
     <DataGrid
-      autoHeight={true}
       getRowId={(r) => r.name}
       rows={mutexGroups}
       pageSize={5}

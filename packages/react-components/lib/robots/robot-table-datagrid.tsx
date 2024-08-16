@@ -166,7 +166,6 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
 
   return (
     <DataGrid
-      autoHeight={true}
       getRowId={(r) => r.name}
       rows={robots}
       pageSize={5}

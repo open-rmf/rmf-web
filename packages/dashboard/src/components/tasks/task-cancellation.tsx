@@ -3,12 +3,11 @@ import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
 
-import { UserProfile } from '../../services/authenticator';
+import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useUserProfile } from '../../hooks/use-user-profile';
 import { Enforcer } from '../../services/permissions';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { RmfApiContext } from '../rmf-dashboard';
-import { UserProfileContext } from '../user-profile-provider';
 
 export interface TaskCancelButtonProp extends ButtonProps {
   taskId: string | null;
@@ -20,15 +19,15 @@ export function TaskCancelButton({
   buttonText,
   ...otherProps
 }: TaskCancelButtonProp): JSX.Element {
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const appController = React.useContext(AppControllerContext);
-  const profile: UserProfile | null = React.useContext(UserProfileContext);
+  const profile = useUserProfile();
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
 
   React.useEffect(() => {
-    if (!rmfApi || !taskId) {
+    if (!taskId) {
       return;
     }
     const sub = rmfApi.getTaskStateObs(taskId).subscribe((state) => {
@@ -54,9 +53,6 @@ export function TaskCancelButton({
       return;
     }
     try {
-      if (!rmfApi) {
-        throw new Error('tasks api not available');
-      }
       await rmfApi.tasksApi?.postCancelTaskTasksCancelTaskPost({
         type: 'cancel_task_request',
         task_id: taskState.booking.id,

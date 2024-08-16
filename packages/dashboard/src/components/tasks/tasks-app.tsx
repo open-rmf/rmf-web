@@ -24,10 +24,10 @@ import {
   Window,
 } from 'react-components';
 
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
-import { RmfApiContext } from '../rmf-dashboard';
 import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
 import { exportCsvFull, exportCsvMinimal } from './utils';
@@ -84,7 +84,7 @@ export const TasksApp = React.memo(
       { onClose, children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
       ref: React.Ref<HTMLDivElement>,
     ) => {
-      const rmfApi = React.useContext(RmfApiContext);
+      const rmfApi = useRmfApi();
       const appController = React.useContext(AppControllerContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
@@ -146,10 +146,6 @@ export const TasksApp = React.memo(
       // TODO: parameterize this variable
       const GET_LIMIT = 10;
       React.useEffect(() => {
-        if (!rmfApi) {
-          return;
-        }
-
         if (selectedPanelIndex !== TaskTablePanel.QueueTable) {
           console.debug('Stop subscribing to task queue updates when viewing schedule tab');
           return;
@@ -231,10 +227,6 @@ export const TasksApp = React.memo(
       ]);
 
       const getPastMonthTasks = async (timestamp: Date) => {
-        if (!rmfApi) {
-          return [];
-        }
-
         const currentMillis = timestamp.getTime();
         const oneMonthMillis = 31 * 24 * 60 * 60 * 1000;
         const allTasks: TaskState[] = [];

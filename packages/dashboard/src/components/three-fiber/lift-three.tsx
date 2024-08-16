@@ -5,7 +5,7 @@ import React from 'react';
 import { LiftThreeMaker } from 'react-components';
 import { throttleTime } from 'rxjs';
 
-import { RmfApiContext } from '../rmf-dashboard';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 
 interface LiftsProps {
   opacity: number;
@@ -16,13 +16,10 @@ interface LiftsProps {
 }
 
 export const Lifts = React.memo(({ lift, onLiftClick }: LiftsProps): JSX.Element => {
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const [liftState, setLiftState] = React.useState<LiftState | undefined>(undefined);
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     if (!lift) {
       return;
     }

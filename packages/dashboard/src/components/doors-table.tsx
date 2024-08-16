@@ -4,29 +4,21 @@ import { DoorDataGridTable, DoorTableData } from 'react-components';
 import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg/DoorMode';
 import { throttleTime } from 'rxjs';
 
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { getApiErrorMessage } from '../utils/api';
 import { AppEvents } from './app-events';
-import { createMicroApp } from './micro-app';
-import { RmfApiContext } from './rmf-dashboard';
 
-export const DoorsApp = createMicroApp('Doors', () => {
-  const rmfApi = React.useContext(RmfApiContext);
+export const DoorsTable = () => {
+  const rmfApi = useRmfApi();
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
   const [doorTableData, setDoorTableData] = React.useState<Record<string, DoorTableData>>({});
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     const sub = rmfApi.buildingMapObs.subscribe(setBuildingMap);
     return () => sub.unsubscribe();
   }, [rmfApi]);
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
-
     let doorIndex = 0;
     buildingMap?.levels.map((level) =>
       level.doors.map(async (door) => {
@@ -84,4 +76,6 @@ export const DoorsApp = createMicroApp('Doors', () => {
       }}
     />
   );
-});
+};
+
+export default DoorsTable;

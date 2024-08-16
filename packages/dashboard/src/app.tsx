@@ -7,12 +7,11 @@ import './app.css';
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { appConfig, ResourcesContext } from './app-config';
+import { appConfig } from './app-config';
 import {
   AdminRouter,
   AppBase,
   AppEvents,
-  createMapApp,
   PrivateRoute,
   RmfDashboard,
   SettingsContext,
@@ -21,6 +20,11 @@ import {
   WorkspaceState,
 } from './components';
 import { MicroAppManifest } from './components/micro-app';
+import doorsApp from './micro-apps/doors-app';
+import liftsApp from './micro-apps/lifts-app';
+import createMapApp from './micro-apps/map-app';
+import robotMutexGroupsApp from './micro-apps/robot-mutex-groups-app';
+import robotsApp from './micro-apps/robots-app';
 import { LoginPage } from './pages';
 import KeycloakAuthenticator from './services/keycloak';
 import StubAuthenticator from './services/stub-authenticator';
@@ -41,8 +45,6 @@ const mapApp = createMapApp({
   defaultZoom: appConfig.defaultZoom,
 });
 
-const appRegistry = [mapApp];
-
 const homeWorkspace: WorkspaceState = {
   windows: {
     map: {
@@ -52,22 +54,18 @@ const homeWorkspace: WorkspaceState = {
   },
 };
 
-// const robotsWorkspace: WorkspaceState = {
-//   layout: [
-//     { i: 'robots', x: 0, y: 0, w: 7, h: 4 },
-//     { i: 'map', x: 8, y: 0, w: 5, h: 8 },
-//     { i: 'doors', x: 0, y: 0, w: 7, h: 4 },
-//     { i: 'lifts', x: 0, y: 0, w: 7, h: 4 },
-//     { i: 'mutexGroups', x: 8, y: 0, w: 5, h: 4 },
-//   ],
-//   windows: [
-//     { key: 'robots', appName: 'Robots' },
-//     { key: 'map', appName: 'Map' },
-//     { key: 'doors', appName: 'Doors' },
-//     { key: 'lifts', appName: 'Lifts' },
-//     { key: 'mutexGroups', appName: 'Mutex Groups' },
-//   ],
-// };
+const robotsWorkspace: WorkspaceState = {
+  windows: {
+    robots: {
+      layout: { x: 0, y: 0, w: 7, h: 4 },
+      component: robotsApp.Component,
+    },
+    map: { layout: { x: 8, y: 0, w: 5, h: 8 }, component: mapApp.Component },
+    doors: { layout: { x: 0, y: 0, w: 7, h: 4 }, component: doorsApp.Component },
+    lifts: { layout: { x: 0, y: 0, w: 7, h: 4 }, component: liftsApp.Component },
+    mutexGroups: { layout: { x: 8, y: 0, w: 5, h: 4 }, component: robotMutexGroupsApp.Component },
+  },
+};
 
 // const tasksWorkspace: WorkspaceState = {
 //   layout: [
@@ -88,9 +86,24 @@ export default function App() {
       authenticator={new StubAuthenticator()}
       helpLink={appConfig.helpLink}
       reportIssueLink={appConfig.reportIssue}
-      pickupZones={appConfig.pickupZones}
-      cartIds={appConfig.cartIds}
-      tabs={[{ name: 'Map', route: '', element: <StaticWorkspace initialState={homeWorkspace} /> }]}
+      resources={appConfig.resources.default}
+      tasks={{
+        allowedTasks: appConfig.allowedTasks,
+        pickupZones: appConfig.pickupZones,
+        cartIds: appConfig.cartIds,
+      }}
+      tabs={[
+        {
+          name: 'Map',
+          route: '/',
+          element: <StaticWorkspace key="Map" initialState={homeWorkspace} />,
+        },
+        {
+          name: 'Robots',
+          route: '/robots',
+          element: <StaticWorkspace key="Robots" initialState={robotsWorkspace} />,
+        },
+      ]}
     />
   );
 }

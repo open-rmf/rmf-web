@@ -11,9 +11,9 @@ import { RobotState } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
 
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { RmfApiContext } from '../rmf-dashboard';
 
 export interface RobotDecommissionButtonProp extends Omit<ButtonProps, 'onClick' | 'autoFocus'> {
   fleet: string;
@@ -24,8 +24,8 @@ export function RobotDecommissionButton({
   fleet,
   robotState,
   ...otherProps
-}: RobotDecommissionButtonProp): JSX.Element {
-  const rmfApi = React.useContext(RmfApiContext);
+}: RobotDecommissionButtonProp) {
+  const rmfApi = useRmfApi();
   const appController = React.useContext(AppControllerContext);
   const [reassignTasks, setReassignTasks] = React.useState(true);
   const [allowIdleBehavior, setAllowIdleBehavior] = React.useState(false);
@@ -60,9 +60,6 @@ export function RobotDecommissionButton({
       return;
     }
     try {
-      if (!rmfApi) {
-        throw new Error('fleets api not available');
-      }
       const resp = await rmfApi.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(
         fleet,
         robotState.name,
@@ -116,9 +113,6 @@ export function RobotDecommissionButton({
       return;
     }
     try {
-      if (!rmfApi) {
-        throw new Error('fleets api not available');
-      }
       const resp = await rmfApi.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(
         fleet,
         robotState.name,

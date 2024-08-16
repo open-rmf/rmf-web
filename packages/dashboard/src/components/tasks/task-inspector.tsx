@@ -4,7 +4,7 @@ import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { TaskInfo } from 'react-components';
 
-import { RmfApiContext } from '../rmf-dashboard';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { TaskCancelButton } from './task-cancellation';
 import { TaskLogs } from './task-logs';
 
@@ -15,14 +15,14 @@ export interface TableDataGridState {
 
 export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Element {
   const theme = useTheme();
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
   const [isOpen, setIsOpen] = React.useState(true);
 
   React.useEffect(() => {
-    if (!rmfApi || !task) {
+    if (!task) {
       setTaskState(null);
       setTaskLogs(null);
       return;

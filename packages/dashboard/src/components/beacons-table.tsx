@@ -2,18 +2,13 @@ import { BeaconState } from 'api-client';
 import React from 'react';
 import { BeaconDataGridTable } from 'react-components';
 
-import { createMicroApp } from './micro-app';
-import { RmfApiContext } from './rmf-dashboard';
+import { useRmfApi } from '../hooks/rmf-api';
 
-export const BeaconsApp = createMicroApp('Beacons', () => {
-  const rmfApi = React.useContext(RmfApiContext);
+export const BeaconsTable = () => {
+  const rmfApi = useRmfApi();
   const [beacons, setBeacons] = React.useState<Record<string, BeaconState>>({});
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
-
     (async () => {
       const { data } = await rmfApi.beaconsApi.getBeaconsBeaconsGet();
       for (const state of data) {
@@ -38,4 +33,6 @@ export const BeaconsApp = createMicroApp('Beacons', () => {
   }, [rmfApi]);
 
   return <BeaconDataGridTable beacons={Object.values(beacons)} />;
-});
+};
+
+export default BeaconsTable;

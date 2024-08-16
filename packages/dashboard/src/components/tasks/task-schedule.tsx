@@ -19,12 +19,12 @@ import {
   Schedule,
 } from 'react-components';
 
-import { allowedTasks } from '../../app-config';
 import { useCreateTaskFormData } from '../../hooks/use-create-task-form';
-import useGetUsername from '../../hooks/use-fetch-user';
+import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useTaskRegistry } from '../../hooks/use-task-registry';
+import { useUserProfile } from '../../hooks/use-user-profile';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { RmfApiContext } from '../rmf-dashboard';
 import {
   apiScheduleToSchedule,
   getScheduledTaskTitle,
@@ -66,12 +66,13 @@ const disablingCellsWithoutEvents = (
 };
 
 export const TaskSchedule = () => {
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const { showAlert } = React.useContext(AppControllerContext);
 
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
     useCreateTaskFormData(rmfApi);
-  const username = useGetUsername(rmfApi);
+  const username = useUserProfile().user.username;
+  const taskRegistry = useTaskRegistry();
   const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
   const [refreshTaskScheduleCount, setRefreshTaskScheduleCount] = React.useState(0);
   const exceptDateRef = React.useRef<Date>(new Date());
@@ -116,9 +117,6 @@ export const TaskSchedule = () => {
       // deleting or editing schedules.
       setCurrentView(params);
 
-      if (!rmfApi) {
-        return;
-      }
       const tasks = (
         await rmfApi.tasksApi.getScheduledTasksScheduledTasksGet(
           params.end.toISOString(),
@@ -133,7 +131,7 @@ export const TaskSchedule = () => {
       return tasks.flatMap((t: ScheduledTask) =>
         t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
           const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
-            getScheduledTaskTitle(t, allowedTasks),
+            getScheduledTaskTitle(t, taskRegistry.taskDefinitions),
           );
           events.forEach((ev) => {
             eventsMap.current[Number(ev.event_id)] = t;
@@ -143,7 +141,7 @@ export const TaskSchedule = () => {
         }),
       );
     },
-    [rmfApi, allowedTasks],
+    [rmfApi, taskRegistry.taskDefinitions],
   );
 
   const CustomCalendarEditor = ({ scheduler, value, onChange }: CustomCalendarEditorProps) => {
@@ -187,10 +185,6 @@ export const TaskSchedule = () => {
 
   const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
     async (taskRequests, schedule) => {
-      if (!rmfApi) {
-        throw new Error('tasks api not available');
-      }
-
       if (!schedule || !currentScheduleTask) {
         throw new Error('No schedule or task selected for submission.');
       }
@@ -228,9 +222,6 @@ export const TaskSchedule = () => {
 
       if (!task) {
         throw new Error(`unable to find task for event ${currentEventIdRef.current}`);
-      }
-      if (!rmfApi) {
-        throw new Error('tasks api not available');
       }
 
       if (eventScope === EventScopes.CURRENT) {
@@ -317,7 +308,7 @@ export const TaskSchedule = () => {
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
-          tasksToDisplay={allowedTasks}
+          tasksToDisplay={taskRegistry.taskDefinitions}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
           pickupPoints={pickupPoints}

@@ -7,7 +7,7 @@ import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
 import { throttleTime } from 'rxjs';
 import { Mesh } from 'three';
 
-import { RmfApiContext } from '../rmf-dashboard';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 
 interface DoorProps {
   door: RmfDoor;
@@ -25,15 +25,12 @@ function toDoorMode(liftState: LiftState): RmfDoorMode {
 export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
   const ref = React.useRef<Mesh>(null!);
   const { door, lift, onDoorClick } = doorProps;
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
   const [doorState, setDoorState] = React.useState<DoorState | null>(null);
   const [liftState, setLiftState] = React.useState<LiftState | undefined>(undefined);
   const [color, setColor] = React.useState<string>('red');
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     if (!lift) {
       return;
     }
@@ -65,9 +62,6 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
   }, [doorState?.current_mode.value, liftState]);
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     const sub = rmfApi.getDoorStateObs(door.name).subscribe(setDoorState);
     return () => sub.unsubscribe();
   }, [rmfApi, door.name]);

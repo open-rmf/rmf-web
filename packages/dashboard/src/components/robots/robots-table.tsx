@@ -3,26 +3,20 @@ import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { RobotDataGridTable, RobotTableData } from 'react-components';
 
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
-import { createMicroApp } from '../micro-app';
-import { RmfApiContext } from '../rmf-dashboard';
 import { RobotSummary } from './robot-summary';
 
 const RefreshRobotTableInterval = 10000;
 
-export const RobotsApp = createMicroApp('Robots', () => {
-  const rmfApi = React.useContext(RmfApiContext);
+export const RobotsTable = () => {
+  const rmfApi = useRmfApi();
 
   const [robots, setRobots] = React.useState<Record<string, RobotTableData[]>>({});
   const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
   const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      console.error('Unable to get latest robot information, fleets API unavailable');
-      return;
-    }
-
     const refreshRobotTable = async () => {
       const fleets = (await rmfApi.fleetsApi.getFleetsFleetsGet()).data;
       for (const fleet of fleets) {
@@ -96,7 +90,7 @@ export const RobotsApp = createMicroApp('Robots', () => {
   }, [rmfApi]);
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ height: '100%' }}>
       <RobotDataGridTable
         robots={Object.values(robots).flatMap((r) => r)}
         onRobotClick={(_ev, robot) => {
@@ -110,4 +104,6 @@ export const RobotsApp = createMicroApp('Robots', () => {
       )}
     </TableContainer>
   );
-});
+};
+
+export default RobotsTable;

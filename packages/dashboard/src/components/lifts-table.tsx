@@ -5,24 +5,19 @@ import { LiftDataGridTable, LiftTableData } from 'react-components';
 import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { throttleTime } from 'rxjs';
 
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { getApiErrorMessage } from '../utils/api';
 import { AppEvents } from './app-events';
 import { LiftSummary } from './lift-summary';
-import { createMicroApp } from './micro-app';
-import { RmfApiContext } from './rmf-dashboard';
 
-export const LiftsApp = createMicroApp('Lifts', () => {
-  const rmfApi = React.useContext(RmfApiContext);
+export const LiftsTable = () => {
+  const rmfApi = useRmfApi();
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
   const [liftTableData, setLiftTableData] = React.useState<Record<string, LiftTableData[]>>({});
   const [openLiftSummary, setOpenLiftSummary] = React.useState(false);
   const [selectedLift, setSelectedLift] = React.useState<Lift | null>(null);
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
-
     const sub = rmfApi.buildingMapObs.subscribe((newMap) => {
       setBuildingMap(newMap);
     });
@@ -30,10 +25,6 @@ export const LiftsApp = createMicroApp('Lifts', () => {
   }, [rmfApi]);
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
-
     buildingMap?.lifts.map(async (lift, i) => {
       try {
         const sub = rmfApi
@@ -56,10 +47,6 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                     lift: lift,
                     liftState: liftState,
                     onRequestSubmit: async (_ev, doorState, requestType, destination) => {
-                      if (!rmfApi) {
-                        console.error('rmf ingress is undefined');
-                        return;
-                      }
                       const fleet_session_ids: string[] = [];
                       if (requestType === RmfLiftRequest.REQUEST_END_SESSION) {
                         const fleets = (await rmfApi.fleetsApi.getFleetsFleetsGet()).data;
@@ -93,7 +80,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
   }, [rmfApi, buildingMap]);
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ height: '100%' }}>
       <LiftDataGridTable
         lifts={Object.values(liftTableData).flatMap((l) => l)}
         onLiftClick={(_ev, liftData) => {
@@ -117,4 +104,6 @@ export const LiftsApp = createMicroApp('Lifts', () => {
       )}
     </TableContainer>
   );
-});
+};
+
+export default LiftsTable;

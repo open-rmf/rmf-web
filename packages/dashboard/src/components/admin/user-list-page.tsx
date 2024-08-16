@@ -1,13 +1,11 @@
-import React from 'react';
-
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { getApiErrorMessage } from '../../utils/api';
-import { RmfApiContext } from '../rmf-dashboard';
 import { adminPageClasses, AdminPageContainer } from './page-css';
 import { UserListCard } from './user-list-card';
 
 export function UserListPage(): JSX.Element | null {
-  const rmfApi = React.useContext(RmfApiContext);
-  const adminApi = rmfApi?.adminApi;
+  const rmfApi = useRmfApi();
+  const adminApi = rmfApi.adminApi;
 
   if (!adminApi) return null;
 

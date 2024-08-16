@@ -34,7 +34,7 @@ import React from 'react';
 import { base, RobotTableData } from 'react-components';
 import { combineLatest, EMPTY, mergeMap, of } from 'rxjs';
 
-import { RmfApiContext } from '../rmf-dashboard';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { TaskCancelButton } from '../tasks/task-cancellation';
 import { TaskInspector } from '../tasks/task-inspector';
 import { RobotDecommissionButton } from './robot-decommission';
@@ -104,7 +104,7 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const rmfApi = React.useContext(RmfApiContext);
+  const rmfApi = useRmfApi();
 
   const [isOpen, setIsOpen] = React.useState(true);
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
@@ -114,9 +114,6 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
   const [navigationDestination, setNavigationDestination] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (!rmfApi) {
-      return;
-    }
     const sub = rmfApi
       .getFleetStateObs(robot.fleet)
       .pipe(
@@ -183,6 +180,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
     }
   }, [taskState]);
 
+  const theme = useTheme();
+
   const returnDialogContent = () => {
     const contents = [
       {
@@ -222,8 +221,6 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           `Idle Behavior : ${commission.idle_behavior ?? 'n/a'}`,
       });
     }
-
-    const theme = useTheme();
 
     return (
       <>

@@ -31,6 +31,7 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Tab,
   Tabs,
   Toolbar,
   Tooltip,
@@ -42,16 +43,15 @@ import React from 'react';
 import { ConfirmationDialog, CreateTaskForm, CreateTaskFormProps } from 'react-components';
 import { Subscription } from 'rxjs';
 
-import { allowedTasks, ResourcesContext } from '../app-config';
-import { useNonNullableContext } from '../hooks';
+import { useAuthenticator } from '../hooks/use-authenticator';
 import { useCreateTaskFormData } from '../hooks/use-create-task-form';
-import useGetUsername from '../hooks/use-fetch-user';
-import { AuthenticatorContext } from '../services/authenticator';
+import { useResources } from '../hooks/use-resources';
+import { useRmfApi } from '../hooks/use-rmf-api';
+import { useTaskRegistry } from '../hooks/use-task-registry';
+import { useUserProfile } from '../hooks/use-user-profile';
 import { AppControllerContext, SettingsContext } from './app-contexts';
 import { AppEvents } from './app-events';
-import { RmfApiContext } from './rmf-dashboard';
 import { toApiSchedule } from './tasks/utils';
-import { UserProfileContext } from './user-profile-provider';
 
 export const APP_BAR_HEIGHT = '3.5rem';
 
@@ -81,31 +81,22 @@ function AppSettings() {
 }
 
 export interface AppBarProps {
-  tabs: React.ReactNode[];
+  tabs: React.ReactElement<React.ComponentProps<typeof Tab>>[];
   tabValue: string;
   helpLink: string;
   reportIssueLink: string;
-  pickupZones: string[];
-  cartIds: string[];
   extraToolbarItems?: React.ReactNode;
 }
 
 export const AppBar = React.memo(
-  ({
-    tabs,
-    tabValue,
-    helpLink,
-    reportIssueLink,
-    pickupZones,
-    cartIds,
-    extraToolbarItems,
-  }: AppBarProps) => {
-    const authenticator = useNonNullableContext(AuthenticatorContext);
-    const rmfApi = useNonNullableContext(RmfApiContext);
-    const resources = React.useContext(ResourcesContext);
+  ({ tabs, tabValue, helpLink, reportIssueLink, extraToolbarItems }: AppBarProps) => {
+    const authenticator = useAuthenticator();
+    const rmfApi = useRmfApi();
+    const resources = useResources();
+    const taskRegistry = useTaskRegistry();
     const { showAlert } = React.useContext(AppControllerContext);
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const profile = useNonNullableContext(UserProfileContext);
+    const profile = useUserProfile();
     const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
     const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
     const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
@@ -122,7 +113,7 @@ export const AppBar = React.memo(
 
     const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
       useCreateTaskFormData(rmfApi);
-    const username = useGetUsername(rmfApi);
+    const username = profile.user.username;
 
     async function handleLogout(): Promise<void> {
       try {
@@ -231,9 +222,6 @@ export const AppBar = React.memo(
     };
 
     React.useEffect(() => {
-      if (!rmfApi) {
-        return;
-      }
       (async () => {
         try {
           const resp =
@@ -462,11 +450,11 @@ export const AppBar = React.memo(
         {openCreateTaskForm && (
           <CreateTaskForm
             user={username ? username : 'unknown user'}
-            tasksToDisplay={allowedTasks}
+            tasksToDisplay={taskRegistry.taskDefinitions}
             patrolWaypoints={waypointNames}
             cleaningZones={cleaningZoneNames}
-            pickupZones={pickupZones}
-            cartIds={cartIds}
+            pickupZones={taskRegistry.pickupZones}
+            cartIds={taskRegistry.cartIds}
             pickupPoints={pickupPoints}
             dropoffPoints={dropoffPoints}
             favoritesTasks={favoritesTasks}
