@@ -5,6 +5,8 @@
 
 import UpdateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   Box,
   Button,
@@ -874,8 +876,8 @@ export function CreateTaskForm({
               />
 
               <Grid>
-                <Grid container spacing={theme.spacing(2)}>
-                  <Grid item xs={12}>
+                <Grid container spacing={theme.spacing(2)} alignItems="center">
+                  <Grid item xs={11}>
                     <TextField
                       select
                       id="task-type"
@@ -905,6 +907,53 @@ export function CreateTaskForm({
                       })}
                     </TextField>
                   </Grid>
+                  <Grid item xs={1}>
+                    {callToUpdateFavoriteTask ? (
+                      <Tooltip title="Confirm edits for favorite task">
+                        <IconButton
+                          edge="end"
+                          aria-label="update"
+                          onClick={() => {
+                            !callToUpdateFavoriteTask &&
+                              setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                            setOpenFavoriteDialog(true);
+                          }}
+                          // FIXME: Favorite tasks are disabled for custom compose
+                          // tasks for now, as it will require a re-write of
+                          // FavoriteTask's pydantic model with better typing.
+                          disabled={
+                            taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId
+                          }
+                        >
+                          <SaveIcon transform={`scale(${isScreenHeightLessThan800 ? 0.7 : 1})`} />
+                        </IconButton>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip title="Save as favorite task">
+                        <IconButton
+                          edge="end"
+                          aria-label="update"
+                          onClick={() => {
+                            !callToUpdateFavoriteTask &&
+                              setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                            setOpenFavoriteDialog(true);
+                          }}
+                          // FIXME: Favorite tasks are disabled for custom compose
+                          // tasks for now, as it will require a re-write of
+                          // FavoriteTask's pydantic model with better typing.
+                          disabled={
+                            taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId
+                          }
+                        >
+                          <FavoriteBorder
+                            transform={`scale(${isScreenHeightLessThan800 ? 0.7 : 1})`}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </Grid>
+                  {/* <Grid item xs={1}>
+                  </Grid> */}
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
                     <Tooltip title="Prioritized tasks will added to the front of the task execution queue">
                       <FormControlLabel
@@ -947,26 +996,6 @@ export function CreateTaskForm({
                   style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
                 />
                 {renderTaskDescriptionForm(taskDefinitionId)}
-                <Grid container justifyContent="center">
-                  <Button
-                    aria-label="Save as a favorite task"
-                    variant="contained"
-                    color="primary"
-                    size={isScreenHeightLessThan800 ? 'small' : 'medium'}
-                    onClick={() => {
-                      !callToUpdateFavoriteTask &&
-                        setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-                      setOpenFavoriteDialog(true);
-                    }}
-                    style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
-                    // FIXME: Favorite tasks are disabled for custom compose
-                    // tasks for now, as it will require a re-write of
-                    // FavoriteTask's pydantic model with better typing.
-                    disabled={taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId}
-                  >
-                    {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
-                  </Button>
-                </Grid>
               </Grid>
             </Grid>
           </DialogContent>
@@ -1034,6 +1063,7 @@ export function CreateTaskForm({
               }
               helperText="Required"
               error={favoriteTaskTitleError}
+              fullWidth
             />
           )}
           {callToDeleteFavoriteTask && (
