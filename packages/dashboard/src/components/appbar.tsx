@@ -36,6 +36,7 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { AlertRequest, FireAlarmTriggerState, TaskFavorite } from 'api-client';
 import { formatDistance } from 'date-fns';
@@ -250,8 +251,10 @@ export const AppBar = React.memo(
       setOpenAdminActionsDialog(false);
     }, [rmfApi, showAlert]);
 
+    const theme = useTheme();
+
     return (
-      <MuiAppBar position="static" sx={{ height: APP_BAR_HEIGHT }}>
+      <MuiAppBar position="fixed" sx={{ height: APP_BAR_HEIGHT, zIndex: theme.zIndex.drawer + 1 }}>
         <Grid container alignItems="center" justifyContent="space-between" wrap="nowrap">
           <Box display="flex" alignItems="center">
             <img src={resources.logos.header} style={{ height: APP_BAR_HEIGHT }} />

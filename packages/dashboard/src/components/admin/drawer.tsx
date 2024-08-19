@@ -3,13 +3,12 @@ import AccountIcon from '@mui/icons-material/AccountCircle';
 import SecurityIcon from '@mui/icons-material/Security';
 import {
   Drawer,
-  DrawerProps,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  styled,
   Toolbar,
+  useTheme,
 } from '@mui/material';
 import React from 'react';
 import { RouteProps, useLocation, useNavigate } from 'react-router';
@@ -21,31 +20,6 @@ const drawerValuesRoutesMap: Record<AdminDrawerValues, RouteProps> = {
   Roles: { path: '/roles' },
 };
 
-const prefix = 'drawer';
-const classes = {
-  drawerPaper: `${prefix}-paper`,
-  drawerContainer: `${prefix}-container`,
-  itemIcon: `${prefix}-itemicon`,
-  activeItem: `${prefix}-active-item`,
-};
-const StyledDrawer = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
-  [`& .${classes.drawerPaper}`]: {
-    backgroundColor: theme.palette.primary.dark,
-    color: theme.palette.getContrastText(theme.palette.primary.dark),
-    minWidth: 240,
-    width: '16%',
-  },
-  [`& .${classes.drawerContainer}`]: {
-    overflow: 'auto',
-  },
-  [`& .${classes.itemIcon}`]: {
-    color: theme.palette.getContrastText(theme.palette.primary.dark),
-  },
-  [`& .${classes.activeItem}`]: {
-    backgroundColor: `${theme.palette.primary.light} !important`,
-  },
-}));
-
 export function AdminDrawer(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,36 +30,49 @@ export function AdminDrawer(): JSX.Element {
 
     return matched ? (matched[0] as AdminDrawerValues) : 'Users';
   }, [location.pathname]);
+  const theme = useTheme();
 
   const DrawerItem = React.useCallback(
     ({ Icon, text, route }: { Icon: SvgIconComponent; text: AdminDrawerValues; route: string }) => {
       return (
         <ListItem
-          button
-          className={activeItem === text ? classes.activeItem : undefined}
+          sx={
+            activeItem === text
+              ? { backgroundColor: `${theme.palette.primary.light} !important` }
+              : undefined
+          }
           onClick={() => {
             navigate(route);
           }}
         >
           <ListItemIcon>
-            <Icon className={classes.itemIcon} />
+            <Icon sx={{ color: theme.palette.getContrastText(theme.palette.primary.dark) }} />
           </ListItemIcon>
           <ListItemText>{text}</ListItemText>
         </ListItem>
       );
     },
-    [activeItem, navigate],
+    [activeItem, navigate, theme],
   );
 
   return (
-    <StyledDrawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
+    <Drawer
+      variant="permanent"
+      PaperProps={{
+        sx: {
+          minWidth: 240,
+          backgroundColor: theme.palette.primary.dark,
+          color: theme.palette.getContrastText(theme.palette.primary.dark),
+        },
+      }}
+    >
       <Toolbar />
-      <div className={classes.drawerContainer}>
+      <div>
         <List>
           <DrawerItem text="Users" route={'users'} Icon={AccountIcon} />
           <DrawerItem text="Roles" route={'roles'} Icon={SecurityIcon} />
         </List>
       </div>
-    </StyledDrawer>
+    </Drawer>
   );
 }

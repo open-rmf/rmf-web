@@ -9,7 +9,6 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { appConfig } from './app-config';
 import {
-  AdminRouter,
   AppBase,
   AppEvents,
   PrivateRoute,

@@ -1,14 +1,16 @@
-import { Container, Tab, Typography } from '@mui/material';
-import React, { startTransition, useTransition } from 'react';
+import { Box, Container, Tab, Typography } from '@mui/material';
+import React, { useTransition } from 'react';
 import { getDefaultTaskDefinition, LocalizationProvider } from 'react-components';
-import { RouterProvider } from 'react-router';
-import { createBrowserRouter } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 
+import { authenticator } from '../app-config';
 import { AuthenticatorProvider } from '../hooks/use-authenticator';
 import { Resources, ResourcesProvider } from '../hooks/use-resources';
 import { RmfApiProvider } from '../hooks/use-rmf-api';
 import { TaskRegistry, TaskRegistryProvider } from '../hooks/use-task-registry';
-import { UserProfileProvider } from '../hooks/use-user-profile';
+import { UserProfileProvider, useUserProfile } from '../hooks/use-user-profile';
+import { LoginPage } from '../pages';
 import { Authenticator, UserProfile } from '../services/authenticator';
 import { RmfApi } from '../services/rmf-api';
 import AppBar, { APP_BAR_HEIGHT } from './appbar';
@@ -76,18 +78,17 @@ export interface RmfDashboardProps {
    * List of tabs on the app bar.
    */
   tabs: DashboardTab[];
+
+  /**
+   * Prefix where other routes will be based on, defaults to `import.meta.env.BASE_URL`.
+   * Must end with a slash
+   */
+  baseUrl?: string;
 }
 
-export function RmfDashboard({
-  apiServerUrl,
-  trajectoryServerUrl,
-  authenticator,
-  helpLink,
-  reportIssueLink,
-  resources,
-  tasks,
-  tabs,
-}: RmfDashboardProps) {
+export function RmfDashboard(props: RmfDashboardProps) {
+  const { apiServerUrl, trajectoryServerUrl, authenticator, resources, tasks } = props;
+
   const rmfApi = React.useMemo(
     () => new RmfApi(apiServerUrl, trajectoryServerUrl, authenticator),
     [apiServerUrl, trajectoryServerUrl, authenticator],
@@ -127,6 +128,57 @@ export function RmfDashboard({
     })();
   }, [authenticator, rmfApi]);
 
+  return (
+    userProfile && (
+      <LocalizationProvider>
+        <AuthenticatorProvider value={authenticator}>
+          <ResourcesProvider value={resources}>
+            <TaskRegistryProvider value={taskRegistry}>
+              <RmfApiProvider value={rmfApi}>
+                <UserProfileProvider value={userProfile}>
+                  <BrowserRouter>
+                    <DashboardContents {...props} />
+                  </BrowserRouter>
+                </UserProfileProvider>
+              </RmfApiProvider>
+            </TaskRegistryProvider>
+          </ResourcesProvider>
+        </AuthenticatorProvider>
+      </LocalizationProvider>
+    )
+  );
+}
+
+interface RequireAuthProps {
+  redirectTo: string;
+  children: React.ReactNode;
+}
+
+function RequireAuth({ redirectTo, children }: RequireAuthProps) {
+  const userProfile = useUserProfile();
+  return userProfile ? children : <Navigate to={redirectTo} />;
+}
+
+function NotFound() {
+  return (
+    <Container maxWidth="md" sx={{ textAlign: 'center', py: 8 }}>
+      <Typography variant="h3" gutterBottom>
+        404 - Not Found
+      </Typography>
+      <Typography variant="body1" color="textSecondary" gutterBottom>
+        The page you're looking for doesn't exist.
+      </Typography>
+    </Container>
+  );
+}
+
+function DashboardContents({
+  helpLink,
+  reportIssueLink,
+  resources,
+  tabs,
+  baseUrl = import.meta.env.BASE_URL,
+}: RmfDashboardProps) {
   const [tabValue, setTabValue] = React.useState(tabs[0].name);
 
   const WithTabControl = React.useCallback(({ t }: { t: DashboardTab }) => {
@@ -134,41 +186,20 @@ export function RmfDashboard({
     return t.element;
   }, []);
 
-  const router = React.useMemo(
-    () =>
-      createBrowserRouter(
-        tabs.map((t) => ({
-          path: t.route,
-          element: <WithTabControl t={t} />,
-        })),
-      ),
-    [tabs, WithTabControl],
-  );
-
   const [pendingTransition, startTransition] = useTransition();
+  const navigate = useNavigate();
 
-  const AllThemProviders = React.useCallback(
-    ({ children }: React.PropsWithChildren<{}>) =>
-      userProfile && (
-        <LocalizationProvider>
-          <AuthenticatorProvider value={authenticator}>
-            <ResourcesProvider value={resources}>
-              <TaskRegistryProvider value={taskRegistry}>
-                <RmfApiProvider value={rmfApi}>
-                  <UserProfileProvider value={userProfile}>{children}</UserProfileProvider>
-                </RmfApiProvider>
-              </TaskRegistryProvider>
-            </ResourcesProvider>
-          </AuthenticatorProvider>
-        </LocalizationProvider>
-      ),
-    [authenticator, resources, rmfApi, taskRegistry, userProfile],
-  );
+  // TODO(koonpeng): enable admin tab when authz is implemented.
+  const allTabs = tabs;
+  // const allTabs = React.useMemo<DashboardTab[]>(
+  //   () => [...tabs, { name: 'Admin', route: 'admin', element: <AdminDrawer /> }],
+  //   [tabs],
+  // );
 
   return (
-    <AllThemProviders>
+    <>
       <AppBar
-        tabs={tabs.map((t) => (
+        tabs={allTabs.map((t) => (
           <Tab
             key={t.name}
             sx={{ height: APP_BAR_HEIGHT }}
@@ -177,7 +208,7 @@ export function RmfDashboard({
             onClick={() => {
               setTabValue(t.name);
               startTransition(() => {
-                router.navigate(t.route);
+                navigate(t.route);
               });
             }}
           />
@@ -185,8 +216,37 @@ export function RmfDashboard({
         tabValue={tabValue}
         helpLink={helpLink}
         reportIssueLink={reportIssueLink}
-      ></AppBar>
-      {!pendingTransition && <RouterProvider router={router} />}
-    </AllThemProviders>
+      />
+      <Box sx={{ marginTop: APP_BAR_HEIGHT }} />
+      {!pendingTransition && (
+        <Routes>
+          <Route path={baseUrl}>
+            <Route
+              path="login"
+              element={
+                <LoginPage
+                  title="Dashboard"
+                  logo={resources.logos.header}
+                  onLoginClick={() => authenticator.login(`${window.location.origin}${baseUrl}`)}
+                />
+              }
+            />
+            {allTabs.map((t) => (
+              <Route
+                key={t.name}
+                path={t.route}
+                element={
+                  <RequireAuth redirectTo={`${baseUrl}login`}>
+                    <WithTabControl t={t} />
+                  </RequireAuth>
+                }
+              />
+            ))}
+            <Route path="*" element={<NotFound />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      )}
+    </>
   );
 }
