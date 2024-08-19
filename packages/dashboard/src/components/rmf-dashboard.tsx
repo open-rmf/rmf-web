@@ -1,7 +1,7 @@
 import { Box, Container, Tab, Typography } from '@mui/material';
 import React, { useTransition } from 'react';
 import { getDefaultTaskDefinition, LocalizationProvider } from 'react-components';
-import { Navigate, Route, Routes, useNavigate } from 'react-router';
+import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
 import { authenticator } from '../app-config';
@@ -183,7 +183,7 @@ function DashboardContents({
 
   const WithTabControl = React.useCallback(({ t }: { t: DashboardTab }) => {
     setTabValue(t.name);
-    return t.element;
+    return <React.Fragment key={t.name}>{t.element}</React.Fragment>;
   }, []);
 
   const [pendingTransition, startTransition] = useTransition();
@@ -197,56 +197,59 @@ function DashboardContents({
   // );
 
   return (
-    <>
-      <AppBar
-        tabs={allTabs.map((t) => (
-          <Tab
-            key={t.name}
-            sx={{ height: APP_BAR_HEIGHT }}
-            label={<Typography variant="h6">{t.name}</Typography>}
-            value={t.name}
-            onClick={() => {
-              setTabValue(t.name);
-              startTransition(() => {
-                navigate(t.route);
-              });
-            }}
-          />
-        ))}
-        tabValue={tabValue}
-        helpLink={helpLink}
-        reportIssueLink={reportIssueLink}
-      />
-      <Box sx={{ marginTop: APP_BAR_HEIGHT }} />
-      {!pendingTransition && (
-        <Routes>
-          <Route path={baseUrl}>
+    <Routes>
+      <Route path={baseUrl}>
+        <Route
+          path="login"
+          element={
+            <LoginPage
+              title="Dashboard"
+              logo={resources.logos.header}
+              onLoginClick={() => authenticator.login(`${window.location.origin}${baseUrl}`)}
+            />
+          }
+        />
+        <Route
+          element={
+            <>
+              <AppBar
+                tabs={allTabs.map((t) => (
+                  <Tab
+                    key={t.name}
+                    sx={{ height: APP_BAR_HEIGHT }}
+                    label={<Typography variant="h6">{t.name}</Typography>}
+                    value={t.name}
+                    onClick={() => {
+                      setTabValue(t.name);
+                      startTransition(() => {
+                        navigate(`${baseUrl}${t.route}`);
+                      });
+                    }}
+                  />
+                ))}
+                tabValue={tabValue}
+                helpLink={helpLink}
+                reportIssueLink={reportIssueLink}
+              />
+              <Box sx={{ marginTop: APP_BAR_HEIGHT }} />
+              <Outlet />
+            </>
+          }
+        >
+          {allTabs.map((t) => (
             <Route
-              path="login"
+              key={t.name}
+              path={t.route}
               element={
-                <LoginPage
-                  title="Dashboard"
-                  logo={resources.logos.header}
-                  onLoginClick={() => authenticator.login(`${window.location.origin}${baseUrl}`)}
-                />
+                <RequireAuth redirectTo={`${baseUrl}login`}>
+                  <WithTabControl t={t} />
+                </RequireAuth>
               }
             />
-            {allTabs.map((t) => (
-              <Route
-                key={t.name}
-                path={t.route}
-                element={
-                  <RequireAuth redirectTo={`${baseUrl}login`}>
-                    <WithTabControl t={t} />
-                  </RequireAuth>
-                }
-              />
-            ))}
-            <Route path="*" element={<NotFound />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      )}
-    </>
+          ))}
+        </Route>
+      </Route>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }

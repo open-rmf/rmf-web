@@ -91,20 +91,21 @@ export default function App() {
       tabs={[
         {
           name: 'Map',
-          route: '/',
-          element: <StaticWorkspace key="Map" initialState={homeWorkspace} />,
+          route: '',
+          element: <StaticWorkspace initialState={homeWorkspace} />,
         },
         {
           name: 'Robots',
-          route: '/robots',
-          element: <StaticWorkspace key="Robots" initialState={robotsWorkspace} />,
+          route: 'robots',
+          element: <StaticWorkspace initialState={robotsWorkspace} />,
         },
         {
           name: 'Tasks',
-          route: '/tasks',
-          element: <StaticWorkspace key="Tasks" initialState={tasksWorkspace} />,
+          route: 'tasks',
+          element: <StaticWorkspace initialState={tasksWorkspace} />,
         },
       ]}
+      baseUrl="hello/"
     />
   );
 }
