@@ -9,18 +9,21 @@ export const DeliveryPickupTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery_pickup',
   taskDisplayName: 'Delivery - 1:1',
   requestCategory: 'compose',
+  scheduleEventColor: undefined,
 };
 
 export const DeliverySequentialLotPickupTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery_sequential_lot_pickup',
   taskDisplayName: 'Delivery - Sequential lot pick up',
   requestCategory: 'compose',
+  scheduleEventColor: undefined,
 };
 
 export const DeliveryAreaPickupTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery_area_pickup',
   taskDisplayName: 'Delivery - Area pick up',
   requestCategory: 'compose',
+  scheduleEventColor: undefined,
 };
 
 export interface LotPickupActivity {

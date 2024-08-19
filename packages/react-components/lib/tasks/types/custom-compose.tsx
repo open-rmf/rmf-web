@@ -8,6 +8,7 @@ export const CustomComposeTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'custom_compose',
   taskDisplayName: 'Custom Compose Task',
   requestCategory: 'compose',
+  scheduleEventColor: undefined,
 };
 
 export type CustomComposeTaskDescription = string;

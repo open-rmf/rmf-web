@@ -49,6 +49,11 @@ export interface TaskResource {
    * Configure the display name for the task definition.
    */
   displayName?: string;
+
+  /**
+   * The color of the event when rendered on the task scheduler in the form of a CSS color string.
+   */
+  scheduleEventColor?: string;
 }
 
 export interface StubAuthConfig {}
@@ -191,16 +196,15 @@ export const ResourcesContext = React.createContext<Resources>(appConfig.resourc
 // FIXME(koonepng): This should be fully definition in app config when the dashboard actually
 // supports configurating all the fields.
 export const allowedTasks: TaskDefinition[] = appConfig.allowedTasks.map((taskResource) => {
-  const defaultTaskDefinition = getDefaultTaskDefinition(taskResource.taskDefinitionId);
-  if (!defaultTaskDefinition) {
+  const taskDefinition = getDefaultTaskDefinition(taskResource.taskDefinitionId);
+  if (!taskDefinition) {
     throw Error(`Invalid tasks configured for dashboard: [${taskResource.taskDefinitionId}]`);
   }
   if (taskResource.displayName !== undefined) {
-    return {
-      ...defaultTaskDefinition,
-      taskDisplayName: taskResource.displayName,
-    };
-  } else {
-    return defaultTaskDefinition;
+    taskDefinition.taskDisplayName = taskResource.displayName;
   }
+  if (taskResource.scheduleEventColor !== undefined) {
+    taskDefinition.scheduleEventColor = taskResource.scheduleEventColor;
+  }
+  return taskDefinition;
 });
