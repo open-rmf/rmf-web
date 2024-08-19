@@ -232,7 +232,7 @@ function DashboardContents({
                 reportIssueLink={reportIssueLink}
               />
               <Box sx={{ marginTop: APP_BAR_HEIGHT }} />
-              <Outlet />
+              {!pendingTransition && <Outlet />}
             </>
           }
         >
