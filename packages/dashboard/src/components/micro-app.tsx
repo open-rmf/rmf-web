@@ -9,7 +9,7 @@ export type MicroAppProps = Omit<WindowProps, 'title' | 'children'>;
 export interface MicroAppManifest {
   appId: string;
   displayName: string;
-  Component: React.ComponentType<any>;
+  Component: React.ComponentType<MicroAppProps>;
 }
 
 /**
@@ -31,7 +31,7 @@ export function createMicroApp<P>(
   return {
     appId,
     displayName,
-    Component: React.forwardRef((microAppProps: MicroAppProps, ref: React.Ref<HTMLDivElement>) => {
+    Component: React.forwardRef<HTMLDivElement>((microAppProps: MicroAppProps, ref) => {
       const settings = React.useContext(SettingsContext);
       return (
         <Window ref={ref} title={displayName} {...microAppProps}>
@@ -41,6 +41,6 @@ export function createMicroApp<P>(
           </Suspense>
         </Window>
       );
-    }),
+    }) as React.ComponentType<MicroAppProps>,
   };
 }

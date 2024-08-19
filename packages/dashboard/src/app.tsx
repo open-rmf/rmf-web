@@ -25,6 +25,7 @@ import liftsApp from './micro-apps/lifts-app';
 import createMapApp from './micro-apps/map-app';
 import robotMutexGroupsApp from './micro-apps/robot-mutex-groups-app';
 import robotsApp from './micro-apps/robots-app';
+import tasksApp from './micro-apps/tasks-app';
 import { LoginPage } from './pages';
 import KeycloakAuthenticator from './services/keycloak';
 import StubAuthenticator from './services/stub-authenticator';
@@ -67,16 +68,12 @@ const robotsWorkspace: WorkspaceState = {
   },
 };
 
-// const tasksWorkspace: WorkspaceState = {
-//   layout: [
-//     { i: 'tasks', x: 0, y: 0, w: 7, h: 12 },
-//     { i: 'map', x: 8, y: 0, w: 5, h: 12 },
-//   ],
-//   windows: [
-//     { key: 'tasks', appName: 'Tasks' },
-//     { key: 'map', appName: 'Map' },
-//   ],
-// };
+const tasksWorkspace: WorkspaceState = {
+  windows: {
+    tasks: { layout: { x: 0, y: 0, w: 7, h: 8 }, component: tasksApp.Component },
+    map: { layout: { x: 8, y: 0, w: 5, h: 8 }, component: mapApp.Component },
+  },
+};
 
 export default function App() {
   return (
@@ -102,6 +99,11 @@ export default function App() {
           name: 'Robots',
           route: '/robots',
           element: <StaticWorkspace key="Robots" initialState={robotsWorkspace} />,
+        },
+        {
+          name: 'Tasks',
+          route: '/tasks',
+          element: <StaticWorkspace key="Tasks" initialState={tasksWorkspace} />,
         },
       ]}
     />

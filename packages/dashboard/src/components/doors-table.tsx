@@ -1,3 +1,4 @@
+import { TableContainer } from '@mui/material';
 import { BuildingMap } from 'api-client';
 import React from 'react';
 import { DoorDataGridTable, DoorTableData } from 'react-components';
@@ -57,24 +58,26 @@ export const DoorsTable = () => {
   }, [rmfApi, buildingMap]);
 
   return (
-    <DoorDataGridTable
-      doors={Object.values(doorTableData)}
-      onDoorClick={(_ev, doorData) => {
-        if (!buildingMap) {
-          AppEvents.doorSelect.next(null);
-          return;
-        }
+    <TableContainer sx={{ height: '100% ' }}>
+      <DoorDataGridTable
+        doors={Object.values(doorTableData)}
+        onDoorClick={(_ev, doorData) => {
+          if (!buildingMap) {
+            AppEvents.doorSelect.next(null);
+            return;
+          }
 
-        for (const level of buildingMap.levels) {
-          for (const door of level.doors) {
-            if (door.name === doorData.doorName) {
-              AppEvents.doorSelect.next([level.name, door]);
-              return;
+          for (const level of buildingMap.levels) {
+            for (const door of level.doors) {
+              if (door.name === doorData.doorName) {
+                AppEvents.doorSelect.next([level.name, door]);
+                return;
+              }
             }
           }
-        }
-      }}
-    />
+        }}
+      />
+    </TableContainer>
   );
 };
 

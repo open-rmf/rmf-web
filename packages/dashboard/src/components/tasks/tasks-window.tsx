@@ -3,6 +3,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Box,
   Button,
+  Grid,
   Menu,
   MenuItem,
   styled,
@@ -59,26 +60,26 @@ function TabPanel(props: TabPanelProps) {
   // Removing top padding for Schedule as there is too much whitespace after
   // the day-week-month view has been shifted to the right.
   return (
-    <div
-      role="tabpanel"
-      hidden={selectedTabIndex !== index}
-      id={tabPanelId(index)}
-      aria-labelledby={tabId(index)}
-      {...other}
-    >
-      {selectedTabIndex === index && (
-        <Box
-          component="div"
-          sx={{ p: 3, pt: selectedTabIndex === TaskTablePanel.Schedule ? 0 : 3 }}
-        >
-          {children}
-        </Box>
-      )}
-    </div>
+    index === selectedTabIndex && (
+      <Box
+        role="tabpanel"
+        id={tabPanelId(index)}
+        aria-labelledby={tabId(index)}
+        flexGrow={1}
+        display="flex"
+        {...other}
+      >
+        {selectedTabIndex === index && (
+          <Box sx={{ p: 3, pt: selectedTabIndex === TaskTablePanel.Schedule ? 0 : 3 }} flexGrow={1}>
+            {children}
+          </Box>
+        )}
+      </Box>
+    )
   );
 }
 
-export const TasksApp = React.memo(
+export const TasksWindow = React.memo(
   React.forwardRef(
     (
       { onClose, children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
@@ -379,61 +380,69 @@ export const TasksApp = React.memo(
           }
           {...otherProps}
         >
-          <Tabs value={selectedPanelIndex} onChange={handlePanelChange} aria-label="Task App Tabs">
-            <Tab
-              label="Queue"
-              id={tabId(TaskTablePanel.QueueTable)}
-              aria-controls={tabPanelId(TaskTablePanel.QueueTable)}
-              sx={{
-                fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-              }}
-            />
-            <Tab
-              label="Schedule"
-              id={tabId(TaskTablePanel.Schedule)}
-              aria-controls={tabPanelId(TaskTablePanel.Schedule)}
-              sx={{
-                fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-              }}
-            />
-          </Tabs>
-          <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>
-            <TableContainer>
-              <TaskDataGridTable
-                tasks={tasksState}
-                onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
-                  setSelectedTask(task);
-                  if (task.assigned_to) {
-                    AppEvents.robotSelect.next([task.assigned_to.group, task.assigned_to.name]);
-                  }
-                  setOpenTaskSummary(true);
+          <Grid container direction="column" wrap="nowrap" height="100%">
+            <Tabs
+              value={selectedPanelIndex}
+              onChange={handlePanelChange}
+              aria-label="Task App Tabs"
+            >
+              <Tab
+                label="Queue"
+                id={tabId(TaskTablePanel.QueueTable)}
+                aria-controls={tabPanelId(TaskTablePanel.QueueTable)}
+                sx={{
+                  fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
                 }}
-                setFilterFields={setFilterFields}
-                setSortFields={setSortFields}
-                onPageChange={(newPage: number) =>
-                  setTasksState((old: Tasks) => ({ ...old, page: newPage + 1 }))
-                }
-                onPageSizeChange={(newPageSize: number) =>
-                  setTasksState((old: Tasks) => ({ ...old, pageSize: newPageSize }))
-                }
               />
-            </TableContainer>
-          </TabPanel>
-          <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.Schedule}>
-            <StyledDiv>
-              <TaskSchedule />
-            </StyledDiv>
-          </TabPanel>
-          <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
-          {openTaskSummary && (
-            <TaskSummary
-              onClose={() => setOpenTaskSummary(false)}
-              task={selectedTask ?? undefined}
-            />
-          )}
-          {children}
+              <Tab
+                label="Schedule"
+                id={tabId(TaskTablePanel.Schedule)}
+                aria-controls={tabPanelId(TaskTablePanel.Schedule)}
+                sx={{
+                  fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                }}
+              />
+            </Tabs>
+            <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>
+              <TableContainer sx={{ height: '100%' }}>
+                <TaskDataGridTable
+                  tasks={tasksState}
+                  onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
+                    setSelectedTask(task);
+                    if (task.assigned_to) {
+                      AppEvents.robotSelect.next([task.assigned_to.group, task.assigned_to.name]);
+                    }
+                    setOpenTaskSummary(true);
+                  }}
+                  setFilterFields={setFilterFields}
+                  setSortFields={setSortFields}
+                  onPageChange={(newPage: number) =>
+                    setTasksState((old: Tasks) => ({ ...old, page: newPage + 1 }))
+                  }
+                  onPageSizeChange={(newPageSize: number) =>
+                    setTasksState((old: Tasks) => ({ ...old, pageSize: newPageSize }))
+                  }
+                />
+              </TableContainer>
+            </TabPanel>
+            <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.Schedule}>
+              <StyledDiv>
+                <TaskSchedule />
+              </StyledDiv>
+            </TabPanel>
+            <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
+            {openTaskSummary && (
+              <TaskSummary
+                onClose={() => setOpenTaskSummary(false)}
+                task={selectedTask ?? undefined}
+              />
+            )}
+            {children}
+          </Grid>
         </Window>
       );
     },
   ),
 );
+
+export default TasksWindow;

@@ -186,7 +186,7 @@ export function RmfDashboard({
         helpLink={helpLink}
         reportIssueLink={reportIssueLink}
       ></AppBar>
-      <Container>{!pendingTransition && <RouterProvider router={router} />}</Container>
+      {!pendingTransition && <RouterProvider router={router} />}
     </AllThemProviders>
   );
 }

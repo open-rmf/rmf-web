@@ -24,7 +24,6 @@ export const Workspace = ({ state, onStateChange }: WorkspaceProps) => {
   return (
     <WindowContainer
       layout={layout}
-      designMode
       onLayoutChange={(newLayout) => {
         const newState = { ...state };
         newLayout.forEach((l) => (newState.windows[l.i].layout = l));
