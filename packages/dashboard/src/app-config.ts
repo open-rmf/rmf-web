@@ -51,7 +51,7 @@ export interface TaskResource {
   displayName?: string;
 
   /**
-   * The color of the event when rendered on the task scheduler.
+   * The color of the event when rendered on the task scheduler in the form of a CSS color string.
    */
   scheduleEventColor?: string;
 }

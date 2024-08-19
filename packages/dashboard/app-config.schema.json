@@ -114,7 +114,7 @@
                     "type": "string"
                 },
                 "scheduleEventColor": {
-                    "description": "The color of the event when rendered on the task scheduler.",
+                    "description": "The color of the event when rendered on the task scheduler in the form of a CSS color string.",
                     "type": "string"
                 },
                 "taskDefinitionId": {
