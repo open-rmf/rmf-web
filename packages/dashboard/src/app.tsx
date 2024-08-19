@@ -4,39 +4,15 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import './app.css';
 
-import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-
 import { appConfig } from './app-config';
-import {
-  AppBase,
-  AppEvents,
-  PrivateRoute,
-  RmfDashboard,
-  SettingsContext,
-  StaticWorkspace,
-  Workspace,
-  WorkspaceState,
-} from './components';
-import { MicroAppManifest } from './components/micro-app';
+import { RmfDashboard, StaticWorkspace, WorkspaceState } from './components';
 import doorsApp from './micro-apps/doors-app';
 import liftsApp from './micro-apps/lifts-app';
 import createMapApp from './micro-apps/map-app';
 import robotMutexGroupsApp from './micro-apps/robot-mutex-groups-app';
 import robotsApp from './micro-apps/robots-app';
 import tasksApp from './micro-apps/tasks-app';
-import { LoginPage } from './pages';
-import KeycloakAuthenticator from './services/keycloak';
 import StubAuthenticator from './services/stub-authenticator';
-import {
-  AdminRoute,
-  CustomRoute1,
-  CustomRoute2,
-  DashboardRoute,
-  LoginRoute,
-  RobotsRoute,
-  TasksRoute,
-} from './utils/url';
 
 const mapApp = createMapApp({
   attributionPrefix: appConfig.attributionPrefix,
@@ -105,133 +81,6 @@ export default function App() {
           element: <StaticWorkspace initialState={tasksWorkspace} />,
         },
       ]}
-      baseUrl="hello/"
     />
   );
 }
-
-// export default function App(): JSX.Element | null {
-//   const authenticator = React.useContext(AuthenticatorContext);
-//   const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
-//   const [user, setUser] = React.useState<string | null>(authenticator.user || null);
-
-//   React.useEffect(() => {
-//     let cancel = false;
-//     const onUserChanged = (newUser: string | null) => {
-//       setUser(newUser);
-//       AppEvents.justLoggedIn.next(true);
-//     };
-//     authenticator.on('userChanged', onUserChanged);
-//     (async () => {
-//       await authenticator.init();
-//       if (cancel) {
-//         return;
-//       }
-//       setUser(authenticator.user || null);
-//       setAuthInitialized(true);
-//     })();
-//     return () => {
-//       cancel = true;
-//       authenticator.off('userChanged', onUserChanged);
-//     };
-//   }, [authenticator]);
-
-//   const appConfig = React.useContext(AppConfigContext);
-//   const settings = React.useContext(SettingsContext);
-//   const resources = appConfig.resources[settings.themeMode] || appConfig.resources.default;
-
-//   const loginRedirect = React.useMemo(() => <Navigate to={LoginRoute} />, []);
-
-//   return authInitialized ? (
-//     <ResourcesContext.Provider value={resources}>
-//       {user ? (
-//         <RmfDashboard
-//           apiServerUrl="http://localhost:8080"
-//           trajectoryServerUrl="http://localhost:8081"
-//         >
-//           <AppBase>
-//             <Routes>
-//               <Route path={LoginRoute} element={<Navigate to={DashboardRoute} />} />
-
-//               <Route
-//                 path={DashboardRoute}
-//                 element={
-//                   <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-//                     <Workspace key="dashboard" state={dashboardWorkspace} />
-//                   </PrivateRoute>
-//                 }
-//               />
-
-//               <Route
-//                 path={RobotsRoute}
-//                 element={
-//                   <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-//                     <Workspace key="robots" state={robotsWorkspace} />
-//                   </PrivateRoute>
-//                 }
-//               />
-
-//               <Route
-//                 path={TasksRoute}
-//                 element={
-//                   <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-//                     <Workspace key="tasks" state={tasksWorkspace} />
-//                   </PrivateRoute>
-//                 }
-//               />
-
-//               {APP_CONFIG_ENABLE_CUSTOM_TABS && (
-//                 <Route
-//                   path={CustomRoute1}
-//                   element={
-//                     <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-//                       <ManagedWorkspace key="custom1" workspaceId="custom1" />
-//                     </PrivateRoute>
-//                   }
-//                 />
-//               )}
-
-//               {APP_CONFIG_ENABLE_CUSTOM_TABS && (
-//                 <Route
-//                   path={CustomRoute2}
-//                   element={
-//                     <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-//                       <ManagedWorkspace key="custom2" workspaceId="custom2" />
-//                     </PrivateRoute>
-//                   }
-//                 />
-//               )}
-
-//               {APP_CONFIG_ENABLE_ADMIN_TAB && (
-//                 <Route
-//                   path={AdminRoute}
-//                   element={
-//                     <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-//                       <AdminRouter />
-//                     </PrivateRoute>
-//                   }
-//                 />
-//               )}
-//             </Routes>
-//           </AppBase>
-//         </RmfDashboard>
-//       ) : (
-//         <Routes>
-//           <Route
-//             path={LoginRoute}
-//             element={
-//               <LoginPage
-//                 title={'Dashboard'}
-//                 logo={resources.logos.header}
-//                 onLoginClick={() =>
-//                   authenticator.login(`${window.location.origin}${DashboardRoute}`)
-//                 }
-//               />
-//             }
-//           />
-//           <Route path="*" element={<Navigate to={LoginRoute} />} />
-//         </Routes>
-//       )}
-//     </ResourcesContext.Provider>
-//   ) : null;
-// }
