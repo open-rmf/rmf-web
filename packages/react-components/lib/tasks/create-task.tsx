@@ -3,7 +3,6 @@
  * For that RMF needs to support task discovery and UI schemas https://github.com/open-rmf/rmf_api_msgs/issues/32.
  */
 
-import BoltIcon from '@mui/icons-material/Bolt';
 import UpdateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
@@ -795,11 +794,11 @@ export function CreateTaskForm({
     }
   };
 
-  const handlePriorityClick = () => {
+  const handlePrioritySwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTaskRequest((prev) => {
       return {
         ...prev,
-        priority: createTaskPriority(!parseTaskPriority(prev.priority)),
+        priority: createTaskPriority(event.target.checked),
       };
     });
   };
@@ -907,18 +906,21 @@ export function CreateTaskForm({
                       sx={{ marginLeft: theme.spacing(1) }}
                     />
                   </Grid>
-                  <Grid container xs={3} justifyContent="flex-end" alignItems="center">
+                  <Grid item xs={3} justifyContent="flex-end">
                     <Tooltip title="Prioritized tasks will added to the front of the task execution queue">
-                      <Chip
-                        icon={<BoltIcon />}
-                        label="Prioritize"
-                        color="primary"
-                        variant={
-                          !taskRequest.priority || !parseTaskPriority(taskRequest.priority)
-                            ? 'outlined'
-                            : 'filled'
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={parseTaskPriority(taskRequest.priority)}
+                            onChange={handlePrioritySwitchChange}
+                          />
                         }
-                        onClick={handlePriorityClick}
+                        label="Prioritize"
+                        sx={{
+                          color: parseTaskPriority(taskRequest.priority)
+                            ? undefined
+                            : theme.palette.action.disabled,
+                        }}
                       />
                     </Tooltip>
                   </Grid>

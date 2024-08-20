@@ -1,4 +1,8 @@
-import { Bolt, InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
+import {
+  InsertInvitation as ScheduleIcon,
+  LowPriority,
+  Person as UserIcon,
+} from '@mui/icons-material/';
 import { Box, Stack, styled, Tooltip, Typography } from '@mui/material';
 import {
   DataGrid,
@@ -124,7 +128,7 @@ const TaskRequester = (
     <Stack direction="row" alignItems="center" gap={1}>
       {prioritized ? (
         <Tooltip title="User prioritized">
-          <Bolt />
+          <LowPriority sx={{ transform: 'rotate(0.5turn)' }} />
         </Tooltip>
       ) : null}
       {scheduled ? (
