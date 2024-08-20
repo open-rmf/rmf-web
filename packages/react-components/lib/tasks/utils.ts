@@ -216,10 +216,6 @@ export function createTaskPriority(prioritize: boolean): Priority {
   return { type: 'binary', value: prioritize ? 1 : 0 };
 }
 
-export function getDefaultTaskPriority(): Priority {
-  return createTaskPriority(false);
-}
-
 // FIXME(ac): This method of parsing is crude, and will be fixed using schemas
 // when we migrate to jsonforms.
 export function parseTaskPriority(priority: Priority | null | undefined): boolean {

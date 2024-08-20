@@ -88,7 +88,7 @@ import {
   PatrolTaskForm,
 } from './types/patrol';
 import { getDefaultTaskDescription, getTaskRequestCategory } from './types/utils';
-import { createTaskPriority, getDefaultTaskPriority, parseTaskPriority } from './utils';
+import { createTaskPriority, parseTaskPriority } from './utils';
 
 export interface TaskDefinition {
   taskDefinitionId: string;
@@ -220,7 +220,7 @@ function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
       description,
       unix_millis_earliest_start_time: 0,
       unix_millis_request_time: Date.now(),
-      priority: getDefaultTaskPriority,
+      priority: createTaskPriority(false),
       requester: '',
     };
   }
