@@ -2,7 +2,7 @@ import { TextField } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, useAsync } from 'react-components';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
 
 export interface CreateRoleDialogProps {
   open: boolean;
@@ -19,7 +19,7 @@ export function CreateRoleDialog({
   const [creating, setCreating] = React.useState(false);
   const [role, setRole] = React.useState('');
   const [roleError, setRoleError] = React.useState(false);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   const validateForm = () => {
     let error = false;

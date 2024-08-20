@@ -5,15 +5,15 @@ import { TaskInfo } from 'react-components';
 // import { UserProfileContext } from 'rmf-auth';
 import { of, switchMap } from 'rxjs';
 
+import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
-import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 // import { Enforcer } from '../permissions';
 
 export const TaskDetailsCard = () => {
   const theme = useTheme();
   const rmfApi = useRmfApi();
-  const appController = React.useContext(AppControllerContext);
+  const appController = useAppController();
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   React.useEffect(() => {

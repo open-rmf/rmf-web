@@ -2,14 +2,14 @@ import { TableContainer, Typography } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-components';
 
+import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
-import { AppControllerContext } from '../app-contexts';
 
 const RefreshMutexGroupTableInterval = 5000;
 
 export const RobotMutexGroupsTable = () => {
   const rmfApi = useRmfApi();
-  const appController = React.useContext(AppControllerContext);
+  const appController = useAppController();
 
   const [mutexGroups, setMutexGroups] = React.useState<Record<string, MutexGroupData>>({});
   const [selectedMutexGroup, setSelectedMutexGroup] = React.useState<MutexGroupData | null>(null);

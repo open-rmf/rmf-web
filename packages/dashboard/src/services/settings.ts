@@ -11,13 +11,11 @@ export function saveSettings(settings: Settings): void {
 export function loadSettings(): Settings {
   const settingsStr = localStorage.getItem('settings');
   if (!settingsStr) {
-    return defaultSettings();
+    return defaultSettings;
   }
   return JSON.parse(settingsStr);
 }
 
-export function defaultSettings(): Settings {
-  return {
-    themeMode: 'default',
-  };
-}
+const defaultSettings: Settings = {
+  themeMode: 'default',
+};

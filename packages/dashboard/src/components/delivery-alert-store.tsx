@@ -13,8 +13,8 @@ import {
 import React from 'react';
 import { base } from 'react-components';
 
+import { useAppController } from '../hooks/use-app-controller';
 import { useRmfApi } from '../hooks/use-rmf-api';
-import { AppControllerContext } from './app-contexts';
 import { TaskCancelButton } from './tasks/task-cancellation';
 import { TaskInspector } from './tasks/task-inspector';
 
@@ -52,7 +52,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const [actionTaken, setActionTaken] = React.useState(!onOverride && !onResume);
   const [newTaskState, setNewTaskState] = React.useState<TaskState | null>(null);
   const [openTaskInspector, setOpenTaskInspector] = React.useState(false);
-  const appController = React.useContext(AppControllerContext);
+  const appController = useAppController();
   const rmfApi = useRmfApi();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
@@ -454,7 +454,7 @@ interface DeliveryAlertData {
 export const DeliveryAlertStore = React.memo(() => {
   const rmfApi = useRmfApi();
   const [alerts, setAlerts] = React.useState<Record<string, DeliveryAlertData>>({});
-  const appController = React.useContext(AppControllerContext);
+  const appController = useAppController();
 
   const filterAndPushDeliveryAlert = (deliveryAlert: DeliveryAlert, taskState?: TaskState) => {
     // Check if a delivery alert for a task is already open, if so, replace it

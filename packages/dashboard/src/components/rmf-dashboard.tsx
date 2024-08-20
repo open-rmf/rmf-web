@@ -1,21 +1,35 @@
-import { Box, Container, Tab, Typography } from '@mui/material';
+import {
+  Alert,
+  AlertProps,
+  Backdrop,
+  CircularProgress,
+  Container,
+  CssBaseline,
+  Snackbar,
+  Tab,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import React, { useTransition } from 'react';
 import { getDefaultTaskDefinition, LocalizationProvider } from 'react-components';
-import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router';
+import { matchPath, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
 import { authenticator } from '../app-config';
+import { AppController, AppControllerProvider } from '../hooks/use-app-controller';
 import { AuthenticatorProvider } from '../hooks/use-authenticator';
 import { Resources, ResourcesProvider } from '../hooks/use-resources';
 import { RmfApiProvider } from '../hooks/use-rmf-api';
+import { SettingsProvider } from '../hooks/use-settings';
 import { TaskRegistry, TaskRegistryProvider } from '../hooks/use-task-registry';
 import { UserProfileProvider, useUserProfile } from '../hooks/use-user-profile';
 import { LoginPage } from '../pages';
 import { Authenticator, UserProfile } from '../services/authenticator';
 import { RmfApi } from '../services/rmf-api';
+import { loadSettings, saveSettings, Settings } from '../services/settings';
 import AppBar, { APP_BAR_HEIGHT } from './appbar';
 
-export * from '../services/rmf-api';
+const DefaultAlertDuration = 2000;
 
 export interface DashboardHome {}
 
@@ -128,18 +142,63 @@ export function RmfDashboard(props: RmfDashboardProps) {
     })();
   }, [authenticator, rmfApi]);
 
+  const [settings, setSettings] = React.useState(() => loadSettings());
+  const updateSettings = React.useCallback((newSettings: Settings) => {
+    saveSettings(newSettings);
+    setSettings(newSettings);
+  }, []);
+
+  const [showAlert, setShowAlert] = React.useState(false);
+  const [alertSeverity, setAlertSeverity] = React.useState<AlertProps['severity']>('error');
+  const [alertMessage, setAlertMessage] = React.useState('');
+  const [alertDuration, setAlertDuration] = React.useState(DefaultAlertDuration);
+  const [extraAppbarItems, setExtraAppbarItems] = React.useState<React.ReactNode>(null);
+  const appController = React.useMemo<AppController>(
+    () => ({
+      updateSettings,
+      showAlert: (severity, message, autoHideDuration) => {
+        setAlertSeverity(severity);
+        setAlertMessage(message);
+        setShowAlert(true);
+        setAlertDuration(autoHideDuration || DefaultAlertDuration);
+      },
+      setExtraAppbarItems,
+    }),
+    [updateSettings],
+  );
+
   return (
     userProfile && (
       <LocalizationProvider>
+        <CssBaseline />
         <AuthenticatorProvider value={authenticator}>
           <ResourcesProvider value={resources}>
             <TaskRegistryProvider value={taskRegistry}>
               <RmfApiProvider value={rmfApi}>
-                <UserProfileProvider value={userProfile}>
-                  <BrowserRouter>
-                    <DashboardContents {...props} />
-                  </BrowserRouter>
-                </UserProfileProvider>
+                <SettingsProvider value={settings}>
+                  <AppControllerProvider value={appController}>
+                    <UserProfileProvider value={userProfile}>
+                      <BrowserRouter>
+                        <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
+                        {/* TODO: Support stacking of alerts */}
+                        <Snackbar
+                          open={showAlert}
+                          message={alertMessage}
+                          onClose={() => setShowAlert(false)}
+                          autoHideDuration={alertDuration}
+                        >
+                          <Alert
+                            onClose={() => setShowAlert(false)}
+                            severity={alertSeverity}
+                            sx={{ width: '100%' }}
+                          >
+                            {alertMessage}
+                          </Alert>
+                        </Snackbar>
+                      </BrowserRouter>
+                    </UserProfileProvider>
+                  </AppControllerProvider>
+                </SettingsProvider>
               </RmfApiProvider>
             </TaskRegistryProvider>
           </ResourcesProvider>
@@ -172,19 +231,20 @@ function NotFound() {
   );
 }
 
+interface DashboardContentsProps extends RmfDashboardProps {
+  extraAppbarItems: React.ReactNode;
+}
+
 function DashboardContents({
   helpLink,
   reportIssueLink,
   resources,
   tabs,
   baseUrl = import.meta.env.BASE_URL,
-}: RmfDashboardProps) {
-  const [tabValue, setTabValue] = React.useState(tabs[0].name);
-
-  const WithTabControl = React.useCallback(({ t }: { t: DashboardTab }) => {
-    setTabValue(t.name);
-    return <React.Fragment key={t.name}>{t.element}</React.Fragment>;
-  }, []);
+  extraAppbarItems,
+}: DashboardContentsProps) {
+  const location = useLocation();
+  const currentTab = tabs.find((t) => matchPath(t.route, location.pathname));
 
   const [pendingTransition, startTransition] = useTransition();
   const navigate = useNavigate();
@@ -220,18 +280,17 @@ function DashboardContents({
                     label={<Typography variant="h6">{t.name}</Typography>}
                     value={t.name}
                     onClick={() => {
-                      setTabValue(t.name);
                       startTransition(() => {
                         navigate(`${baseUrl}${t.route}`);
                       });
                     }}
                   />
                 ))}
-                tabValue={tabValue}
+                tabValue={currentTab!.name}
                 helpLink={helpLink}
                 reportIssueLink={reportIssueLink}
+                extraToolbarItems={extraAppbarItems}
               />
-              <Box sx={{ marginTop: APP_BAR_HEIGHT }} />
               {!pendingTransition && <Outlet />}
             </>
           }
@@ -240,11 +299,7 @@ function DashboardContents({
             <Route
               key={t.name}
               path={t.route}
-              element={
-                <RequireAuth redirectTo={`${baseUrl}login`}>
-                  <WithTabControl t={t} />
-                </RequireAuth>
-              }
+              element={<RequireAuth redirectTo={`${baseUrl}login`}>{t.element}</RequireAuth>}
             />
           ))}
         </Route>

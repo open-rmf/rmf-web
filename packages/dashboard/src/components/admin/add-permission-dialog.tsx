@@ -3,8 +3,8 @@ import { Permission } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, useAsync } from 'react-components';
 
+import { useAppController } from '../../hooks/use-app-controller';
 import { getActionText, RmfAction } from '../../services/permissions';
-import { AppControllerContext } from '../app-contexts';
 
 export interface AddPermissionDialogProps {
   open: boolean;
@@ -23,7 +23,7 @@ export function AddPermissionDialog({
   const [actionError, setActionError] = React.useState(false);
   const [authzGrpError, setAuthzGrpError] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   const validateForm = () => {
     let error = false;

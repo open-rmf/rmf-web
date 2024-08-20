@@ -20,11 +20,11 @@ import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { EMPTY, merge, scan, Subscription, switchMap, throttleTime } from 'rxjs';
 import { Box3, TextureLoader, Vector3 } from 'three';
 
+import { useAppController } from '../hooks/use-app-controller';
 import { useAuthenticator } from '../hooks/use-authenticator';
 import { FleetResource, useResources } from '../hooks/use-resources';
 import { useRmfApi } from '../hooks/use-rmf-api';
 import { TrajectoryData } from '../services/robot-trajectory-manager';
-import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { DoorSummary } from './door-summary';
 import { LiftSummary } from './lift-summary';
@@ -56,7 +56,7 @@ export const Map = styled((props: MapProps) => {
   const { fleets: fleetResources } = useResources();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const rmfApi = useRmfApi();
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
   const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
   const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({
     'Pickup & Dropoff waypoints': false,

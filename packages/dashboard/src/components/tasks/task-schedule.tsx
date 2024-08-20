@@ -19,11 +19,11 @@ import {
   Schedule,
 } from 'react-components';
 
+import { useAppController } from '../../hooks/use-app-controller';
 import { useCreateTaskFormData } from '../../hooks/use-create-task-form';
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { useTaskRegistry } from '../../hooks/use-task-registry';
 import { useUserProfile } from '../../hooks/use-user-profile';
-import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import {
   apiScheduleToSchedule,
@@ -67,7 +67,7 @@ const disablingCellsWithoutEvents = (
 
 export const TaskSchedule = () => {
   const rmfApi = useRmfApi();
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
     useCreateTaskFormData(rmfApi);

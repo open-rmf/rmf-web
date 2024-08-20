@@ -2,7 +2,7 @@ import { BeaconState } from 'api-client';
 import React from 'react';
 import { BeaconDataGridTable } from 'react-components';
 
-import { useRmfApi } from '../hooks/rmf-api';
+import { useRmfApi } from '../hooks/use-rmf-api';
 
 export const BeaconsTable = () => {
   const rmfApi = useRmfApi();

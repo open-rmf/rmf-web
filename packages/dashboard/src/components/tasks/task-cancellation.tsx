@@ -3,10 +3,10 @@ import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
 
+import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { useUserProfile } from '../../hooks/use-user-profile';
 import { Enforcer } from '../../services/permissions';
-import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 
 export interface TaskCancelButtonProp extends ButtonProps {
@@ -20,7 +20,7 @@ export function TaskCancelButton({
   ...otherProps
 }: TaskCancelButtonProp): JSX.Element {
   const rmfApi = useRmfApi();
-  const appController = React.useContext(AppControllerContext);
+  const appController = useAppController();
   const profile = useUserProfile();
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);

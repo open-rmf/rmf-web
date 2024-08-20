@@ -15,7 +15,7 @@ import { User } from 'api-client';
 import React from 'react';
 import { useAsync } from 'react-components';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
 
 const classes = {
   avatar: 'user-profile-action',
@@ -36,7 +36,7 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
   const safeAsync = useAsync();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [disableAdminCheckbox, setDisableAdminCheckbox] = React.useState(false);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   return (
     <StyledCard variant="outlined">
@@ -46,7 +46,10 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
         subheader={user.is_admin ? 'Admin' : 'User'}
         avatar={<AccountIcon className={classes.avatar} />}
         action={
-          <IconButton onClick={(ev) => setAnchorEl(ev.currentTarget)} aria-label="more actions">
+          <IconButton
+            onClick={(ev: React.MouseEvent) => setAnchorEl(ev.currentTarget as HTMLElement)}
+            aria-label="more actions"
+          >
             <MoreIcon />
           </IconButton>
         }

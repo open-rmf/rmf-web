@@ -44,13 +44,14 @@ import React from 'react';
 import { ConfirmationDialog, CreateTaskForm, CreateTaskFormProps } from 'react-components';
 import { Subscription } from 'rxjs';
 
+import { useAppController } from '../hooks/use-app-controller';
 import { useAuthenticator } from '../hooks/use-authenticator';
 import { useCreateTaskFormData } from '../hooks/use-create-task-form';
 import { useResources } from '../hooks/use-resources';
 import { useRmfApi } from '../hooks/use-rmf-api';
+import { useSettings } from '../hooks/use-settings';
 import { useTaskRegistry } from '../hooks/use-task-registry';
 import { useUserProfile } from '../hooks/use-user-profile';
-import { AppControllerContext, SettingsContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { toApiSchedule } from './tasks/utils';
 
@@ -63,8 +64,8 @@ const ToolbarIconButton = React.forwardRef(
 );
 
 function AppSettings() {
-  const settings = React.useContext(SettingsContext);
-  const appController = React.useContext(AppControllerContext);
+  const settings = useSettings();
+  const appController = useAppController();
   return (
     <FormControl>
       <FormLabel id="theme-label">Theme</FormLabel>
@@ -95,7 +96,7 @@ export const AppBar = React.memo(
     const rmfApi = useRmfApi();
     const resources = useResources();
     const taskRegistry = useTaskRegistry();
-    const { showAlert } = React.useContext(AppControllerContext);
+    const { showAlert } = useAppController();
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const profile = useUserProfile();
     const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
@@ -254,7 +255,7 @@ export const AppBar = React.memo(
     const theme = useTheme();
 
     return (
-      <MuiAppBar position="fixed" sx={{ height: APP_BAR_HEIGHT, zIndex: theme.zIndex.drawer + 1 }}>
+      <MuiAppBar position="sticky" sx={{ height: APP_BAR_HEIGHT, zIndex: theme.zIndex.drawer + 1 }}>
         <Grid container alignItems="center" justifyContent="space-between" wrap="nowrap">
           <Box display="flex" alignItems="center">
             <img src={resources.logos.header} style={{ height: APP_BAR_HEIGHT }} />

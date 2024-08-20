@@ -11,8 +11,8 @@ import { RobotState } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
 
+import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
-import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 
 export interface RobotDecommissionButtonProp extends Omit<ButtonProps, 'onClick' | 'autoFocus'> {
@@ -26,7 +26,7 @@ export function RobotDecommissionButton({
   ...otherProps
 }: RobotDecommissionButtonProp) {
   const rmfApi = useRmfApi();
-  const appController = React.useContext(AppControllerContext);
+  const appController = useAppController();
   const [reassignTasks, setReassignTasks] = React.useState(true);
   const [allowIdleBehavior, setAllowIdleBehavior] = React.useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);

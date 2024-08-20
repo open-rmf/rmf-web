@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
 import { Window, WindowProps } from 'react-components';
 
+import { useSettings } from '../hooks/use-settings';
 import { Settings } from '../services/settings';
-import { SettingsContext } from './app-contexts';
 
 export type MicroAppProps = Omit<WindowProps, 'title' | 'children'>;
 
@@ -32,7 +32,7 @@ export function createMicroApp<P>(
     appId,
     displayName,
     Component: React.forwardRef<HTMLDivElement>((microAppProps: MicroAppProps, ref) => {
-      const settings = React.useContext(SettingsContext);
+      const settings = useSettings();
       return (
         <Window ref={ref} title={displayName} {...microAppProps}>
           {/* TODO(koonpeng): Implement fallback */}

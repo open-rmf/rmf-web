@@ -25,8 +25,8 @@ import {
   Window,
 } from 'react-components';
 
+import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
-import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { TaskSchedule } from './task-schedule';
@@ -86,7 +86,7 @@ export const TasksWindow = React.memo(
       ref: React.Ref<HTMLDivElement>,
     ) => {
       const rmfApi = useRmfApi();
-      const appController = React.useContext(AppControllerContext);
+      const appController = useAppController();
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);

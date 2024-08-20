@@ -20,8 +20,8 @@ import React from 'react';
 import { base } from 'react-components';
 import { Subscription } from 'rxjs';
 
+import { useAppController } from '../hooks/use-app-controller';
 import { useRmfApi } from '../hooks/use-rmf-api';
-import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { TaskCancelButton } from './tasks/task-cancellation';
 
@@ -33,7 +33,7 @@ interface AlertDialogProps {
 const AlertDialog = React.memo((props: AlertDialogProps) => {
   const { alertRequest, onDismiss } = props;
   const [isOpen, setIsOpen] = React.useState(true);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
   const rmfApi = useRmfApi();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const [additionalAlertMessage, setAdditionalAlertMessage] = React.useState<string | null>(null);

@@ -6,7 +6,7 @@ import React from 'react';
 import { rmfLight } from 'react-components';
 import { MemoryRouter } from 'react-router';
 
-import { UserProfileContext } from '../components/user-profile-provider';
+import { UserProfileProvider } from '../hooks/use-user-profile';
 import { UserProfile } from '../services/authenticator';
 
 export const superUser: UserProfile = {
@@ -32,7 +32,7 @@ export const TestProviders: React.FC<React.PropsWithChildren<TestProivderProps>>
   return (
     <MemoryRouter>
       <ThemeProvider theme={rmfLight}>
-        <UserProfileContext.Provider value={profile}>{children}</UserProfileContext.Provider>
+        <UserProfileProvider value={profile}>{children}</UserProfileProvider>
       </ThemeProvider>
     </MemoryRouter>
   );

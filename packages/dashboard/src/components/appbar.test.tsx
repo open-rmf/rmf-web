@@ -4,20 +4,20 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { AppController, AppControllerProvider } from '../hooks/use-app-controller';
 import { AuthenticatorProvider } from '../hooks/use-authenticator';
 import { Resources, ResourcesProvider } from '../hooks/use-resources';
 import { UserProfileProvider } from '../hooks/use-user-profile';
 import { UserProfile } from '../services/authenticator';
 import { StubAuthenticator } from '../services/stub-authenticator';
 import { render } from '../utils/test-utils.test';
-import { AppController, AppControllerContext } from './app-contexts';
 import AppBar from './appbar';
 
 function makeMockAppController(): AppController {
   return {
     updateSettings: vi.fn(),
     showAlert: vi.fn(),
-    setExtraAppbarIcons: vi.fn(),
+    setExtraAppbarItems: vi.fn(),
   };
 }
 
@@ -37,11 +37,11 @@ describe('AppBar', () => {
   let appController: AppController;
   const Base = (props: React.PropsWithChildren<{}>) => {
     return (
-      <AppControllerContext.Provider value={appController}>
+      <AppControllerProvider value={appController}>
         <ResourcesProvider value={resources}>
           <UserProfileProvider value={profile}>{props.children}</UserProfileProvider>
         </ResourcesProvider>
-      </AppControllerContext.Provider>
+      </AppControllerProvider>
     );
   };
 

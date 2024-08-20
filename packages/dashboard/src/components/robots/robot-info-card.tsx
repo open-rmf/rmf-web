@@ -4,7 +4,7 @@ import React from 'react';
 import { RobotInfo } from 'react-components';
 import { combineLatest, EMPTY, mergeMap, of, switchMap, throttleTime } from 'rxjs';
 
-import { useRmfApi } from '../../hooks/rmf-api';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
 
 export const RobotInfoCard = () => {

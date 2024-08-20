@@ -18,7 +18,7 @@ import {
 import React from 'react';
 import { Loading, TransferList, useAsync } from 'react-components';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
 
 const prefix = 'manage-roles-dialog';
 const classes = {
@@ -63,7 +63,7 @@ export function ManageRolesDialog({
   const [assignedRoles, setAssignedRoles] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   React.useEffect(() => {
     if (!open || !getAllRoles) return;

@@ -19,8 +19,8 @@ import { Permission } from 'api-client';
 import React from 'react';
 import { Loading, useAsync } from 'react-components';
 
+import { useAppController } from '../../hooks/use-app-controller';
 import { getActionText } from '../../services/permissions';
-import { AppControllerContext } from '../app-contexts';
 import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
 
 const prefix = 'permissions-card';
@@ -60,7 +60,7 @@ export function PermissionsCard({
   const [loading, setLoading] = React.useState(false);
   const [permissions, setPermissions] = React.useState<Permission[]>([]);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   const refresh = React.useCallback(async () => {
     if (!getPermissions) return;
