@@ -797,16 +797,9 @@ export function CreateTaskForm({
 
   const handlePriorityClick = () => {
     setTaskRequest((prev) => {
-      if (!prev.priority || !parseTaskPriority(prev.priority)) {
-        return {
-          ...prev,
-          priority: createTaskPriority(true),
-        };
-      }
-
       return {
         ...prev,
-        priority: createTaskPriority(false),
+        priority: createTaskPriority(!parseTaskPriority(prev.priority)),
       };
     });
   };

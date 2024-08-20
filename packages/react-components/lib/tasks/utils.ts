@@ -222,7 +222,11 @@ export function getDefaultTaskPriority(): Priority {
 
 // FIXME(ac): This method of parsing is crude, and will be fixed using schemas
 // when we migrate to jsonforms.
-export function parseTaskPriority(priority: Priority): boolean {
+export function parseTaskPriority(priority: Priority | null | undefined): boolean {
+  if (!priority) {
+    return false;
+  }
+
   if (
     typeof priority == 'object' &&
     'type' in priority &&
