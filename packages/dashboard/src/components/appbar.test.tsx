@@ -2,52 +2,33 @@ import { Tab } from '@mui/material';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { AppController, AppControllerProvider } from '../hooks/use-app-controller';
 import { AuthenticatorProvider } from '../hooks/use-authenticator';
-import { Resources, ResourcesProvider } from '../hooks/use-resources';
-import { UserProfileProvider } from '../hooks/use-user-profile';
-import { UserProfile } from '../services/authenticator';
+import { RmfApiProvider } from '../hooks/use-rmf-api';
+import { RmfApi } from '../services/rmf-api';
 import { StubAuthenticator } from '../services/stub-authenticator';
-import { render } from '../utils/test-utils.test';
+import { MockRmfApi, render, TestProviders } from '../utils/test-utils.test';
 import AppBar from './appbar';
 
-function makeMockAppController(): AppController {
-  return {
-    updateSettings: vi.fn(),
-    showAlert: vi.fn(),
-    setExtraAppbarItems: vi.fn(),
-  };
-}
-
-const profile: UserProfile = {
-  user: { username: 'test', is_admin: false, roles: [] },
-  permissions: [],
-};
-
-const resources: Resources = {
-  fleets: {},
-  logos: {
-    header: '/test-logo.png',
-  },
-};
-
 describe('AppBar', () => {
-  let appController: AppController;
   const Base = (props: React.PropsWithChildren<{}>) => {
+    const rmfApi = React.useMemo<RmfApi>(() => {
+      const mockRmfApi = new MockRmfApi();
+      // mock out some api calls so they never resolves
+      mockRmfApi.tasksApi.getFavoritesTasksFavoriteTasksGet = () => new Promise(() => {});
+      mockRmfApi.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet = () =>
+        new Promise(() => {});
+      mockRmfApi.buildingApi.getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet =
+        () => new Promise(() => {});
+      return mockRmfApi;
+    }, []);
     return (
-      <AppControllerProvider value={appController}>
-        <ResourcesProvider value={resources}>
-          <UserProfileProvider value={profile}>{props.children}</UserProfileProvider>
-        </ResourcesProvider>
-      </AppControllerProvider>
+      <TestProviders>
+        <RmfApiProvider value={rmfApi}>{props.children}</RmfApiProvider>
+      </TestProviders>
     );
   };
-
-  beforeEach(() => {
-    appController = makeMockAppController();
-  });
 
   it('renders with navigation bar', () => {
     const root = render(
@@ -81,16 +62,16 @@ describe('AppBar', () => {
     const authenticator = new StubAuthenticator('test');
     const spy = vi.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
     const root = render(
-      <AuthenticatorProvider value={authenticator}>
-        <Base>
+      <Base>
+        <AuthenticatorProvider value={authenticator}>
           <AppBar
             tabs={[<Tab key="test" label="test" value="test" />]}
             tabValue="test"
             helpLink=""
             reportIssueLink=""
           />
-        </Base>
-      </AuthenticatorProvider>,
+        </AuthenticatorProvider>
+      </Base>,
     );
     userEvent.click(root.getByLabelText('user-btn'));
     await expect(waitFor(() => root.getByText('Logout'))).resolves.not.toThrow();

@@ -1,14 +1,11 @@
 import {
   Alert,
   AlertProps,
-  Backdrop,
-  CircularProgress,
   Container,
   CssBaseline,
   Snackbar,
   Tab,
   Typography,
-  useTheme,
 } from '@mui/material';
 import React, { useTransition } from 'react';
 import { getDefaultTaskDefinition, LocalizationProvider } from 'react-components';
@@ -25,7 +22,7 @@ import { TaskRegistry, TaskRegistryProvider } from '../hooks/use-task-registry';
 import { UserProfileProvider, useUserProfile } from '../hooks/use-user-profile';
 import { LoginPage } from '../pages';
 import { Authenticator, UserProfile } from '../services/authenticator';
-import { RmfApi } from '../services/rmf-api';
+import { DefaultRmfApi } from '../services/rmf-api';
 import { loadSettings, saveSettings, Settings } from '../services/settings';
 import AppBar, { APP_BAR_HEIGHT } from './appbar';
 
@@ -104,7 +101,7 @@ export function RmfDashboard(props: RmfDashboardProps) {
   const { apiServerUrl, trajectoryServerUrl, authenticator, resources, tasks } = props;
 
   const rmfApi = React.useMemo(
-    () => new RmfApi(apiServerUrl, trajectoryServerUrl, authenticator),
+    () => new DefaultRmfApi(apiServerUrl, trajectoryServerUrl, authenticator),
     [apiServerUrl, trajectoryServerUrl, authenticator],
   );
 

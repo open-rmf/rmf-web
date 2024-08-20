@@ -37,7 +37,41 @@ import { Authenticator } from './authenticator';
 import { NegotiationStatusManager } from './negotiation-status-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 
-export class RmfApi {
+export interface RmfApi {
+  beaconsApi: BeaconsApi;
+  buildingApi: BuildingApi;
+  defaultApi: DefaultApi;
+  doorsApi: DoorsApi;
+  liftsApi: LiftsApi;
+  dispensersApi: DispensersApi;
+  ingestorsApi: IngestorsApi;
+  fleetsApi: FleetsApi;
+  tasksApi: TasksApi;
+  alertsApi: AlertsApi;
+  adminApi: AdminApi;
+  deliveryAlertsApi: DeliveryAlertsApi;
+  negotiationStatusManager?: NegotiationStatusManager;
+  trajectoryManager?: RobotTrajectoryManager;
+
+  buildingMapObs: Observable<BuildingMap>;
+  beaconsObsStore: Observable<BeaconState>;
+  doorsObs: Observable<Door[]>;
+  getDoorStateObs(name: string): Observable<DoorState>;
+  liftsObs: Observable<Lift[]>;
+  getLiftStateObs(name: string): Observable<LiftState>;
+  dispensersObs: Observable<Dispenser[]>;
+  getDispenserStateObs(guid: string): Observable<DispenserState>;
+  ingestorsObs: Observable<Ingestor[]>;
+  getIngestorStateObs(guid: string): Observable<IngestorState>;
+  fleetsObs: Observable<FleetState[]>;
+  getFleetStateObs(name: string): Observable<FleetState>;
+  getTaskStateObs(taskId: string): Observable<TaskState>;
+  alertRequestsObsStore: Observable<AlertRequest>;
+  alertResponsesObsStore: Observable<AlertResponse>;
+  deliveryAlertObsStore: Observable<DeliveryAlert>;
+}
+
+export class DefaultRmfApi implements RmfApi {
   private _sioClient: Observable<SioClient | null>;
 
   beaconsApi: BeaconsApi;

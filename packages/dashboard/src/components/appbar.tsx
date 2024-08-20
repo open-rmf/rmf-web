@@ -258,7 +258,7 @@ export const AppBar = React.memo(
       <MuiAppBar position="sticky" sx={{ height: APP_BAR_HEIGHT, zIndex: theme.zIndex.drawer + 1 }}>
         <Grid container alignItems="center" justifyContent="space-between" wrap="nowrap">
           <Box display="flex" alignItems="center">
-            <img src={resources.logos.header} style={{ height: APP_BAR_HEIGHT }} />
+            <img src={resources.logos.header} alt="logo" style={{ height: APP_BAR_HEIGHT }} />
             <Divider orientation="vertical" flexItem />
             <Tabs
               variant="scrollable"
