@@ -24,7 +24,9 @@ import { LoginPage } from '../pages';
 import { Authenticator, UserProfile } from '../services/authenticator';
 import { DefaultRmfApi } from '../services/rmf-api';
 import { loadSettings, saveSettings, Settings } from '../services/settings';
+import { AlertManager } from './alert-manager';
 import AppBar, { APP_BAR_HEIGHT } from './appbar';
+import { DeliveryAlertStore } from './delivery-alert-store';
 
 const DefaultAlertDuration = 2000;
 
@@ -100,10 +102,16 @@ export interface RmfDashboardProps {
    * Must end with a slash
    */
   baseUrl?: string;
+
+  /**
+   * Url to a file to be played when an alert occurs on the dashboard.
+   */
+  alertAudioPath?: string;
 }
 
 export function RmfDashboard(props: RmfDashboardProps) {
-  const { apiServerUrl, trajectoryServerUrl, authenticator, resources, tasks } = props;
+  const { apiServerUrl, trajectoryServerUrl, authenticator, resources, tasks, alertAudioPath } =
+    props;
 
   const rmfApi = React.useMemo(
     () => new DefaultRmfApi(apiServerUrl, trajectoryServerUrl, authenticator),
@@ -179,6 +187,8 @@ export function RmfDashboard(props: RmfDashboardProps) {
               <RmfApiProvider value={rmfApi}>
                 <SettingsProvider value={settings}>
                   <AppControllerProvider value={appController}>
+                    <AlertManager alertAudioPath={alertAudioPath} />
+                    <DeliveryAlertStore />
                     <UserProfileProvider value={userProfile}>
                       <BrowserRouter>
                         <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
