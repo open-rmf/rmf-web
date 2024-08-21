@@ -1,4 +1,5 @@
 import testConfig from '../app-config.json';
+import { AllowedTask } from './components';
 import { Resources } from './hooks/use-resources';
 import { Authenticator } from './services/authenticator';
 import { KeycloakAuthenticator } from './services/keycloak';
@@ -10,21 +11,6 @@ export interface KeycloakAuthConfig {
   url: string;
   realm: string;
   clientId: string;
-}
-
-/**
- * Configuration for task definitions.
- */
-export interface AllowedTask {
-  /**
-   * The task definition to configure.
-   */
-  taskDefinitionId: 'patrol' | 'delivery' | 'compose-clean' | 'custom_compose';
-
-  /**
-   * Configure the display name for the task definition.
-   */
-  displayName?: string;
 }
 
 /**
@@ -87,6 +73,11 @@ export interface RuntimeConfig {
    * List of allowed tasks that can be requested
    */
   allowedTasks: AllowedTask[];
+
+  /**
+   * Url to a .wav file to be played when an alert occurs on the dashboard.
+   */
+  alertAudioPath?: string;
 
   /**
    * Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.

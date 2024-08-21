@@ -22,6 +22,7 @@ export const PatrolTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'patrol',
   taskDisplayName: 'Patrol',
   requestCategory: 'patrol',
+  scheduleEventColor: undefined,
 };
 
 export interface PatrolTaskDescription {

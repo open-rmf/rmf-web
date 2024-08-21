@@ -246,9 +246,17 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
   );
 });
 
-export const AlertManager = React.memo(() => {
+export interface AlertManagerProps {
+  alertAudioPath?: string;
+}
+
+export const AlertManager = React.memo(({ alertAudioPath }: AlertManagerProps) => {
   const rmfApi = useRmfApi();
   const [openAlerts, setOpenAlerts] = React.useState<Record<string, AlertRequest>>({});
+  const alertAudio: HTMLAudioElement | undefined = React.useMemo(
+    () => (alertAudioPath ? new Audio(alertAudioPath) : undefined),
+    [alertAudioPath],
+  );
 
   React.useEffect(() => {
     const pushAlertsToBeDisplayed = async (alertRequest: AlertRequest) => {
@@ -270,9 +278,14 @@ export const AlertManager = React.memo(() => {
           `Alert [${alertRequest.id}]: was responded with [${resp.response}] at ${resp.unix_millis_response_time}`,
         );
       } catch (e) {
-        console.log(
-          `Error retrieving alert response of ID ${alertRequest.id}, ${(e as Error).message}`,
+        console.debug(
+          `Failed to retrieve alert response of ID ${alertRequest.id}, ${(e as Error).message}`,
         );
+
+        if (alertAudio) {
+          alertAudio.play();
+        }
+
         setOpenAlerts((prev) => {
           return {
             ...prev,
@@ -324,7 +337,7 @@ export const AlertManager = React.memo(() => {
         sub.unsubscribe();
       }
     };
-  }, [rmfApi]);
+  }, [rmfApi, alertAudio]);
 
   const removeOpenAlert = (id: string) => {
     const filteredAlerts = Object.fromEntries(

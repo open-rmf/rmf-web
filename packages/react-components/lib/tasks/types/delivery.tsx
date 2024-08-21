@@ -10,6 +10,7 @@ export const DeliveryTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery',
   taskDisplayName: 'Delivery',
   requestCategory: 'delivery',
+  scheduleEventColor: undefined,
 };
 
 interface TaskPlace {

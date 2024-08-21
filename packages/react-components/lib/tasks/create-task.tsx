@@ -88,6 +88,7 @@ export interface TaskDefinition {
   taskDefinitionId: string;
   taskDisplayName: string;
   requestCategory: string;
+  scheduleEventColor?: string;
 }
 
 export type TaskDescription =

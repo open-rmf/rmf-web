@@ -8,6 +8,7 @@ export const ComposeCleanTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'compose-clean',
   taskDisplayName: 'Clean',
   requestCategory: 'compose',
+  scheduleEventColor: undefined,
 };
 
 interface GoToPlaceActivity {

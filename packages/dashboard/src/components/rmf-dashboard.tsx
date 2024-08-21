@@ -46,6 +46,11 @@ export interface AllowedTask {
    * Configure the display name for the task definition.
    */
   displayName?: string;
+
+  /**
+   * The color of the event when rendered on the task scheduler in the form of a CSS color string.
+   */
+  scheduleEventColor?: string;
 }
 
 export interface TaskRegistryInput extends Omit<TaskRegistry, 'taskDefinitions'> {
@@ -114,14 +119,14 @@ export function RmfDashboard(props: RmfDashboardProps) {
         if (!defaultTaskDefinition) {
           throw Error(`Invalid tasks configured for dashboard: [${t.taskDefinitionId}]`);
         }
+        const taskDefinition = { ...defaultTaskDefinition };
         if (t.displayName !== undefined) {
-          return {
-            ...defaultTaskDefinition,
-            taskDisplayName: t.displayName,
-          };
-        } else {
-          return defaultTaskDefinition;
+          taskDefinition.taskDisplayName = t.displayName;
         }
+        if (t.scheduleEventColor !== undefined) {
+          taskDefinition.scheduleEventColor = t.scheduleEventColor;
+        }
+        return taskDefinition;
       }),
       pickupZones: tasks.pickupZones,
       cartIds: tasks.cartIds,

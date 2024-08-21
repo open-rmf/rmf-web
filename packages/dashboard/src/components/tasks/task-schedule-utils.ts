@@ -48,6 +48,7 @@ export const scheduleToEvents = (
   task: ScheduledTask,
   getEventId: () => number,
   getEventTitle: () => string,
+  getEventColor: () => string | undefined,
 ): ProcessedEvent[] => {
   if (!schedule.at) {
     console.warn('Unable to convert schedule without [at] to an event');
@@ -119,6 +120,7 @@ export const scheduleToEvents = (
           end: addMinutes(cur, 45),
           event_id: getEventId(),
           title: getEventTitle(),
+          color: getEventColor(),
         });
       }
     }
@@ -189,6 +191,23 @@ export const getScheduledTaskTitle = (
     return `[${task.id}] Unknown`;
   }
   return shortDescription;
+};
+
+export const getScheduledTaskColor = (
+  task: ScheduledTask,
+  supportedTasks?: TaskDefinition[],
+): string | undefined => {
+  const taskBookingLabel = getTaskBookingLabelFromTaskRequest(task.task_request);
+
+  let customEventColor: string | undefined = undefined;
+  if (supportedTasks && taskBookingLabel && 'task_definition_id' in taskBookingLabel) {
+    for (const s of supportedTasks) {
+      if (s.taskDefinitionId === taskBookingLabel['task_definition_id']) {
+        customEventColor = s.scheduleEventColor;
+      }
+    }
+  }
+  return customEventColor;
 };
 
 // Pad a number to 2 digits
