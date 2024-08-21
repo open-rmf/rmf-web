@@ -109,6 +109,8 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     return () => sub.unsubscribe();
   }, [rmf, task]);
 
+  const theme = useTheme();
+
   const returnDialogContent = () => {
     const contents = [
       {
@@ -131,8 +133,6 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         });
       }
     }
-
-    const theme = useTheme();
 
     return (
       <>
