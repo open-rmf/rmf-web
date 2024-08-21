@@ -1,6 +1,29 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
+        "AllowedTask": {
+            "description": "Configuration for task definitions.",
+            "properties": {
+                "displayName": {
+                    "description": "Configure the display name for the task definition.",
+                    "type": "string"
+                },
+                "taskDefinitionId": {
+                    "description": "The task definition to configure.",
+                    "enum": [
+                        "compose-clean",
+                        "custom_compose",
+                        "delivery",
+                        "patrol"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "taskDefinitionId"
+            ],
+            "type": "object"
+        },
         "BuildConfig": {
             "description": "These will be injected at build time, they CANNOT be changed after the bundle is built.",
             "properties": {
@@ -105,36 +128,13 @@
         },
         "StubAuthConfig": {
             "type": "object"
-        },
-        "TaskResource": {
-            "description": "Configuration for task definitions.",
-            "properties": {
-                "displayName": {
-                    "description": "Configure the display name for the task definition.",
-                    "type": "string"
-                },
-                "taskDefinitionId": {
-                    "description": "The task definition to configure.",
-                    "enum": [
-                        "compose-clean",
-                        "custom_compose",
-                        "delivery",
-                        "patrol"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "taskDefinitionId"
-            ],
-            "type": "object"
         }
     },
     "properties": {
         "allowedTasks": {
             "description": "List of allowed tasks that can be requested",
             "items": {
-                "$ref": "#/definitions/TaskResource"
+                "$ref": "#/definitions/AllowedTask"
             },
             "type": "array"
         },

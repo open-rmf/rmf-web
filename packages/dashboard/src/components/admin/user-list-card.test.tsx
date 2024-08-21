@@ -1,9 +1,14 @@
-import { render, waitFor } from '@testing-library/react';
+import { render as render_, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
+import { AppControllerProvider } from '../../hooks/use-app-controller';
+import { makeMockAppController } from '../../utils/test-utils.test';
 import { UserListCard } from './user-list-card';
+
+const render = (ui: React.ReactNode) =>
+  render_(<AppControllerProvider value={makeMockAppController()}>{ui}</AppControllerProvider>);
 
 describe('UserListCard', () => {
   it('opens delete dialog when button is clicked', async () => {
