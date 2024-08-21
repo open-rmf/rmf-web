@@ -57,11 +57,10 @@ import { toApiSchedule } from './tasks/utils';
 
 export const APP_BAR_HEIGHT = '3.5rem';
 
-const ToolbarIconButton = React.forwardRef(
-  (props: React.ComponentProps<typeof IconButton>, ref) => (
-    <IconButton size="large" ref={ref} {...props} />
-  ),
-);
+const ToolbarIconButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<typeof IconButton>
+>((props, ref) => <IconButton size="large" ref={ref} {...props} />);
 
 function AppSettings() {
   const settings = useSettings();

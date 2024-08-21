@@ -88,7 +88,7 @@ function CustomList({ title, items, checked, setChecked }: CustomListProps) {
           subheader={`${numberOfChecked}/${items.length} selected`}
         />
         <Divider />
-        <List className={classes.list} dense disablePadding component="div" role="list">
+        <List className={classes.list} dense disablePadding role="list">
           {items.map((item) => {
             const labelId = `transfer-list-all-item-${item}-label`;
 

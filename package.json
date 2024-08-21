@@ -34,6 +34,9 @@
   "pnpm": {
     "overrides": {
       "typescript-json-schema>@types/node": "*"
+    },
+    "patchedDependencies": {
+      "@react-three/fiber": "patches/@react-three__fiber.patch"
     }
   },
   "overrides": {

@@ -1,0 +1,22 @@
+diff --git a/dist/declarations/src/three-types.d.ts b/dist/declarations/src/three-types.d.ts
+index 7668a42e27ac2c51ebaaac88db8bfd8fe823ae75..beb86ce6dd562fffe0048c04ae570b1b9f499475 100644
+--- a/dist/declarations/src/three-types.d.ts
++++ b/dist/declarations/src/three-types.d.ts
+@@ -384,10 +384,11 @@ export interface ThreeElements {
+     fogExp2: FogExp2Props;
+     shape: ShapeProps;
+ }
+-declare global {
+-    namespace JSX {
+-        interface IntrinsicElements extends ThreeElements {
+-        }
+-    }
+-}
++// PATCH: @react-three/fiber conflicts with @mui/material because it exports too many IntrinsicElements.
++// declare global {
++//     namespace JSX {
++//         interface IntrinsicElements extends ThreeElements {
++//         }
++//     }
++// }
+ export {};

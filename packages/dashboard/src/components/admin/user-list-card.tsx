@@ -143,7 +143,7 @@ export function UserListCard({
                       color="secondary"
                       startIcon={<DeleteIcon />}
                       className={classes.controlsButton}
-                      onClick={(ev: React.MouseEvent) => {
+                      onClick={(ev) => {
                         ev.stopPropagation();
                         setSelectedUser(u);
                         setOpenDeleteDialog(true);
@@ -159,12 +159,11 @@ export function UserListCard({
           {users.length === 0 && searching && <div style={{ height: 100 }} />}
         </Loading>
         <TablePagination
-          component="div"
           count={hasMore ? -1 : page * ItemsPerPage + users.length}
           page={page}
           rowsPerPage={ItemsPerPage}
           rowsPerPageOptions={[ItemsPerPage]}
-          onPageChange={(_: React.MouseEvent, newPage: number) => setPage(newPage)}
+          onPageChange={(_, newPage) => setPage(newPage)}
         />
       </TableContainer>
       {openDeleteDialog && (
