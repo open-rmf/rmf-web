@@ -20,6 +20,7 @@ import React from 'react';
 import { base } from 'react-components';
 import { Subscription } from 'rxjs';
 
+import { AppConfigContext } from '../app-config';
 import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { RmfAppContext } from './rmf-app';
@@ -256,6 +257,10 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
 export const AlertManager = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [openAlerts, setOpenAlerts] = React.useState<Record<string, AlertRequest>>({});
+  const appConfig = React.useContext(AppConfigContext);
+  const alertAudio: HTMLAudioElement | undefined = appConfig.alertAudioPath
+    ? new Audio(appConfig.alertAudioPath)
+    : undefined;
 
   React.useEffect(() => {
     if (!rmf) {
@@ -285,9 +290,14 @@ export const AlertManager = React.memo(() => {
           `Alert [${alertRequest.id}]: was responded with [${resp.response}] at ${resp.unix_millis_response_time}`,
         );
       } catch (e) {
-        console.log(
-          `Error retrieving alert response of ID ${alertRequest.id}, ${(e as Error).message}`,
+        console.debug(
+          `Failed to retrieve alert response of ID ${alertRequest.id}, ${(e as Error).message}`,
         );
+
+        if (alertAudio) {
+          alertAudio.play();
+        }
+
         setOpenAlerts((prev) => {
           return {
             ...prev,
