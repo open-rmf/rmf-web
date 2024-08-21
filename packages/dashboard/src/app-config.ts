@@ -126,7 +126,7 @@ export interface RuntimeConfig {
   allowedTasks: TaskResource[];
 
   /**
-   * Url to a .wav file to be played when an alert occurs on the dashboard.
+   * Url to a file to be played when an alert occurs on the dashboard.
    */
   alertAudioPath?: string;
 
