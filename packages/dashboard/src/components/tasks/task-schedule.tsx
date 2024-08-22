@@ -9,7 +9,11 @@ import { DayProps } from '@aldabil/react-scheduler/views/Day';
 import { MonthProps } from '@aldabil/react-scheduler/views/Month';
 import { WeekProps } from '@aldabil/react-scheduler/views/Week';
 import { Button, Typography } from '@mui/material';
-import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
+import {
+  RobotTaskRequest,
+  ScheduledTask,
+  ScheduledTaskScheduleOutput as ApiSchedule,
+} from 'api-client';
 import React from 'react';
 import {
   ConfirmationDialog,
@@ -192,17 +196,45 @@ export const TaskSchedule = () => {
     );
   };
 
-  const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
-    async (taskRequests, schedule) => {
+  const dispatchTask = React.useCallback<Required<CreateTaskFormProps>['dispatchTask']>(
+    async (taskRequest, robotDispatchTarget) => {
+      if (!rmf) {
+        throw new Error('tasks api not available');
+      }
+      if (robotDispatchTarget) {
+        const robotTask: RobotTaskRequest = {
+          type: 'robot_task_request',
+          robot: robotDispatchTarget.robot,
+          fleet: robotDispatchTarget.fleet,
+          request: taskRequest,
+        };
+        console.debug(`dispatch robot task:`);
+        console.debug(robotTask);
+        await rmf.tasksApi.postRobotTaskTasksRobotTaskPost(robotTask);
+      } else {
+        console.debug('dispatch task:');
+        console.debug(taskRequest);
+        await rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+          type: 'dispatch_task_request',
+          request: taskRequest,
+        });
+      }
+      AppEvents.refreshTaskApp.next();
+    },
+    [rmf],
+  );
+
+  const scheduleTask = React.useCallback<Required<CreateTaskFormProps>['scheduleTask']>(
+    async (taskRequest, schedule) => {
       if (!rmf) {
         throw new Error('tasks api not available');
       }
 
-      if (!schedule || !currentScheduleTask) {
-        throw new Error('No schedule or task selected for submission.');
+      if (!currentScheduleTask) {
+        throw new Error('No schedule task selected for submission.');
       }
 
-      const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, schedule));
+      const scheduleRequest = toApiSchedule(taskRequest, schedule);
 
       let exceptDate: string | undefined = undefined;
       if (eventScope === EventScopes.CURRENT) {
@@ -212,14 +244,10 @@ export const TaskSchedule = () => {
         console.debug(`Editing schedule id ${currentScheduleTask.id}`);
       }
 
-      await Promise.all(
-        scheduleRequests.map((req) =>
-          rmf.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
-            currentScheduleTask.id,
-            req,
-            exceptDate,
-          ),
-        ),
+      await rmf.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
+        currentScheduleTask.id,
+        scheduleRequest,
+        exceptDate,
       );
 
       setEventScope(EventScopes.CURRENT);
@@ -337,7 +365,8 @@ export const TaskSchedule = () => {
             setEventScope(EventScopes.CURRENT);
             AppEvents.refreshTaskSchedule.next();
           }}
-          submitTasks={submitTasks}
+          dispatchTask={dispatchTask}
+          scheduleTask={scheduleTask}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
             showAlert('success', 'Successfully created task');

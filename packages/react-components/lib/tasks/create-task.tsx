@@ -28,6 +28,7 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
+  ListSubheader,
   MenuItem,
   Radio,
   RadioGroup,
@@ -291,14 +292,19 @@ const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChan
   );
 };
 
+export interface RobotDispatchTarget {
+  fleet: string;
+  robot: string;
+}
+
 export interface CreateTaskFormProps
   extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
   user: string;
+  fleets?: Record<string, string[]>;
   tasksToDisplay?: TaskDefinition[];
-  allowBatch?: boolean;
   cleaningZones?: string[];
   patrolWaypoints?: string[];
   pickupZones?: string[];
@@ -309,9 +315,10 @@ export interface CreateTaskFormProps
   scheduleToEdit?: Schedule;
   // requestTask is provided only when editing a schedule
   requestTask?: TaskRequest;
-  submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
-  onSuccess?(tasks: TaskRequest[]): void;
-  onFail?(error: Error, tasks: TaskRequest[]): void;
+  dispatchTask(task: TaskRequest, robotDispatchTarget: RobotDispatchTarget | null): Promise<void>;
+  scheduleTask(task: TaskRequest, schedule: Schedule): Promise<void>;
+  onSuccess?(task: TaskRequest): void;
+  onFail?(error: Error, task?: TaskRequest): void;
   onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
   onFailFavoriteTask?(error: Error, favoriteTask: TaskFavorite): void;
   submitFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
@@ -322,6 +329,10 @@ export interface CreateTaskFormProps
 
 export function CreateTaskForm({
   user,
+  fleets = {
+    f1: ['r11', 'r12'],
+    f2: ['r21', 'r22'],
+  },
   tasksToDisplay = [
     PatrolTaskDefinition,
     DeliveryTaskDefinition,
@@ -339,7 +350,8 @@ export function CreateTaskForm({
   favoritesTasks = [],
   scheduleToEdit,
   requestTask,
-  submitTasks,
+  dispatchTask,
+  scheduleTask,
   onClose,
   onSuccess,
   onFail,
@@ -395,7 +407,7 @@ export function CreateTaskForm({
   if (!defaultTaskDescription || !defaultTaskRequest) {
     // We should never reach this state unless a misconfiguration happened.
     const err = Error('Default task could not be generated, this might be a configuration error');
-    onFail && onFail(err, []);
+    onFail && onFail(err);
     console.error(err.message);
     throw new TypeError(err.message);
   }
@@ -613,7 +625,7 @@ export function CreateTaskForm({
         `Failed to retrieve task request category for task [${newTaskDefinitionId}], there might be a misconfiguration.`,
       );
       console.error(err.message);
-      onFail && onFail(err, []);
+      onFail && onFail(err);
       return;
     }
     taskRequest.category = category;
@@ -631,11 +643,6 @@ export function CreateTaskForm({
 
   // no memo because deps would likely change
   const handleSubmit = async (scheduling: boolean) => {
-    if (!submitTasks) {
-      onSuccess && onSuccess([taskRequest]);
-      return;
-    }
-
     const request = { ...taskRequest };
     request.requester = user;
     request.unix_millis_request_time = Date.now();
@@ -647,7 +654,7 @@ export function CreateTaskForm({
         request.description = obj;
       } catch (e) {
         console.error('Invalid custom compose task description');
-        onFail && onFail(e as Error, [request]);
+        onFail && onFail(e as Error, request);
         return;
       }
     }
@@ -681,7 +688,7 @@ export function CreateTaskForm({
         const error = Error(
           `Failed to generate booking label for task request of definition ID: ${taskDefinitionId}`,
         );
-        onFail && onFail(error, [request]);
+        onFail && onFail(error, request);
         return;
       }
 
@@ -701,20 +708,31 @@ export function CreateTaskForm({
 
     try {
       setSubmitting(true);
-      await submitTasks([request], scheduling ? schedule : null);
+      if (scheduling) {
+        await scheduleTask(request, schedule);
+      } else {
+        let robotDispatchTarget: RobotDispatchTarget | null = null;
+        if (dispatchType === DispatchType.Robot) {
+          robotDispatchTarget = {
+            fleet: '',
+            robot: '',
+          };
+        }
+        await dispatchTask(request, robotDispatchTarget);
+      }
       setSubmitting(false);
 
       if (scheduling) {
         onSuccessScheduling && onSuccessScheduling();
       } else {
-        onSuccess && onSuccess([request]);
+        onSuccess && onSuccess(request);
       }
     } catch (e) {
       setSubmitting(false);
       if (scheduling) {
         onFailScheduling && onFailScheduling(e as Error);
       } else {
-        onFail && onFail(e as Error, [request]);
+        onFail && onFail(e as Error, request);
       }
     }
   };
@@ -801,6 +819,53 @@ export function CreateTaskForm({
         priority: createTaskPriority(event.target.checked),
       };
     });
+  };
+
+  enum DispatchType {
+    Automatic = 'Automatic',
+    Fleet = 'Fleet',
+    Robot = 'Robot',
+  }
+
+  const [dispatchType, setDispatchType] = React.useState<DispatchType>(DispatchType.Automatic);
+  const [robotDispatchTarget, setRobotDispatchTarget] = React.useState<RobotDispatchTarget | null>(
+    null,
+  );
+
+  const handleChangeDispatchType = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setDispatchType(ev.target.value as DispatchType);
+    setTaskRequest((prev) => {
+      return {
+        ...prev,
+        fleet_name: undefined,
+      };
+    });
+    setRobotDispatchTarget(null);
+  };
+
+  const handleDispatchFleetTargetChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('handleDispatchFleetTargetChange called');
+    setTaskRequest((prev) => {
+      return {
+        ...prev,
+        fleet_name: ev.target.value.length > 0 ? ev.target.value : undefined,
+      };
+    });
+  };
+
+  const handleDispatchRobotTargetChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    let robotFleet: string | null = null;
+    for (const fleetName of Object.keys(fleets)) {
+      if (fleets[fleetName].includes(ev.target.value)) {
+        robotFleet = fleetName;
+        break;
+      }
+    }
+    if (robotFleet === null) {
+      console.error(`Failed to find fleet name for robot [${ev.target.value}]`);
+      return;
+    }
+    setRobotDispatchTarget({ fleet: robotFleet, robot: ev.target.value });
   };
 
   return (
@@ -923,6 +988,85 @@ export function CreateTaskForm({
                         }}
                       />
                     </Tooltip>
+                  </Grid>
+                </Grid>
+                <Divider
+                  orientation="horizontal"
+                  flexItem
+                  style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
+                />
+                <Grid container spacing={theme.spacing(2)} alignItems="center">
+                  <Grid item xs={6}>
+                    <TextField
+                      select
+                      id="dispatch-type"
+                      label="Dispatch type"
+                      variant="outlined"
+                      fullWidth
+                      margin="normal"
+                      value={dispatchType}
+                      onChange={handleChangeDispatchType}
+                    >
+                      <MenuItem value={DispatchType.Automatic}>{DispatchType.Automatic}</MenuItem>
+                      <MenuItem value={DispatchType.Fleet}>{DispatchType.Fleet}</MenuItem>
+                      <MenuItem value={DispatchType.Robot}>{DispatchType.Robot}</MenuItem>
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={6}>
+                    {dispatchType === DispatchType.Fleet ? (
+                      <TextField
+                        select
+                        id="dispatch-fleet-type"
+                        label="Select fleet"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={taskRequest.fleet_name ?? ''}
+                        defaultValue={Object.keys(fleets)[0]}
+                        onChange={handleDispatchFleetTargetChange}
+                      >
+                        {Object.keys(fleets).map((fleetName) => {
+                          return (
+                            <MenuItem value={fleetName} key={fleetName}>
+                              {fleetName}
+                            </MenuItem>
+                          );
+                        })}
+                      </TextField>
+                    ) : dispatchType === DispatchType.Robot ? (
+                      <TextField
+                        select
+                        id="dispatch-robot-type"
+                        label="Select robot"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={robotDispatchTarget?.robot}
+                        onChange={handleDispatchRobotTargetChange}
+                      >
+                        {Object.keys(fleets).map((fleetName) => {
+                          return (
+                            <>
+                              <ListSubheader>{fleetName}</ListSubheader>
+                              {fleets[fleetName].map((robotName) => (
+                                <MenuItem value={robotName} key={robotName}>
+                                  {robotName}
+                                </MenuItem>
+                              ))}
+                            </>
+                          );
+                        })}
+                      </TextField>
+                    ) : (
+                      <TextField
+                        select
+                        disabled
+                        id="dispatch-automatic-type"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                      />
+                    )}
                   </Grid>
                 </Grid>
                 <Divider

@@ -11,7 +11,8 @@ type Story = StoryObj<typeof CreateTaskForm>;
 
 export const CreateTask: Story = {
   args: {
-    submitTasks: async () => new Promise((res) => setTimeout(res, 500)),
+    dispatchTask: async () => new Promise((res) => setTimeout(res, 500)),
+    scheduleTask: async () => new Promise((res) => setTimeout(res, 500)),
     cleaningZones: ['test_zone_0', 'test_zone_1'],
     patrolWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
     pickupPoints: { test_waypoint_0: 'test_waypoint_0' },
