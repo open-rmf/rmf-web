@@ -31,16 +31,20 @@ export function createMicroApp<P>(
   return {
     appId,
     displayName,
-    Component: React.forwardRef<HTMLDivElement>((microAppProps: MicroAppProps, ref) => {
-      const settings = useSettings();
-      return (
-        <Window ref={ref} title={displayName} {...microAppProps}>
-          {/* TODO(koonpeng): Implement fallback */}
-          <Suspense fallback={null}>
-            <LazyComponent {...props(settings)} />
-          </Suspense>
-        </Window>
-      );
-    }) as React.ComponentType<MicroAppProps>,
+    Component: React.forwardRef<HTMLDivElement>(
+      ({ children, ...otherProps }: React.PropsWithChildren<MicroAppProps>, ref) => {
+        const settings = useSettings();
+        return (
+          <Window ref={ref} title={displayName} {...otherProps}>
+            {/* TODO(koonpeng): Implement fallback */}
+            <Suspense fallback={null}>
+              <LazyComponent {...props(settings)} />
+            </Suspense>
+            {/* this contains the resize handle */}
+            {children}
+          </Window>
+        );
+      },
+    ) as React.ComponentType<MicroAppProps>,
   };
 }

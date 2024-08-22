@@ -241,7 +241,6 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       rowsPerPageOptions={[5]}
       sx={{
         fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-        overflowX: 'scroll',
       }}
       autoPageSize={isScreenHeightLessThan800}
       density={isScreenHeightLessThan800 ? 'compact' : 'standard'}

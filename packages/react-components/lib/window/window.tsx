@@ -1,6 +1,6 @@
 import type {} from '@emotion/styled';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Grid, IconButton, Paper, PaperProps, styled, useTheme } from '@mui/material';
+import { Box, IconButton, Paper, PaperProps, styled, useTheme } from '@mui/material';
 import React from 'react';
 import { Layout } from 'react-grid-layout';
 
@@ -22,31 +22,52 @@ export const Window = styled(
     ) => {
       const theme = useTheme();
 
+      // The resize marker injected by `react-grid-layout` must be a direct children, but we
+      // want to wrap the window components in a div so it shows a scrollbar. So we assume that
+      // the injected resize marker is always the last component and render it separately.
+      const childrenArr = React.Children.toArray(children);
+      const childComponents = childrenArr.slice(0, childrenArr.length - 1);
+      const resizeComponent = childrenArr[childrenArr.length - 1];
+
       const windowManagerState = React.useContext(WindowManagerStateContext);
       return (
         <Paper
           ref={ref}
           variant="outlined"
           sx={{
-            cursor: windowManagerState.designMode ? 'move' : undefined,
+            cursor: 'move',
             borderRadius: theme.shape.borderRadius,
+            '& > :not(.custom-resize-handle)': {
+              pointerEvents: windowManagerState.designMode ? 'none' : undefined,
+            },
+            '& .window-toolbar-items': {
+              pointerEvents: 'auto',
+            },
             ...sx,
           }}
           {...otherProps}
         >
-          <Grid item className="rgl-draggable">
-            <WindowToolbar title={title}>
-              {toolbar}
-              {windowManagerState.designMode && (
-                <IconButton color="inherit" onClick={() => onClose && onClose()}>
-                  <CloseIcon />
-                </IconButton>
-              )}
-            </WindowToolbar>
-          </Grid>
-          <Box sx={{ overflow: 'auto', width: '100%', height: '100%', cursor: 'auto' }}>
-            {children}
+          <WindowToolbar
+            title={title}
+            toolbarItemContainerProps={{ className: 'window-toolbar-items' }}
+          >
+            {toolbar}
+            {windowManagerState.designMode && (
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  console.log('clicked');
+                  onClose && onClose();
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
+          </WindowToolbar>
+          <Box width="100%" height="100%" overflow="auto">
+            {childComponents}
           </Box>
+          {resizeComponent}
         </Paper>
       );
     },

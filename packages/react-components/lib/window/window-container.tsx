@@ -1,6 +1,7 @@
 import 'react-grid-layout/css/styles.css';
 import './no-rgl-animations.css';
 
+import { styled } from '@mui/material';
 import React from 'react';
 import { default as GridLayout_, Layout as WindowLayout, WidthProvider } from 'react-grid-layout';
 
@@ -58,11 +59,34 @@ export const WindowContainer: React.FC<WindowContainerProps> = ({
         preventCollision
         isResizable={designMode}
         isDraggable={designMode}
-        draggableHandle=".rgl-draggable"
         onLayoutChange={onLayoutChange}
+        draggableCancel=".custom-resize-handle,.window-toolbar-items"
+        resizeHandle={<ResizeHandle className="custom-resize-handle" />}
       >
         {children}
       </GridLayout>
     </WindowManagerStateContext.Provider>
   );
 };
+
+/**
+ * A custom resize handle that uses theme properties
+ */
+const ResizeHandle = styled('span')(({ theme }) => ({
+  position: 'absolute',
+  right: theme.spacing(1),
+  bottom: theme.spacing(1),
+  width: 20,
+  height: 20,
+  cursor: 'se-resize',
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: '0.5rem',
+    height: '0.5rem',
+    borderRight: `2px solid ${theme.palette.grey[500]}`,
+    borderBottom: `2px solid ${theme.palette.grey[500]}`,
+  },
+}));

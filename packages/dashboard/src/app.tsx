@@ -25,7 +25,7 @@ const homeWorkspace: WorkspaceState = {
   windows: {
     map: {
       layout: { x: 0, y: 0, w: 12, h: 6 },
-      component: mapApp.Component,
+      Component: mapApp.Component,
     },
   },
 };
@@ -34,19 +34,19 @@ const robotsWorkspace: WorkspaceState = {
   windows: {
     robots: {
       layout: { x: 0, y: 0, w: 7, h: 4 },
-      component: robotsApp.Component,
+      Component: robotsApp.Component,
     },
-    map: { layout: { x: 8, y: 0, w: 5, h: 8 }, component: mapApp.Component },
-    doors: { layout: { x: 0, y: 0, w: 7, h: 4 }, component: doorsApp.Component },
-    lifts: { layout: { x: 0, y: 0, w: 7, h: 4 }, component: liftsApp.Component },
-    mutexGroups: { layout: { x: 8, y: 0, w: 5, h: 4 }, component: robotMutexGroupsApp.Component },
+    map: { layout: { x: 8, y: 0, w: 5, h: 8 }, Component: mapApp.Component },
+    doors: { layout: { x: 0, y: 0, w: 7, h: 4 }, Component: doorsApp.Component },
+    lifts: { layout: { x: 0, y: 0, w: 7, h: 4 }, Component: liftsApp.Component },
+    mutexGroups: { layout: { x: 8, y: 0, w: 5, h: 4 }, Component: robotMutexGroupsApp.Component },
   },
 };
 
 const tasksWorkspace: WorkspaceState = {
   windows: {
-    tasks: { layout: { x: 0, y: 0, w: 7, h: 8 }, component: tasksApp.Component },
-    map: { layout: { x: 8, y: 0, w: 5, h: 8 }, component: mapApp.Component },
+    tasks: { layout: { x: 0, y: 0, w: 7, h: 8 }, Component: tasksApp.Component },
+    map: { layout: { x: 8, y: 0, w: 5, h: 8 }, Component: mapApp.Component },
   },
 };
 
