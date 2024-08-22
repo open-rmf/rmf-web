@@ -150,7 +150,7 @@ export const TaskSchedule = () => {
         }),
       );
     },
-    [rmf, allowedTasks],
+    [rmf],
   );
 
   const CustomCalendarEditor = ({ scheduler, value, onChange }: CustomCalendarEditorProps) => {

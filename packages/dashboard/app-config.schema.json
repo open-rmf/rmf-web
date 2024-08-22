@@ -136,7 +136,7 @@
     },
     "properties": {
         "alertAudioPath": {
-            "description": "Url to a .wav file to be played when an alert occurs on the dashboard.",
+            "description": "Url to a file to be played when an alert occurs on the dashboard.",
             "type": "string"
         },
         "allowedTasks": {

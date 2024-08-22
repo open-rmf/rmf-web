@@ -258,9 +258,10 @@ export const AlertManager = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [openAlerts, setOpenAlerts] = React.useState<Record<string, AlertRequest>>({});
   const appConfig = React.useContext(AppConfigContext);
-  const alertAudio: HTMLAudioElement | undefined = appConfig.alertAudioPath
-    ? new Audio(appConfig.alertAudioPath)
-    : undefined;
+  const alertAudio: HTMLAudioElement | undefined = React.useMemo(
+    () => (appConfig.alertAudioPath ? new Audio(appConfig.alertAudioPath) : undefined),
+    [appConfig.alertAudioPath],
+  );
 
   React.useEffect(() => {
     if (!rmf) {
@@ -349,7 +350,7 @@ export const AlertManager = React.memo(() => {
         sub.unsubscribe();
       }
     };
-  }, [rmf]);
+  }, [rmf, alertAudio]);
 
   const removeOpenAlert = (id: string) => {
     const filteredAlerts = Object.fromEntries(
