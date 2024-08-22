@@ -35,7 +35,7 @@ export const Window = styled(
           ref={ref}
           variant="outlined"
           sx={{
-            cursor: 'move',
+            cursor: windowManagerState.designMode ? 'move' : undefined,
             borderRadius: theme.shape.borderRadius,
             '& > :not(.custom-resize-handle)': {
               pointerEvents: windowManagerState.designMode ? 'none' : undefined,
@@ -53,13 +53,7 @@ export const Window = styled(
           >
             {toolbar}
             {windowManagerState.designMode && (
-              <IconButton
-                color="inherit"
-                onClick={() => {
-                  console.log('clicked');
-                  onClose && onClose();
-                }}
-              >
+              <IconButton color="inherit" onClick={() => onClose && onClose()}>
                 <CloseIcon />
               </IconButton>
             )}
@@ -67,7 +61,7 @@ export const Window = styled(
           <Box width="100%" height="100%" overflow="auto">
             {childComponents}
           </Box>
-          {resizeComponent}
+          {windowManagerState.designMode && resizeComponent}
         </Paper>
       );
     },

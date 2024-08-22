@@ -5,7 +5,8 @@ import '@fontsource/roboto/700.css';
 import './app.css';
 
 import { appConfig } from './app-config';
-import { RmfDashboard, StaticWorkspace, WorkspaceState } from './components';
+import { InitialWindow, LocallyPersistentWorkspace, RmfDashboard, Workspace } from './components';
+import { MicroAppManifest } from './components/micro-app';
 import doorsApp from './micro-apps/doors-app';
 import liftsApp from './micro-apps/lifts-app';
 import createMapApp from './micro-apps/map-app';
@@ -21,34 +22,37 @@ const mapApp = createMapApp({
   defaultZoom: appConfig.defaultZoom,
 });
 
-const homeWorkspace: WorkspaceState = {
-  windows: {
-    map: {
-      layout: { x: 0, y: 0, w: 12, h: 6 },
-      Component: mapApp.Component,
-    },
-  },
-};
+const appRegistry: MicroAppManifest[] = [
+  mapApp,
+  doorsApp,
+  liftsApp,
+  robotsApp,
+  robotMutexGroupsApp,
+  tasksApp,
+];
 
-const robotsWorkspace: WorkspaceState = {
-  windows: {
-    robots: {
-      layout: { x: 0, y: 0, w: 7, h: 4 },
-      Component: robotsApp.Component,
-    },
-    map: { layout: { x: 8, y: 0, w: 5, h: 8 }, Component: mapApp.Component },
-    doors: { layout: { x: 0, y: 0, w: 7, h: 4 }, Component: doorsApp.Component },
-    lifts: { layout: { x: 0, y: 0, w: 7, h: 4 }, Component: liftsApp.Component },
-    mutexGroups: { layout: { x: 8, y: 0, w: 5, h: 4 }, Component: robotMutexGroupsApp.Component },
+const homeWorkspace: InitialWindow[] = [
+  {
+    layout: { x: 0, y: 0, w: 12, h: 6 },
+    microApp: mapApp,
   },
-};
+];
 
-const tasksWorkspace: WorkspaceState = {
-  windows: {
-    tasks: { layout: { x: 0, y: 0, w: 7, h: 8 }, Component: tasksApp.Component },
-    map: { layout: { x: 8, y: 0, w: 5, h: 8 }, Component: mapApp.Component },
+const robotsWorkspace: InitialWindow[] = [
+  {
+    layout: { x: 0, y: 0, w: 7, h: 4 },
+    microApp: robotsApp,
   },
-};
+  { layout: { x: 8, y: 0, w: 5, h: 8 }, microApp: mapApp },
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: doorsApp },
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: liftsApp },
+  { layout: { x: 8, y: 0, w: 5, h: 4 }, microApp: robotMutexGroupsApp },
+];
+
+const tasksWorkspace: InitialWindow[] = [
+  { layout: { x: 0, y: 0, w: 7, h: 8 }, microApp: tasksApp },
+  { layout: { x: 8, y: 0, w: 5, h: 8 }, microApp: mapApp },
+];
 
 export default function App() {
   return (
@@ -68,17 +72,29 @@ export default function App() {
         {
           name: 'Map',
           route: '',
-          element: <StaticWorkspace initialState={homeWorkspace} />,
+          element: <Workspace initialWindows={homeWorkspace} />,
         },
         {
           name: 'Robots',
           route: 'robots',
-          element: <StaticWorkspace initialState={robotsWorkspace} />,
+          element: <Workspace initialWindows={robotsWorkspace} />,
         },
         {
           name: 'Tasks',
           route: 'tasks',
-          element: <StaticWorkspace initialState={tasksWorkspace} />,
+          element: <Workspace initialWindows={tasksWorkspace} />,
+        },
+        {
+          name: 'Custom',
+          route: 'custom',
+          element: (
+            <LocallyPersistentWorkspace
+              defaultWindows={[]}
+              allowDesignMode
+              appRegistry={appRegistry}
+              storageKey="custom-workspace"
+            />
+          ),
         },
       ]}
     />
