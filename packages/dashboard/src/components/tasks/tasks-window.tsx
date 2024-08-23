@@ -10,7 +10,6 @@ import {
   Tab,
   TableContainer,
   Tabs,
-  Toolbar,
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
@@ -301,59 +300,57 @@ export const TasksWindow = React.memo(
           title="Tasks"
           onClose={onClose}
           toolbar={
-            <Toolbar variant="dense">
-              <div>
-                <Tooltip title="Export task history of the past 31 days" placement="top">
-                  <Button
-                    sx={{
-                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
-                    }}
-                    id="export-button"
-                    aria-controls={openExportMenu ? 'export-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={openExportMenu ? 'true' : undefined}
-                    variant="outlined"
-                    onClick={handleClickExportMenu}
-                    color="inherit"
-                    startIcon={
-                      <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                    }
-                  >
-                    Export past 31 days
-                  </Button>
-                </Tooltip>
-                <Menu
-                  id="export-menu"
-                  MenuListProps={{
-                    'aria-labelledby': 'export-button',
+            <Box display="flex" gap={1} marginRight={1}>
+              <Tooltip title="Export task history of the past 31 days" placement="top">
+                <Button
+                  sx={{
+                    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                    paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
+                    paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
+                    marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
                   }}
-                  anchorEl={anchorExportElement}
-                  open={openExportMenu}
-                  onClose={handleCloseExportMenu}
+                  id="export-button"
+                  aria-controls={openExportMenu ? 'export-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={openExportMenu ? 'true' : undefined}
+                  variant="outlined"
+                  onClick={handleClickExportMenu}
+                  color="inherit"
+                  startIcon={
+                    <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
+                  }
                 >
-                  <MenuItem
-                    onClick={() => {
-                      exportTasksToCsv(true);
-                      handleCloseExportMenu();
-                    }}
-                    disableRipple
-                  >
-                    Export Minimal
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      exportTasksToCsv(false);
-                      handleCloseExportMenu();
-                    }}
-                    disableRipple
-                  >
-                    Export Full
-                  </MenuItem>
-                </Menu>
-              </div>
+                  Export past 31 days
+                </Button>
+              </Tooltip>
+              <Menu
+                id="export-menu"
+                MenuListProps={{
+                  'aria-labelledby': 'export-button',
+                }}
+                anchorEl={anchorExportElement}
+                open={openExportMenu}
+                onClose={handleCloseExportMenu}
+              >
+                <MenuItem
+                  onClick={() => {
+                    exportTasksToCsv(true);
+                    handleCloseExportMenu();
+                  }}
+                  disableRipple
+                >
+                  Export Minimal
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    exportTasksToCsv(false);
+                    handleCloseExportMenu();
+                  }}
+                  disableRipple
+                >
+                  Export Full
+                </MenuItem>
+              </Menu>
               <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
                 <Button
                   sx={{
@@ -376,7 +373,7 @@ export const TasksWindow = React.memo(
                   Refresh Task Queue
                 </Button>
               </Tooltip>
-            </Toolbar>
+            </Box>
           }
           {...otherProps}
         >
@@ -437,8 +434,8 @@ export const TasksWindow = React.memo(
                 task={selectedTask ?? undefined}
               />
             )}
-            {children}
           </Grid>
+          {children}
         </Window>
       );
     },

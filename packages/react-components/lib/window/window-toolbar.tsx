@@ -15,9 +15,11 @@ export const WindowToolbar: React.FC<WindowToolbarProps> = ({
   return (
     <AppBar position="static" elevation={0} {...otherProps}>
       <Toolbar variant="dense" disableGutters sx={{ paddingLeft: 2 }}>
-        <Grid container justifyContent="space-between" alignItems="center">
+        <Grid container justifyContent="space-between" alignItems="center" wrap="nowrap">
           <Typography variant="h6">{title}</Typography>
-          <Box {...toolbarItemContainerProps}>{children}</Box>
+          <Box display="flex" alignItems="center" {...toolbarItemContainerProps}>
+            {children}
+          </Box>
         </Grid>
       </Toolbar>
     </AppBar>

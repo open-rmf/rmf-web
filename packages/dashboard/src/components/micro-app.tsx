@@ -36,7 +36,6 @@ export function createMicroApp<P>(
         const settings = useSettings();
         return (
           <Window ref={ref} title={displayName} {...otherProps}>
-            {/* TODO(koonpeng): Implement fallback */}
             <Suspense fallback={null}>
               <LazyComponent {...props(settings)} />
             </Suspense>
