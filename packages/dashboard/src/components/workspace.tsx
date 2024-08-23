@@ -93,7 +93,8 @@ export const Workspace = React.memo(
               <microApp.Component
                 key={l.i}
                 onClose={() => {
-                  const newLayout = layout.filter((l2) => l2.i !== l2.i);
+                  const newLayout = layout.filter((l2) => l2.i !== l.i);
+                  console.log(layout, newLayout);
                   onLayoutChange &&
                     onLayoutChange(
                       newLayout.map((l) => ({ layout: l, microApp: windowApps.current[l.i] })),
