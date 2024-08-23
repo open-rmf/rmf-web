@@ -12,7 +12,6 @@ import { getDefaultTaskDefinition, LocalizationProvider } from 'react-components
 import { matchPath, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
-import { authenticator } from '../app-config';
 import { AppController, AppControllerProvider } from '../hooks/use-app-controller';
 import { AuthenticatorProvider } from '../hooks/use-authenticator';
 import { Resources, ResourcesProvider } from '../hooks/use-resources';
@@ -248,6 +247,7 @@ interface DashboardContentsProps extends RmfDashboardProps {
 }
 
 function DashboardContents({
+  authenticator,
   helpLink,
   reportIssueLink,
   resources,
