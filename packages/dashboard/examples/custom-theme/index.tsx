@@ -56,14 +56,6 @@ const nordTheme = createTheme({
       secondary: nord6,
       disabled: nord5,
     },
-    action: {
-      active: nord5,
-      hover: nord5,
-      focus: nord5,
-      selected: nord5,
-      disabled: nord3,
-    },
-    divider: nord3,
     error: {
       main: nord11,
     },

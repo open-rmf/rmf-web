@@ -13,7 +13,7 @@ export const WindowToolbar: React.FC<WindowToolbarProps> = ({
   ...otherProps
 }) => {
   return (
-    <AppBar position="static" elevation={0} {...otherProps}>
+    <AppBar position="static" elevation={1} {...otherProps}>
       <Toolbar variant="dense" disableGutters sx={{ paddingLeft: 2 }}>
         <Grid container justifyContent="space-between" alignItems="center" wrap="nowrap">
           <Typography variant="h6">{title}</Typography>

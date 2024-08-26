@@ -150,7 +150,7 @@ export const Workspace = React.memo(
                       onLayoutChange(
                         newLayout.map((l) => ({ layout: l, microApp: windowApps.current[l.i] })),
                       );
-                    setLayout(newLayout);
+                    React.startTransition(() => setLayout(newLayout));
                     setAddMenuAnchor(null);
                   }}
                 >

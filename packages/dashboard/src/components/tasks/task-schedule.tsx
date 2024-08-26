@@ -8,7 +8,7 @@ import {
 import { DayProps } from '@aldabil/react-scheduler/views/Day';
 import { MonthProps } from '@aldabil/react-scheduler/views/Month';
 import { WeekProps } from '@aldabil/react-scheduler/views/Week';
-import { Button, Typography } from '@mui/material';
+import { Button, Theme, Typography, useTheme } from '@mui/material';
 import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
 import React from 'react';
 import {
@@ -49,6 +49,7 @@ interface CustomCalendarEditorProps {
 const disablingCellsWithoutEvents = (
   events: ProcessedEvent[],
   { start, ...props }: CellRenderedProps,
+  theme: Theme,
 ): React.ReactElement => {
   const filteredEvents = events.filter((event) => start.getTime() !== event.start.getTime());
   const disabled = filteredEvents.length > 0 || events.length === 0;
@@ -57,7 +58,7 @@ const disablingCellsWithoutEvents = (
     <Button
       style={{
         height: '100%',
-        background: disabled ? '#eee' : 'transparent',
+        background: disabled ? theme.palette.action.disabled : 'transparent',
         cursor: disabled ? 'default' : 'pointer',
       }}
       disableRipple={disabled}
@@ -252,12 +253,14 @@ export const TaskSchedule = () => {
     }
   };
 
+  const theme = useTheme();
+
   const defaultDaySettings: DayProps = {
     startHour: 0,
     endHour: 23,
     step: 60,
     cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }, theme),
   };
   const defaultWeekSettings: WeekProps = {
     weekDays: [0, 1, 2, 3, 4, 5, 6],
@@ -266,7 +269,7 @@ export const TaskSchedule = () => {
     endHour: 23,
     step: 60,
     cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }, theme),
   };
   const defaultMonthSettings: MonthProps = {
     weekDays: [0, 1, 2, 3, 4, 5, 6],
@@ -274,7 +277,7 @@ export const TaskSchedule = () => {
     startHour: 0,
     endHour: 23,
     cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }, theme),
   };
 
   return (
