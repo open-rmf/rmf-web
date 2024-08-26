@@ -5,6 +5,7 @@ import {
   CssBaseline,
   Snackbar,
   Tab,
+  ThemeProvider,
   Typography,
 } from '@mui/material';
 import React, { useTransition } from 'react';
@@ -58,6 +59,14 @@ export interface TaskRegistryInput extends Omit<TaskRegistry, 'taskDefinitions'>
   allowedTasks: AllowedTask[];
 }
 
+export type MuiTheme = React.ComponentProps<typeof ThemeProvider>['theme'];
+
+export interface DashboardThemes {
+  default: MuiTheme;
+  // TODO(koonpeng): support dark theme
+  // dark?: MuiTheme;
+}
+
 export interface RmfDashboardProps {
   /**
    * Url of the RMF api server.
@@ -80,6 +89,8 @@ export interface RmfDashboardProps {
    * Url to be linked for the "report issue" button.
    */
   reportIssueLink: string;
+
+  themes?: DashboardThemes;
 
   /**
    * Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.
@@ -109,8 +120,15 @@ export interface RmfDashboardProps {
 }
 
 export function RmfDashboard(props: RmfDashboardProps) {
-  const { apiServerUrl, trajectoryServerUrl, authenticator, resources, tasks, alertAudioPath } =
-    props;
+  const {
+    apiServerUrl,
+    trajectoryServerUrl,
+    authenticator,
+    themes,
+    resources,
+    tasks,
+    alertAudioPath,
+  } = props;
 
   const rmfApi = React.useMemo(
     () => new DefaultRmfApi(apiServerUrl, trajectoryServerUrl, authenticator),
@@ -176,47 +194,54 @@ export function RmfDashboard(props: RmfDashboardProps) {
     [updateSettings],
   );
 
-  return (
-    userProfile && (
-      <LocalizationProvider>
-        <CssBaseline />
-        <AuthenticatorProvider value={authenticator}>
-          <ResourcesProvider value={resources}>
-            <TaskRegistryProvider value={taskRegistry}>
-              <RmfApiProvider value={rmfApi}>
-                <SettingsProvider value={settings}>
-                  <AppControllerProvider value={appController}>
-                    <AlertManager alertAudioPath={alertAudioPath} />
-                    <DeliveryAlertStore />
-                    <UserProfileProvider value={userProfile}>
-                      <BrowserRouter>
-                        <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
-                        {/* TODO: Support stacking of alerts */}
-                        <Snackbar
-                          open={showAlert}
-                          message={alertMessage}
+  const theme = React.useMemo(() => {
+    if (!themes) {
+      return null;
+    }
+    return themes[settings.themeMode] || themes.default;
+  }, [themes, settings.themeMode]);
+
+  const providers = userProfile && (
+    <LocalizationProvider>
+      <CssBaseline />
+      <AuthenticatorProvider value={authenticator}>
+        <ResourcesProvider value={resources}>
+          <TaskRegistryProvider value={taskRegistry}>
+            <RmfApiProvider value={rmfApi}>
+              <SettingsProvider value={settings}>
+                <AppControllerProvider value={appController}>
+                  <AlertManager alertAudioPath={alertAudioPath} />
+                  <DeliveryAlertStore />
+                  <UserProfileProvider value={userProfile}>
+                    <BrowserRouter>
+                      <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
+                      {/* TODO: Support stacking of alerts */}
+                      <Snackbar
+                        open={showAlert}
+                        message={alertMessage}
+                        onClose={() => setShowAlert(false)}
+                        autoHideDuration={alertDuration}
+                      >
+                        <Alert
                           onClose={() => setShowAlert(false)}
-                          autoHideDuration={alertDuration}
+                          severity={alertSeverity}
+                          sx={{ width: '100%' }}
                         >
-                          <Alert
-                            onClose={() => setShowAlert(false)}
-                            severity={alertSeverity}
-                            sx={{ width: '100%' }}
-                          >
-                            {alertMessage}
-                          </Alert>
-                        </Snackbar>
-                      </BrowserRouter>
-                    </UserProfileProvider>
-                  </AppControllerProvider>
-                </SettingsProvider>
-              </RmfApiProvider>
-            </TaskRegistryProvider>
-          </ResourcesProvider>
-        </AuthenticatorProvider>
-      </LocalizationProvider>
-    )
+                          {alertMessage}
+                        </Alert>
+                      </Snackbar>
+                    </BrowserRouter>
+                  </UserProfileProvider>
+                </AppControllerProvider>
+              </SettingsProvider>
+            </RmfApiProvider>
+          </TaskRegistryProvider>
+        </ResourcesProvider>
+      </AuthenticatorProvider>
+    </LocalizationProvider>
   );
+
+  return theme ? <ThemeProvider theme={theme}>{providers}</ThemeProvider> : providers;
 }
 
 interface RequireAuthProps {

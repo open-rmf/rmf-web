@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  publicDir: path.resolve(__dirname, 'public'),
   resolve: {
     alias: {
       'rmf-dashboard': path.resolve(__dirname, '../../src'),
