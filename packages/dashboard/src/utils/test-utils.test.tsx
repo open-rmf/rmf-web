@@ -39,10 +39,12 @@ import { AppController, AppControllerProvider } from '../hooks/use-app-controlle
 import { AuthenticatorProvider } from '../hooks/use-authenticator';
 import { Resources, ResourcesProvider } from '../hooks/use-resources';
 import { RmfApiProvider } from '../hooks/use-rmf-api';
+import { SettingsProvider } from '../hooks/use-settings';
 import { TaskRegistry, TaskRegistryProvider } from '../hooks/use-task-registry';
 import { UserProfileProvider } from '../hooks/use-user-profile';
 import { UserProfile } from '../services/authenticator';
 import { RmfApi } from '../services/rmf-api';
+import { Settings } from '../services/settings';
 import StubAuthenticator from '../services/stub-authenticator';
 
 export const superUser: UserProfile = {
@@ -147,6 +149,10 @@ export const TestProviders = ({ profile = superUser, children }: TestProviderPro
     () => ({ taskDefinitions: [], pickupZones: [], cartIds: [] }),
     [],
   );
+  const settings = React.useMemo<Settings>(
+    () => ({ themeMode: 'default', microAppSettings: {} }),
+    [],
+  );
   const rmfApi = React.useMemo<RmfApi>(() => new MockRmfApi(), []);
   const appController = React.useMemo<AppController>(() => makeMockAppController(), []);
 
@@ -155,9 +161,11 @@ export const TestProviders = ({ profile = superUser, children }: TestProviderPro
       <ResourcesProvider value={resources}>
         <TaskRegistryProvider value={taskRegistry}>
           <RmfApiProvider value={rmfApi}>
-            <AppControllerProvider value={appController}>
-              <UserProfileProvider value={profile}>{children}</UserProfileProvider>
-            </AppControllerProvider>
+            <SettingsProvider value={settings}>
+              <AppControllerProvider value={appController}>
+                <UserProfileProvider value={profile}>{children}</UserProfileProvider>
+              </AppControllerProvider>
+            </SettingsProvider>
           </RmfApiProvider>
         </TaskRegistryProvider>
       </ResourcesProvider>
