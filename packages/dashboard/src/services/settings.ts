@@ -1,4 +1,4 @@
-export type ThemeMode = 'default';
+export type ThemeMode = 'default' | 'dark';
 
 export interface Settings {
   themeMode: ThemeMode;

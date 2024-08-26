@@ -93,7 +93,7 @@ export default function App() {
       authenticator={new StubAuthenticator()}
       helpLink="https://osrf.github.io/ros2multirobotbook/rmf-core.html"
       reportIssueLink="https://github.com/open-rmf/rmf-web/issues"
-      themes={{ default: nordTheme }}
+      themes={{ default: createTheme(), dark: nordTheme }}
       resources={{ fleets: {}, logos: { header: '/resources/defaultLogo.png' } }}
       tasks={{
         allowedTasks: [

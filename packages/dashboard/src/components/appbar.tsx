@@ -5,9 +5,10 @@ import {
   Logout,
   Notifications,
   Report,
-  // Settings,
   Warning as Issue,
 } from '@mui/icons-material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import {
   AppBar as MuiAppBar,
   Badge,
@@ -54,6 +55,7 @@ import { useTaskRegistry } from '../hooks/use-task-registry';
 import { useUserProfile } from '../hooks/use-user-profile';
 import { AppEvents } from './app-events';
 import { toApiSchedule } from './tasks/utils';
+import { DashboardThemes } from './theme';
 
 export const APP_BAR_HEIGHT = '3.5rem';
 
@@ -84,13 +86,14 @@ function AppSettings() {
 export interface AppBarProps {
   tabs: React.ReactElement<React.ComponentProps<typeof Tab>>[];
   tabValue: string;
+  themes?: DashboardThemes;
   helpLink: string;
   reportIssueLink: string;
   extraToolbarItems?: React.ReactNode;
 }
 
 export const AppBar = React.memo(
-  ({ tabs, tabValue, helpLink, reportIssueLink, extraToolbarItems }: AppBarProps) => {
+  ({ tabs, tabValue, themes, helpLink, reportIssueLink, extraToolbarItems }: AppBarProps) => {
     const authenticator = useAuthenticator();
     const rmfApi = useRmfApi();
     const resources = useResources();
@@ -252,6 +255,8 @@ export const AppBar = React.memo(
     }, [rmfApi, showAlert]);
 
     const theme = useTheme();
+    const settings = useSettings();
+    const appController = useAppController();
 
     return (
       <MuiAppBar position="sticky" sx={{ height: APP_BAR_HEIGHT, zIndex: theme.zIndex.drawer + 1 }}>
@@ -321,14 +326,14 @@ export const AppBar = React.memo(
                   <Tooltip
                     key={alert.id}
                     title={
-                      <React.Fragment>
+                      <>
                         <Typography>Alert</Typography>
                         <Typography>ID: {alert.id}</Typography>
                         <Typography>Title: {alert.title}</Typography>
                         <Typography>
                           Created: {new Date(alert.unix_millis_alert_time).toLocaleString()}
                         </Typography>
-                      </React.Fragment>
+                      </>
                     }
                     placement="right"
                   >
@@ -351,16 +356,23 @@ export const AppBar = React.memo(
               )}
             </Menu>
             {extraToolbarItems}
-            {/* <Tooltip title="Settings">
-            <ToolBarIconButton
-              id="show-settings-btn"
-              aria-label="settings"
-              color="inherit"
-              onClick={(ev) => setSettingsAnchor(ev.currentTarget)}
-            >
-              <Settings fontSize="inherit" />
-            </ToolBarIconButton>
-          </Tooltip> */}
+            {themes?.dark && (
+              <Tooltip title="Toggle Dark Mode">
+                <ToolbarIconButton
+                  id="toggle-dark-mode-btn"
+                  aria-label="toggle dark mode"
+                  color="inherit"
+                  onClick={() =>
+                    appController.updateSettings({
+                      ...settings,
+                      themeMode: settings.themeMode === 'default' ? 'dark' : 'default',
+                    })
+                  }
+                >
+                  {settings.themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                </ToolbarIconButton>
+              </Tooltip>
+            )}
             <Tooltip title="Help">
               <ToolbarIconButton
                 id="show-help-btn"

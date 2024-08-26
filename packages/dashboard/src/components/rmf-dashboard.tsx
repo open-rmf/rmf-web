@@ -27,6 +27,7 @@ import { loadSettings, saveSettings, Settings } from '../services/settings';
 import { AlertManager } from './alert-manager';
 import AppBar, { APP_BAR_HEIGHT } from './appbar';
 import { DeliveryAlertStore } from './delivery-alert-store';
+import { DashboardThemes } from './theme';
 
 const DefaultAlertDuration = 2000;
 
@@ -57,14 +58,6 @@ export interface AllowedTask {
 
 export interface TaskRegistryInput extends Omit<TaskRegistry, 'taskDefinitions'> {
   allowedTasks: AllowedTask[];
-}
-
-export type MuiTheme = React.ComponentProps<typeof ThemeProvider>['theme'];
-
-export interface DashboardThemes {
-  default: MuiTheme;
-  // TODO(koonpeng): support dark theme
-  // dark?: MuiTheme;
 }
 
 export interface RmfDashboardProps {
@@ -275,6 +268,7 @@ function DashboardContents({
   authenticator,
   helpLink,
   reportIssueLink,
+  themes,
   resources,
   tabs,
   baseUrl = import.meta.env.BASE_URL,
@@ -324,6 +318,7 @@ function DashboardContents({
                   />
                 ))}
                 tabValue={currentTab!.name}
+                themes={themes}
                 helpLink={helpLink}
                 reportIssueLink={reportIssueLink}
                 extraToolbarItems={extraAppbarItems}
