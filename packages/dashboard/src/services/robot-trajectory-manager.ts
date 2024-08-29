@@ -1,5 +1,4 @@
-import { Knot } from 'react-components';
-
+import { Knot } from '../components/utils/geometry';
 import { Authenticator } from './authenticator';
 import TrajectorySocketManager from './trajectory-socket-manager';
 

@@ -11,7 +11,6 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
-import { base } from 'react-components';
 
 import { useAppController } from '../hooks/use-app-controller';
 import { useRmfApi } from '../hooks/use-rmf-api';
@@ -122,7 +121,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
       <Dialog
         PaperProps={{
           style: {
-            backgroundColor: base.palette.warning.dark,
+            backgroundColor: theme.palette.warning.dark,
             boxShadow: 'none',
           },
         }}
@@ -334,7 +333,7 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
       <Dialog
         PaperProps={{
           style: {
-            backgroundColor: base.palette.error.dark,
+            backgroundColor: theme.palette.error.dark,
             boxShadow: 'none',
           },
         }}

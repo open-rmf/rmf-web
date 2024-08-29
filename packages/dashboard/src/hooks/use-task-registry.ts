@@ -1,5 +1,4 @@
-import { TaskDefinition } from 'react-components';
-
+import { TaskDefinition } from '../components/tasks/create-task';
 import { createDeferredContext } from './deferred-context';
 
 export interface TaskRegistry {

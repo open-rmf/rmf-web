@@ -16,9 +16,11 @@ import {
   styled,
 } from '@mui/material';
 import React from 'react';
-import { Loading, TransferList, useAsync } from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
+import { useAsync } from '../../hooks/use-async';
+import { Loading } from '../loading';
+import { TransferList } from '../transfer-list';
 
 const prefix = 'manage-roles-dialog';
 const classes = {

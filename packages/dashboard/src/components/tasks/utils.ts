@@ -1,5 +1,7 @@
 import { PostScheduledTaskRequest, TaskRequest, TaskStateOutput as TaskState } from 'api-client';
-import { getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
+
+import { Schedule } from './create-task';
+import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
 
 export function exportCsvFull(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';

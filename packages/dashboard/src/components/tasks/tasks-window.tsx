@@ -15,21 +15,21 @@ import {
 } from '@mui/material';
 import { TaskStateInput as TaskState } from 'api-client';
 import React from 'react';
+
+import { useAppController } from '../../hooks/use-app-controller';
+import { useRmfApi } from '../../hooks/use-rmf-api';
+import { MicroAppProps } from '../../micro-apps';
+import { AppEvents } from '../app-events';
+import { Window } from '../window';
+import { TaskSchedule } from './task-schedule';
+import { TaskSummary } from './task-summary';
 import {
   FilterFields,
   MuiMouseEvent,
   SortFields,
   TaskDataGridTable,
   Tasks,
-  Window,
-} from 'react-components';
-
-import { useAppController } from '../../hooks/use-app-controller';
-import { useRmfApi } from '../../hooks/use-rmf-api';
-import { AppEvents } from '../app-events';
-import { MicroAppProps } from '../micro-app';
-import { TaskSchedule } from './task-schedule';
-import { TaskSummary } from './task-summary';
+} from './task-table-datagrid';
 import { exportCsvFull, exportCsvMinimal } from './utils';
 
 const RefreshTaskQueueTableInterval = 15000;

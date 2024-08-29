@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 
-import { MicroAppManifest } from '../components/micro-app';
+import { MicroAppManifest } from '.';
 
 export default {
   appId: 'tasks',

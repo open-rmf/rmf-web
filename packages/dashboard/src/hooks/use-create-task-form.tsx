@@ -1,7 +1,7 @@
 import React from 'react';
-import { getPlaces } from 'react-components';
 import { Subscription } from 'rxjs';
 
+import { getPlaces } from '../components/place';
 import { RmfApi } from '../services/rmf-api';
 
 export const useCreateTaskFormData = (rmfApi: RmfApi | undefined) => {

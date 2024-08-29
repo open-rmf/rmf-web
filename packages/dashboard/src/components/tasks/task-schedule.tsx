@@ -11,13 +11,6 @@ import { WeekProps } from '@aldabil/react-scheduler/views/Week';
 import { Button, Theme, Typography, useTheme } from '@mui/material';
 import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
 import React from 'react';
-import {
-  ConfirmationDialog,
-  CreateTaskForm,
-  CreateTaskFormProps,
-  EventEditDeletePopup,
-  Schedule,
-} from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
 import { useCreateTaskFormData } from '../../hooks/use-create-task-form';
@@ -25,6 +18,9 @@ import { useRmfApi } from '../../hooks/use-rmf-api';
 import { useTaskRegistry } from '../../hooks/use-task-registry';
 import { useUserProfile } from '../../hooks/use-user-profile';
 import { AppEvents } from '../app-events';
+import { ConfirmationDialog } from '../confirmation-dialog';
+import { CreateTaskForm, CreateTaskFormProps, Schedule } from './create-task';
+import { EventEditDeletePopup } from './task-schedule-event-edit-delete-popup';
 import {
   apiScheduleToSchedule,
   getScheduledTaskColor,

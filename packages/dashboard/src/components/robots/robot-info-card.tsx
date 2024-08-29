@@ -1,11 +1,11 @@
 import { Box, CardContent, Typography } from '@mui/material';
 import { RobotState, TaskStateOutput } from 'api-client';
 import React from 'react';
-import { RobotInfo } from 'react-components';
 import { combineLatest, EMPTY, mergeMap, of, switchMap, throttleTime } from 'rxjs';
 
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
+import { RobotInfo } from './robot-info';
 
 export const RobotInfoCard = () => {
   const rmfApi = useRmfApi();
@@ -73,7 +73,6 @@ export const RobotInfoCard = () => {
         />
       ) : (
         <Box
-          component="div"
           sx={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}
         >
           <Typography variant="h6" align="center">

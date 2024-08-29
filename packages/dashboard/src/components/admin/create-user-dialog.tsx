@@ -1,8 +1,9 @@
 import { TextField } from '@mui/material';
 import React from 'react';
-import { ConfirmationDialog, useAsync } from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
+import { useAsync } from '../../hooks/use-async';
+import { ConfirmationDialog } from '../confirmation-dialog';
 
 export interface CreateUserDialogProps {
   open: boolean;

@@ -21,10 +21,12 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-import { ConfirmationDialog, Loading, useAsync } from 'react-components';
 import { useNavigate } from 'react-router';
 
 import { useAppController } from '../../hooks/use-app-controller';
+import { useAsync } from '../../hooks/use-async';
+import { ConfirmationDialog } from '../confirmation-dialog';
+import { Loading } from '../loading';
 import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 const ItemsPerPage = 20;

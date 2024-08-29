@@ -5,8 +5,9 @@ import '@fontsource/roboto/700.css';
 import './app.css';
 
 import { appConfig } from './app-config';
-import { InitialWindow, LocallyPersistentWorkspace, RmfDashboard, Workspace } from './components';
-import { MicroAppManifest } from './components/micro-app';
+import { RmfDashboard } from './components';
+import { InitialWindow, LocallyPersistentWorkspace, Workspace } from './components/workspace';
+import { MicroAppManifest } from './micro-apps';
 import doorsApp from './micro-apps/doors-app';
 import liftsApp from './micro-apps/lifts-app';
 import createMapApp from './micro-apps/map-app';

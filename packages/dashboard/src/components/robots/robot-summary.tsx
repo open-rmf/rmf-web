@@ -21,6 +21,7 @@ import {
   LinearProgress,
   LinearProgressProps,
   TextField,
+  Theme,
   Typography,
   useMediaQuery,
   useTheme,
@@ -31,38 +32,38 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
-import { base, RobotTableData } from 'react-components';
 import { combineLatest, EMPTY, mergeMap, of } from 'rxjs';
 
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { TaskCancelButton } from '../tasks/task-cancellation';
 import { TaskInspector } from '../tasks/task-inspector';
 import { RobotDecommissionButton } from './robot-decommission';
+import { RobotTableData } from './robot-table-datagrid';
 
-const setTaskDialogColor = (robotStatus: Status | undefined | null) => {
+const setTaskDialogColor = (robotStatus: Status | undefined | null, theme: Theme) => {
   if (!robotStatus) {
-    return base.palette.background.default;
+    return theme.palette.background.default;
   }
 
   switch (robotStatus) {
     case Status.Error:
-      return base.palette.error.dark;
+      return theme.palette.error.dark;
 
     case Status.Working:
-      return base.palette.success.dark;
+      return theme.palette.success.dark;
 
     default:
-      return base.palette.warning.main;
+      return theme.palette.warning.main;
   }
 };
 
 const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
   return (
-    <Box component="div" sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box component="div" sx={{ width: '100%', mr: 1 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ width: '100%', mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
-      <Box component="div" sx={{ minWidth: 35 }}>
+      <Box sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
           props.value,
         )}%`}</Typography>
@@ -257,7 +258,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
     <Dialog
       PaperProps={{
         style: {
-          backgroundColor: setTaskDialogColor(robotState?.status),
+          backgroundColor: setTaskDialogColor(robotState?.status, theme),
           boxShadow: 'none',
         },
       }}
@@ -296,7 +297,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           <Typography variant="body2" fontWeight="bold" ml={3} mt={1}>
             Task progress
           </Typography>
-          <Box component="div" sx={{ width: '95%', ml: 3 }}>
+          <Box sx={{ width: '95%', ml: 3 }}>
             <LinearProgressWithLabel value={taskProgress * 100} />
           </Box>
         </>

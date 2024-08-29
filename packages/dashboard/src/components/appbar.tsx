@@ -43,7 +43,6 @@ import {
 import { AlertRequest, FireAlarmTriggerState, TaskFavorite } from 'api-client';
 import { formatDistance } from 'date-fns';
 import React from 'react';
-import { ConfirmationDialog, CreateTaskForm, CreateTaskFormProps } from 'react-components';
 import { Subscription } from 'rxjs';
 
 import { useAppController } from '../hooks/use-app-controller';
@@ -55,6 +54,8 @@ import { useSettings } from '../hooks/use-settings';
 import { useTaskRegistry } from '../hooks/use-task-registry';
 import { useUserProfile } from '../hooks/use-user-profile';
 import { AppEvents } from './app-events';
+import { ConfirmationDialog } from './confirmation-dialog';
+import { CreateTaskForm, CreateTaskFormProps } from './tasks/create-task';
 import { toApiSchedule } from './tasks/utils';
 import { DashboardThemes } from './theme';
 

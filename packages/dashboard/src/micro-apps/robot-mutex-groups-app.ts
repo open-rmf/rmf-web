@@ -1,4 +1,4 @@
-import { createMicroApp } from '../components/micro-app';
+import { createMicroApp } from '.';
 
 export default createMicroApp(
   'robot-mutex-groups-table',

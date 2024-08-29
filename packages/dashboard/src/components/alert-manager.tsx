@@ -17,7 +17,6 @@ import {
   TaskEventLog,
 } from 'api-client';
 import React from 'react';
-import { base } from 'react-components';
 import { Subscription } from 'rxjs';
 
 import { useAppController } from '../hooks/use-app-controller';
@@ -126,10 +125,10 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
         style: {
           backgroundColor:
             alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Info
-              ? base.palette.success.dark
+              ? theme.palette.success.dark
               : alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Warning
-                ? base.palette.warning.dark
-                : base.palette.error.dark,
+                ? theme.palette.warning.dark
+                : theme.palette.error.dark,
           boxShadow: 'none',
         },
       }}

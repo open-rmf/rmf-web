@@ -18,9 +18,11 @@ import {
 } from '@mui/material';
 import { Permission } from 'api-client';
 import React from 'react';
-import { ConfirmationDialog, Loading, useAsync } from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
+import { useAsync } from '../../hooks/use-async';
+import { ConfirmationDialog } from '../confirmation-dialog';
+import { Loading } from '../loading';
 import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';
 import { PermissionsCard, PermissionsCardProps } from './permissions-card';
 

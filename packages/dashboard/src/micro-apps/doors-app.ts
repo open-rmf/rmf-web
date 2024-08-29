@@ -1,8 +1,8 @@
-import { createMicroApp } from '../components/micro-app';
+import { createMicroApp } from '.';
 
 export default createMicroApp(
   'doors-table',
   'Doors',
-  () => import('../components/doors-table'),
+  () => import('../components/doors/doors-table'),
   () => ({}),
 );

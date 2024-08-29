@@ -20,13 +20,10 @@ import {
   nextWednesday,
   startOfMinute,
 } from 'date-fns';
-import {
-  getShortDescription,
-  getTaskBookingLabelFromTaskRequest,
-  RecurringDays,
-  Schedule,
-  TaskDefinition,
-} from 'react-components';
+
+import { RecurringDays, Schedule, TaskDefinition } from './create-task';
+import { getTaskBookingLabelFromTaskRequest } from './task-booking-label-utils';
+import { getShortDescription } from './types';
 
 /**
  * Generates a list of ProcessedEvents to occur within the query start and end,

@@ -2,9 +2,9 @@ import { Typography } from '@mui/material';
 import { User } from 'api-client';
 import { AxiosError } from 'axios';
 import React from 'react';
-import { useAsync } from 'react-components';
 import { useParams } from 'react-router';
 
+import { useAsync } from '../../hooks/use-async';
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { getApiErrorMessage } from '../../utils/api';
 import { ManageRolesCard } from './manage-roles-dialog';

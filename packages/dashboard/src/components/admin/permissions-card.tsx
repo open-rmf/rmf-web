@@ -17,10 +17,11 @@ import {
 import { styled } from '@mui/material';
 import { Permission } from 'api-client';
 import React from 'react';
-import { Loading, useAsync } from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
+import { useAsync } from '../../hooks/use-async';
 import { getActionText } from '../../services/permissions';
+import { Loading } from '../loading';
 import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
 
 const prefix = 'permissions-card';

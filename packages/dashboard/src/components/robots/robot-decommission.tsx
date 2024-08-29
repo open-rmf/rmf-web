@@ -9,11 +9,11 @@ import {
 } from '@mui/material';
 import { RobotState } from 'api-client';
 import React from 'react';
-import { ConfirmationDialog } from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
+import { ConfirmationDialog } from '../confirmation-dialog';
 
 export interface RobotDecommissionButtonProp extends Omit<ButtonProps, 'onClick' | 'autoFocus'> {
   fleet: string;

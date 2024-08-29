@@ -5,8 +5,9 @@ import '@fontsource/roboto/700.css';
 
 import { createTheme } from '@mui/material';
 import ReactDOM from 'react-dom/client';
-import { LocallyPersistentWorkspace, RmfDashboard } from 'rmf-dashboard/components';
-import { MicroAppManifest } from 'rmf-dashboard/components/micro-app';
+import { RmfDashboard } from 'rmf-dashboard/components';
+import { LocallyPersistentWorkspace } from 'rmf-dashboard/components/workspace';
+import { MicroAppManifest } from 'rmf-dashboard/micro-apps';
 import doorsApp from 'rmf-dashboard/micro-apps/doors-app';
 import liftsApp from 'rmf-dashboard/micro-apps/lifts-app';
 import createMapApp from 'rmf-dashboard/micro-apps/map-app';

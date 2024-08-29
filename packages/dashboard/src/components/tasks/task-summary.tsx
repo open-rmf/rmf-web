@@ -4,6 +4,7 @@ import {
   LinearProgress,
   LinearProgressProps,
   TextField,
+  Theme,
   Typography,
   useMediaQuery,
   useTheme,
@@ -17,19 +18,20 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
-import { base, getTaskBookingLabelFromTaskState, TaskBookingLabels } from 'react-components';
 
 import { useRmfApi } from '../../hooks/use-rmf-api';
+import { TaskBookingLabels } from './booking-label';
+import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
 import { TaskCancelButton } from './task-cancellation';
 import { TaskInspector } from './task-inspector';
 
 const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
   return (
-    <Box component="div" sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box component="div" sx={{ width: '100%', mr: 1 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ width: '100%', mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
-      <Box component="div" sx={{ minWidth: 35 }}>
+      <Box sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
           props.value,
         )}%`}</Typography>
@@ -38,23 +40,23 @@ const LinearProgressWithLabel = (props: LinearProgressProps & { value: number })
   );
 };
 
-const setTaskDialogColor = (taskStatus: Status | undefined | null) => {
+const setTaskDialogColor = (taskStatus: Status | undefined | null, theme: Theme) => {
   if (!taskStatus) {
-    return base.palette.background.default;
+    return theme.palette.background.default;
   }
 
   switch (taskStatus) {
     case Status.Failed:
-      return base.palette.error.dark;
+      return theme.palette.error.dark;
 
     case Status.Underway:
-      return base.palette.success.dark;
+      return theme.palette.success.dark;
 
     case Status.Queued:
-      return base.palette.info.main;
+      return theme.palette.info.main;
 
     default:
-      return base.palette.background.default;
+      return theme.palette.background.default;
   }
 };
 
@@ -169,7 +171,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     <Dialog
       PaperProps={{
         style: {
-          backgroundColor: setTaskDialogColor(taskState?.status),
+          backgroundColor: setTaskDialogColor(taskState?.status, theme),
           boxShadow: 'none',
         },
       }}
@@ -189,7 +191,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       </DialogTitle>
       <Divider />
       {taskProgress && (
-        <Box component="div" sx={{ width: '90%', ml: 3 }}>
+        <Box sx={{ width: '90%', ml: 3 }}>
           <LinearProgressWithLabel value={taskProgress * 100} />
         </Box>
       )}

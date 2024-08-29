@@ -1,8 +1,8 @@
-import { createMicroApp } from '../components/micro-app';
+import { createMicroApp } from '.';
 
 export default createMicroApp(
   'lifts-table',
   'Lifts',
-  () => import('../components/lifts-table'),
+  () => import('../components/lifts/lifts-table'),
   () => ({}),
 );

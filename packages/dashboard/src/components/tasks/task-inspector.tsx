@@ -2,10 +2,10 @@ import { Box, Dialog, DialogContent, DialogTitle, Divider, Grid, Typography } fr
 import { CardContent, useTheme } from '@mui/material';
 import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
-import { TaskInfo } from 'react-components';
 
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { TaskCancelButton } from './task-cancellation';
+import { TaskInfo } from './task-info';
 import { TaskLogs } from './task-logs';
 
 export interface TableDataGridState {
@@ -69,7 +69,7 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
             </Grid>
           </Grid>
           <DialogContent style={{ height: 700 }} dividers={true}>
-            <Box component="div" sx={{ position: 'relative' }}>
+            <Box sx={{ position: 'relative' }}>
               <Grid container direction="row" wrap="nowrap" height="100%">
                 <Grid item xs={6}>
                   {taskState ? (

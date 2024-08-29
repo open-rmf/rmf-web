@@ -5,13 +5,13 @@ import '@fontsource/roboto/700.css';
 import './app.css';
 
 import ReactDOM from 'react-dom/client';
+import { RmfDashboard } from 'rmf-dashboard/components';
 import {
   InitialWindow,
   LocallyPersistentWorkspace,
-  RmfDashboard,
   Workspace,
-} from 'rmf-dashboard/components';
-import { MicroAppManifest } from 'rmf-dashboard/components/micro-app';
+} from 'rmf-dashboard/components/workspace';
+import { MicroAppManifest } from 'rmf-dashboard/micro-apps';
 import doorsApp from 'rmf-dashboard/micro-apps/doors-app';
 import liftsApp from 'rmf-dashboard/micro-apps/lifts-app';
 import createMapApp from 'rmf-dashboard/micro-apps/map-app';

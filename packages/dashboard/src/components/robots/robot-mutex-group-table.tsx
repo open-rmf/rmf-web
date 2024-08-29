@@ -1,9 +1,10 @@
 import { TableContainer, Typography } from '@mui/material';
 import React from 'react';
-import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
+import { ConfirmationDialog } from '../confirmation-dialog';
+import { MutexGroupData, MutexGroupTable } from './mutex-group-table';
 
 const RefreshMutexGroupTableInterval = 5000;
 

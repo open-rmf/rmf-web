@@ -9,7 +9,6 @@ import {
   Typography,
 } from '@mui/material';
 import React, { useTransition } from 'react';
-import { getDefaultTaskDefinition, LocalizationProvider } from 'react-components';
 import { matchPath, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -27,6 +26,8 @@ import { loadSettings, saveSettings, Settings } from '../services/settings';
 import { AlertManager } from './alert-manager';
 import AppBar, { APP_BAR_HEIGHT } from './appbar';
 import { DeliveryAlertStore } from './delivery-alert-store';
+import LocalizationProvider from './locale';
+import { getDefaultTaskDefinition } from './tasks/types';
 import { DashboardThemes } from './theme';
 
 const DefaultAlertDuration = 2000;
