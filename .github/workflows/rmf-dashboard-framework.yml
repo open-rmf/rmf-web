@@ -1,10 +1,9 @@
-name: dashboard
+name: rmf-dashboard-framework
 on:
   pull_request:
     paths:
-      - '.github/workflows/dashboard.yml'
-      - 'packages/dashboard/**'
-      - 'packages/react-components/**'
+      - '.github/workflows/rmf-dashboard-framework.yml'
+      - 'packages/rmf-dashboard-framework/**'
       - 'packages/rmf-models/**'
       - 'packages/api-client/**'
   push:
@@ -27,13 +26,13 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: packages/dashboard
+        working-directory: packages/rmf-dashboard-framework
     steps:
       - uses: actions/checkout@v4
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
-          package: rmf-dashboard
+          package: rmf-dashboard-framework
           skip-build: true
       - name: lint
         run: pnpm lint
@@ -42,4 +41,4 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          flags: dashboard
+          flags: rmf-dashboard-framework
