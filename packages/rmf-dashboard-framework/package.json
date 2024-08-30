@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "pnpm run --filter {.}^... build && vite build",
+    "build:example": "pnpm run --filter {.}^... build && vite -c examples/shared/vite.config.ts build",
     "build-storybook": "storybook build",
     "gen-app-config-schema": "pnpm typescript-json-schema tsconfig.gen.json AppConfig --required -o app-config.schema.json",
     "lint": "tsc --build && eslint --max-warnings 0 src",

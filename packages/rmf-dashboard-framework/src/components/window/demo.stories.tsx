@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
-import { makeLayout } from './test-utils.spec';
+import { makeLayout } from './test-utils.test';
 import { Window } from './window';
 import { WindowContainer, WindowContainerProps } from './window-container';
 
