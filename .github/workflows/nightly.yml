@@ -40,14 +40,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push dashboard
+      - name: Build and push demo-dashboard
         uses: docker/build-push-action@v5
         with:
           push: true
-          build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:latest
-          tags: ghcr.io/${{ github.repository }}/dashboard
-          context: .github/dashboard
+          tags: ghcr.io/${{ github.repository }}/demo-dashboard
+          context: .github/demo-dashboard
       - name: Build and push api-server
         uses: docker/build-push-action@v5
         with:

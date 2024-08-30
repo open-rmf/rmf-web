@@ -30,7 +30,7 @@ docker run \
 ```
 
 > **Note**
-> The values provided for `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` are default values when running the API server and `rmf_demos`, and can be modified to suit different setups.
+> The demo dashboard assumes that the api server is hosted locally on the default ports.
 
 Start the API server with host network access, and set up the correct `ROS_DOMAIN_ID` and ROS 2 RMW implementation that will be used in the rest of the Open-RMF system. The API server will use the default port at `localhost:8000`.
 
@@ -98,7 +98,7 @@ source /opt/ros/jazzy/setup.bash
 # For source build
 source /path/to/workspace/install/setup.bash
 
-cd packages/dashboard
+cd packages/rmf-dashboard-framework
 pnpm start
 ```
 
@@ -119,32 +119,11 @@ When developing individual components, it may be useful to start the dashboard a
 ```bash
 # Start the dashboard in dev, this monitors for changes in the dashboard package and performs rebuilds. A browser refresh is required after all automated builds.
 cd packages/dashboard
-pnpm run start:react
+pnpm start:example examples/demo
 
 # Start the API server, this will need to be restarted for any changes to be reflected
 cd packages/api-server
-pnpm run start
-```
-
-### Optimized build
-
-The dashboard can also be built statically for better performance.
-
-```bash
-cd packages/dashboard
-pnpm run build
-
-# Once completed
-npm install -g serve
-serve -s build
-```
-
-This only serves the frontend, the API server can be started manually to work with an Open-RMF deployment on another terminal instance,
-
-```bash
-# source Open-RMF before proceeding
-cd packages/api-server
-pnpm run start
+pnpm start
 ```
 
 # Contribution guide
