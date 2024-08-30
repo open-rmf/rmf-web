@@ -9,6 +9,7 @@ export const useCreateTaskFormData = (rmf: RmfIngress | undefined) => {
   const [cleaningZoneNames, setCleaningZoneNames] = React.useState<string[]>([]);
   const [pickupPoints, setPickupPoints] = React.useState<Record<string, string>>({});
   const [dropoffPoints, setDropoffPoints] = React.useState<Record<string, string>>({});
+  const [fleets, setFleets] = React.useState<Record<string, string[]>>({});
 
   React.useEffect(() => {
     if (!rmf) {
@@ -42,9 +43,21 @@ export const useCreateTaskFormData = (rmf: RmfIngress | undefined) => {
         setWaypointNames(waypointNames);
       }),
     );
+    subs.push(
+      rmf.fleetsObs.subscribe((fleetStates) => {
+        const result: Record<string, string[]> = {};
+        for (const fleet of fleetStates) {
+          if (!fleet.name || !fleet.robots) {
+            continue;
+          }
+          result[fleet.name] = Object.keys(fleet.robots);
+        }
+        setFleets(result);
+      }),
+    );
 
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf]);
 
-  return { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames };
+  return { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets };
 };

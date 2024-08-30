@@ -74,7 +74,7 @@ export const TaskSchedule = () => {
   const rmf = React.useContext(RmfAppContext);
   const { showAlert } = React.useContext(AppControllerContext);
 
-  const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
+  const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets } =
     useCreateTaskFormData(rmf);
   const username = useGetUsername(rmf);
   const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
@@ -352,6 +352,7 @@ export const TaskSchedule = () => {
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
+          fleets={fleets}
           tasksToDisplay={allowedTasks}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}

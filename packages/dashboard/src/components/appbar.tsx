@@ -159,7 +159,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     FireAlarmTriggerState | undefined
   >(undefined);
 
-  const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
+  const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets } =
     useCreateTaskFormData(rmf);
   const username = useGetUsername(rmf);
 
@@ -566,6 +566,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
+          fleets={fleets}
           tasksToDisplay={allowedTasks}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}

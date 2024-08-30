@@ -329,10 +329,7 @@ export interface CreateTaskFormProps
 
 export function CreateTaskForm({
   user,
-  fleets = {
-    f1: ['r11', 'r12'],
-    f2: ['r21', 'r22'],
-  },
+  fleets,
   tasksToDisplay = [
     PatrolTaskDefinition,
     DeliveryTaskDefinition,
@@ -710,15 +707,10 @@ export function CreateTaskForm({
       setSubmitting(true);
       if (scheduling) {
         await scheduleTask(request, schedule);
-      } else {
-        let robotDispatchTarget: RobotDispatchTarget | null = null;
-        if (dispatchType === DispatchType.Robot) {
-          robotDispatchTarget = {
-            fleet: '',
-            robot: '',
-          };
-        }
+      } else if (dispatchType === DispatchType.Robot) {
         await dispatchTask(request, robotDispatchTarget);
+      } else {
+        await dispatchTask(request, null);
       }
       setSubmitting(false);
 
@@ -844,7 +836,6 @@ export function CreateTaskForm({
   };
 
   const handleDispatchFleetTargetChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('handleDispatchFleetTargetChange called');
     setTaskRequest((prev) => {
       return {
         ...prev,
@@ -854,6 +845,10 @@ export function CreateTaskForm({
   };
 
   const handleDispatchRobotTargetChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    if (!fleets) {
+      setRobotDispatchTarget(null);
+      return;
+    }
     let robotFleet: string | null = null;
     for (const fleetName of Object.keys(fleets)) {
       if (fleets[fleetName].includes(ev.target.value)) {
@@ -1022,16 +1017,17 @@ export function CreateTaskForm({
                         fullWidth
                         margin="normal"
                         value={taskRequest.fleet_name ?? ''}
-                        defaultValue={Object.keys(fleets)[0]}
+                        defaultValue=""
                         onChange={handleDispatchFleetTargetChange}
                       >
-                        {Object.keys(fleets).map((fleetName) => {
-                          return (
-                            <MenuItem value={fleetName} key={fleetName}>
-                              {fleetName}
-                            </MenuItem>
-                          );
-                        })}
+                        {fleets &&
+                          Object.keys(fleets).map((fleetName) => {
+                            return (
+                              <MenuItem value={fleetName} key={fleetName}>
+                                {fleetName}
+                              </MenuItem>
+                            );
+                          })}
                       </TextField>
                     ) : dispatchType === DispatchType.Robot ? (
                       <TextField
@@ -1041,25 +1037,29 @@ export function CreateTaskForm({
                         variant="outlined"
                         fullWidth
                         margin="normal"
-                        value={robotDispatchTarget?.robot}
+                        value={robotDispatchTarget?.robot ?? ''}
+                        defaultValue=""
                         onChange={handleDispatchRobotTargetChange}
                       >
-                        {Object.keys(fleets).map((fleetName) => {
-                          return (
-                            <>
-                              <ListSubheader>{fleetName}</ListSubheader>
-                              {fleets[fleetName].map((robotName) => (
+                        {fleets &&
+                          Object.keys(fleets).flatMap((fleetName) => {
+                            const fleetRobots = [
+                              <Divider key={`${fleetName}_divider`} />,
+                              <MenuItem value={fleetName} key={fleetName} disabled>
+                                {fleetName}
+                              </MenuItem>,
+                            ];
+                            return fleetRobots.concat(
+                              fleets[fleetName].map((robotName) => (
                                 <MenuItem value={robotName} key={robotName}>
                                   {robotName}
                                 </MenuItem>
-                              ))}
-                            </>
-                          );
-                        })}
+                              )),
+                            );
+                          })}
                       </TextField>
                     ) : (
                       <TextField
-                        select
                         disabled
                         id="dispatch-automatic-type"
                         variant="outlined"

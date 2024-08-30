@@ -124,7 +124,6 @@ export function PatrolTaskForm({
     onValidate(isPatrolTaskDescriptionValid(desc));
     onChange(desc);
   };
-  onValidate(isPatrolTaskDescriptionValid(taskDesc));
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
