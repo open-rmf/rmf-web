@@ -203,9 +203,9 @@ export function RmfDashboard(props: RmfDashboardProps) {
             <RmfApiProvider value={rmfApi}>
               <SettingsProvider value={settings}>
                 <AppControllerProvider value={appController}>
-                  <AlertManager alertAudioPath={alertAudioPath} />
                   <DeliveryAlertStore />
                   <UserProfileProvider value={userProfile}>
+                    <AlertManager alertAudioPath={alertAudioPath} />
                     <BrowserRouter>
                       <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
                       {/* TODO: Support stacking of alerts */}
