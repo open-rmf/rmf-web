@@ -10,7 +10,7 @@ export default {
 type Story = StoryObj<typeof CreateUserDialog>;
 
 export const Default: Story = {
-  storyName: 'Create User Dialog',
+  name: 'Create User Dialog',
   render: (args) => (
     <CreateUserDialog
       {...args}

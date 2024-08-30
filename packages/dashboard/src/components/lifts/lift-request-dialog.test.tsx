@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { LiftRequestDialog } from './lift-request-dialog';
 import { requestDoorModes, requestModes } from './lift-utils';
-import { makeLift, makeLiftState } from './test-utils.spec';
+import { makeLift, makeLiftState } from './test-utils.test';
 
 describe('Lift request form', () => {
   it('destination is required', async () => {

@@ -10,7 +10,7 @@ export default {
 type Story = StoryObj<typeof RobotInfo>;
 
 export const Default: Story = {
-  storyName: 'Detailed Info',
+  name: 'Detailed Info',
   args: {
     robotName: 'Robot Name',
     assignedTask: 'mytask',

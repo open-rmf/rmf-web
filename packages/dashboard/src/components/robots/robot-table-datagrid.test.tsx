@@ -3,7 +3,7 @@ import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client
 import { describe, expect, it, vi } from 'vitest';
 
 import { RobotDataGridTable, RobotTableData } from './robot-table-datagrid';
-import { makeRobot } from './test-utils.spec';
+import { makeRobot } from './test-utils.test';
 
 const allStatuses = Object.values(RobotStatus) as RobotStatus[];
 

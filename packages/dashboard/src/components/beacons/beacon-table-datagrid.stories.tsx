@@ -1,5 +1,5 @@
 import { BeaconDataGridTable } from './beacon-table-datagrid';
-import { makeBeaconState } from './test-utils.spec';
+import { makeBeaconState } from './test-utils.test';
 
 export default {
   title: 'BeaconDataGridTable',

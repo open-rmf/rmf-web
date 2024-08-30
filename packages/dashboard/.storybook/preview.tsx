@@ -1,5 +1,6 @@
+import { CssBaseline } from '@mui/material';
 import { Decorator, Preview } from '@storybook/react';
-import React from 'react';
+import { TestProviders } from 'rmf-dashboard/utils/test-utils.test';
 
 import { LocalizationProvider } from '../src/components/locale';
 
@@ -16,25 +17,15 @@ const preview: Preview = {
 
 export default preview;
 
-const withLocalization: Decorator = (Story, context) => {
+const withBaseProviders: Decorator = (Story, context) => {
   return (
     <LocalizationProvider>
-      <Story {...context} />
+      <CssBaseline />
+      <TestProviders>
+        <Story {...context} />
+      </TestProviders>
     </LocalizationProvider>
   );
 };
 
-export const decorators = [withLocalization];
-
-export const globalTypes = {
-  theme: {
-    name: 'Theme',
-    description: 'Global theme for components',
-    defaultValue: 'rmf-light',
-    toolbar: {
-      icon: 'circlehollow',
-      // Array of plain string values or MenuItem shape (see below)
-      items: ['material-default', 'rmf-light', 'rmf-dark'],
-    },
-  },
-};
+export const decorators = [withBaseProviders];

@@ -15,5 +15,5 @@ export default {
 type Story = StoryObj<typeof AdminDrawer>;
 
 export const Default: Story = {
-  storyName: 'Drawer',
+  name: 'Drawer',
 };

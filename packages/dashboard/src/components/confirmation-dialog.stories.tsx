@@ -14,7 +14,7 @@ export default {
 type Story = StoryObj<typeof ConfirmationDialog>;
 
 export const Default: Story = {
-  storyName: 'Confirmation Dialog',
+  name: 'Confirmation Dialog',
   render: (args) => (
     <ConfirmationDialog
       {...args}

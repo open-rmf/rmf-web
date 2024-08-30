@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { DispenserState as RmfDispenserState } from 'rmf-models/ros/rmf_dispenser_msgs/msg';
 import { describe, expect, it } from 'vitest';
 
-import { makeDispenser, makeDispenserState } from './test-utils.spec';
+import { makeDispenser, makeDispenserState } from './test-utils.test';
 import { WorkcellTable } from './workcell-table';
 
 describe('Workcell table', () => {

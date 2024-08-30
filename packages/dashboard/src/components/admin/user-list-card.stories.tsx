@@ -21,7 +21,7 @@ async function searchUsers(search: string, limit: number, offset: number) {
 }
 
 export const Default: Story = {
-  storyName: 'User List Card',
+  name: 'User List Card',
   render: (args) => (
     <MemoryRouter>
       <UserListCard

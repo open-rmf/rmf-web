@@ -19,7 +19,7 @@ export default {
 type Story = StoryObj<typeof UserProfileCard>;
 
 export const Default: Story = {
-  storyName: 'User Profile Card',
+  name: 'User Profile Card',
   render: (args) => {
     const [user, setUser] = React.useState<User>({
       username: 'example',

@@ -11,7 +11,7 @@ export default {
 type Story = StoryObj<typeof RoleListCard>;
 
 export const Default: Story = {
-  storyName: 'Role List Card',
+  name: 'Role List Card',
   render: (args) => (
     <RoleListCard
       {...args}

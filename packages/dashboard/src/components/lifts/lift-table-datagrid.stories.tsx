@@ -1,7 +1,8 @@
+import { Meta, StoryObj } from '@storybook/react';
 import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 import { LiftDataGridTable, LiftTableData } from './lift-table-datagrid';
-import { makeLift } from './test-utils.spec';
+import { makeLift } from './test-utils.test';
 
 const lift = makeLift();
 const mockLifts: LiftTableData[] = [
@@ -16,9 +17,30 @@ const mockLifts: LiftTableData[] = [
   },
 ];
 
-export default {
+const meta: Meta<typeof LiftDataGridTable> = {
   title: 'LiftDataGridTable',
+  component: LiftDataGridTable,
+  decorators: [
+    (Story) => (
+      <div style={{ height: 800 }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 
-export const Default = () => <LiftDataGridTable lifts={mockLifts} />;
-export const Empty = () => <LiftDataGridTable lifts={[]} />;
+export default meta;
+
+type Story = StoryObj<typeof LiftDataGridTable>;
+
+export const Default: Story = {
+  args: {
+    lifts: mockLifts,
+  },
+};
+
+export const Empty: Story = {
+  args: {
+    lifts: [],
+  },
+};

@@ -12,7 +12,7 @@ export default {
 type Story = StoryObj<typeof TaskInfo>;
 
 export const Default: Story = {
-  storyName: 'Task Info',
+  name: 'Task Info',
   args: {
     task: makeTaskState('task'),
   },

@@ -10,7 +10,7 @@ export default {
 type Story = StoryObj<typeof AddPermissionDialog>;
 
 export const Default: Story = {
-  storyName: 'Add Permission Dialog',
+  name: 'Add Permission Dialog',
   render: (args) => (
     <AddPermissionDialog
       {...args}

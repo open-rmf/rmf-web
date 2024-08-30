@@ -15,7 +15,7 @@ for (let i = 0; i < 5; i++) {
 type Story = StoryObj<typeof ManageRolesCard>;
 
 export const Default: Story = {
-  storyName: 'Manage Roles Card',
+  name: 'Manage Roles Card',
   args: {
     assignedRoles: ['role1'],
   },

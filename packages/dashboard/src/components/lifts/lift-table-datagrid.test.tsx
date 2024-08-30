@@ -3,7 +3,7 @@ import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { describe, expect, it } from 'vitest';
 
 import { LiftDataGridTable, LiftTableData } from './lift-table-datagrid';
-import { makeLift } from './test-utils.spec';
+import { makeLift } from './test-utils.test';
 
 describe('LiftDataGridTable', () => {
   const lift = makeLift();

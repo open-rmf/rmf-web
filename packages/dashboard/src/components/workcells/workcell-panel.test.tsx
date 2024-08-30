@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { makeDispenser, makeDispenserState } from './test-utils.spec';
+import { makeDispenser, makeDispenserState } from './test-utils.test';
 import { WorkcellPanel } from './workcell-panel';
 
 function renderWorkcellPanel() {

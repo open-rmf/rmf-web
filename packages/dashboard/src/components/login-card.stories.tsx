@@ -20,6 +20,6 @@ export default {
 type Story = StoryObj<typeof LoginCard>;
 
 export const Default: Story = {
-  storyName: 'Login Card',
+  name: 'Login Card',
   render: (args) => <LoginCard {...args} logo="/resources/ros-health.png" />,
 };

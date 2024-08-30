@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 
-import { makeDispenser, makeDispenserState } from './test-utils.spec';
+import { makeDispenser, makeDispenserState } from './test-utils.test';
 import { WorkcellPanel } from './workcell-panel';
 
 export default {

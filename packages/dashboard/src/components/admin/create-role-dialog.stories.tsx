@@ -10,7 +10,7 @@ export default {
 type Story = StoryObj<typeof CreateRoleDialog>;
 
 export const Default: Story = {
-  storyName: 'Create Role Dialog',
+  name: 'Create Role Dialog',
   render: (args) => (
     <CreateRoleDialog
       {...args}

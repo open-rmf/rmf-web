@@ -43,7 +43,7 @@ const numbers: Record<string, number> = {
 };
 
 export const TransferListStory: Story = {
-  storyName: 'Transfer List',
+  name: 'Transfer List',
   render: (args) => {
     const [leftItems, setLeftItems] = React.useState(['one', 'two', 'three', 'four']);
     const [rightItems, setRightItems] = React.useState(['five', 'six', 'seven', 'eight']);

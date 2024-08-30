@@ -19,7 +19,7 @@ export default {
 type Story = StoryObj<typeof PermissionsCard>;
 
 export const Default: Story = {
-  storyName: 'Permissions Card',
+  name: 'Permissions Card',
   render: (args) => (
     <PermissionsCard {...args} savePermission={() => new Promise((res) => setTimeout(res, 100))} />
   ),

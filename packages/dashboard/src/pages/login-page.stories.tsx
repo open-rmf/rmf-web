@@ -4,7 +4,7 @@ import { LoginCardProps } from '../components/login-card';
 import { LoginPage } from './login-page';
 
 export default {
-  title: 'Login',
+  title: 'Login Page',
   component: LoginPage,
   argTypes: {
     title: {
@@ -21,6 +21,6 @@ export default {
 type Story = StoryObj<typeof LoginPage>;
 
 export const Default: Story = {
-  storyName: 'LoginPage',
-  render: (args: LoginCardProps) => <LoginPage {...args} logo="/resources/ros-health.png" />,
+  name: 'LoginPage',
+  render: (args: LoginCardProps) => <LoginPage {...args} logo="/resources/defaultLogo.png" />,
 };

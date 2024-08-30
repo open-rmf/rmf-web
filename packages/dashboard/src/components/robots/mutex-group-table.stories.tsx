@@ -1,14 +1,26 @@
-import { Meta } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
 import { MutexGroupTable } from './mutex-group-table';
 
-export default {
+const meta: Meta<typeof MutexGroupTable> = {
   title: 'MutexGroupTable',
-} satisfies Meta;
+  component: MutexGroupTable,
+  decorators: [
+    (Story) => (
+      <div style={{ height: 800 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
 
-export function Default() {
-  <MutexGroupTable
-    mutexGroups={[
+export default meta;
+
+type Story = StoryObj<typeof MutexGroupTable>;
+
+export const Default: Story = {
+  args: {
+    mutexGroups: [
       {
         name: 'group1',
         lockedBy: 'fleet1/robot1',
@@ -19,6 +31,6 @@ export function Default() {
         lockedBy: 'fleet1/robot1',
         requestedBy: ['fleet1/robot2'],
       },
-    ]}
-  />;
-}
+    ],
+  },
+};

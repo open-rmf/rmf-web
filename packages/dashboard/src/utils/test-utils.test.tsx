@@ -33,7 +33,6 @@ import {
 import axios from 'axios';
 import React from 'react';
 import { Subject } from 'rxjs';
-import { vi } from 'vitest';
 
 import { AppController, AppControllerProvider } from '../hooks/use-app-controller';
 import { AuthenticatorProvider } from '../hooks/use-authenticator';
@@ -58,9 +57,9 @@ export const superUser: UserProfile = {
 
 export function makeMockAppController(): AppController {
   return {
-    updateSettings: vi.fn(),
-    showAlert: vi.fn(),
-    setExtraAppbarItems: vi.fn(),
+    updateSettings: () => {},
+    showAlert: () => {},
+    setExtraAppbarItems: () => {},
   };
 }
 

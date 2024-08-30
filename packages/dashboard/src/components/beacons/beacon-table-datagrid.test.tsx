@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { BeaconDataGridTable } from './beacon-table-datagrid';
-import { makeBeaconState } from './test-utils.spec';
+import { makeBeaconState } from './test-utils.test';
 
 describe('BeaconDataGridTable', () => {
   it('renders basic beacons data correctly', () => {
