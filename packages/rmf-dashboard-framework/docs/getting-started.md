@@ -48,6 +48,15 @@ tsconfig.app.json
 }
 ```
 
+Finally install and build the deps
+
+```bash
+# TODO(koonpeng): -w flag not needed after rmf-dashboard-framework is published
+pnpm add -w @fontsource/roboto
+pnpm install --filter basic-dashboard...
+pnpm --filter basic-dashboard^... build
+```
+
 ### Creating a Basic Dashboard
 
-
+At this point, you should be able to follow the [demo dashboard example](../examples/demo/main.tsx).
