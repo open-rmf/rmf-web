@@ -27,6 +27,5 @@ npm-debug.log*
 web_server.log
 
 /.rmf
-/.out
 
 *storybook.log
