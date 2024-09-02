@@ -20,7 +20,7 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@aldabil/react-scheduler": "^2.7.8",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
