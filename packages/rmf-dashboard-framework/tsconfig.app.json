@@ -25,7 +25,7 @@
     "noFallthroughCasesInSwitch": true,
 
     "paths": {
-      "rmf-dashboard/*": ["./src/*"]
+      "rmf-dashboard-framework/*": ["./src/*"]
     }
   },
   "include": ["src", "examples", ".storybook/*"]

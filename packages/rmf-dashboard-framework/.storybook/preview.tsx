@@ -1,6 +1,6 @@
 import { CssBaseline } from '@mui/material';
 import { Decorator, Preview } from '@storybook/react';
-import { TestProviders } from 'rmf-dashboard/utils/test-utils.test';
+import { TestProviders } from 'rmf-dashboard-framework/utils/test-utils.test';
 
 import { LocalizationProvider } from '../src/components/locale';
 

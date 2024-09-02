@@ -20,8 +20,32 @@ Clone this repo and install deps
 pnpm create vite -t react-ts basic-dashboard
 cd basic-dashboard
 # TODO(koonpeng): install from npmjs after package is published.
-pnpm add https://github.com/open-rmf/rmf-web#koonpeng/merge-react-components:packages/rmf-dashboard-framework
-pnpm install
+git clone --depth 1 https://github.com/open-rmf/rmf-web
+```
+
+<!-- TODO(koonpeng): not needed after package is published -->
+Add modify the following to resolve `rmf-dashboard-framework` as if it is installed from npmjs.
+
+pnpm-workspace.yaml (create if not exist)
+```yaml
+packages:
+  - "."
+  - "rmf-web/**/*"
+```
+
+package.json
+```
+"dependencies": {
+  ...
+  "rmf-dashboard-framework": "workspace:*"
+}
+```
+
+tsconfig.app.json
+```
+"paths": {
+  "rmf-dashboard-framework/*": ["./node_modules/rmf-dashboard-framework/src/*"]
+}
 ```
 
 ### Creating a Basic Dashboard

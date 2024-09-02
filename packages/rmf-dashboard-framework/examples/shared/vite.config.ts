@@ -8,7 +8,7 @@ export default defineConfig({
   publicDir: path.resolve(__dirname, 'public'),
   resolve: {
     alias: {
-      'rmf-dashboard': path.resolve(__dirname, '../../src'),
+      'rmf-dashboard-framework': path.resolve(__dirname, '../../src'),
     },
   },
 });
