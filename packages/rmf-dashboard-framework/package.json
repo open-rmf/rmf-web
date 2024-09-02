@@ -21,7 +21,7 @@
     "test:coverage": "vitest --coverage"
   },
   "peerDependencies": {
-    "@aldabil/react-scheduler": "^2.7.8",
+    "@aldabil/react-scheduler": "~2.7.8",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@fontsource/roboto": "^4.3.0",

@@ -129,7 +129,7 @@ importers:
   packages/rmf-dashboard-framework:
     dependencies:
       '@aldabil/react-scheduler':
-        specifier: ^2.7.8
+        specifier: ~2.7.8
         version: 2.7.8(5p2u46g4dnuejshpvwpzugasde)
       '@emotion/react':
         specifier: ^11.13.0
