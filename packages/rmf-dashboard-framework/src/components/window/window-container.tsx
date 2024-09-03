@@ -60,7 +60,7 @@ export const WindowContainer: React.FC<WindowContainerProps> = ({
         isResizable={designMode}
         isDraggable={designMode}
         onLayoutChange={onLayoutChange}
-        draggableCancel=".custom-resize-handle,.window-toolbar-items"
+        draggableCancel=".custom-resize-handle,.window-toolbar-close"
         resizeHandle={<ResizeHandle className="custom-resize-handle" />}
       >
         {children}

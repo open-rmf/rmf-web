@@ -8,9 +8,18 @@ import { WindowManagerStateContext } from './context';
 import { WindowToolbar } from './window-toolbar';
 
 export interface WindowProps extends PaperProps {
+  /**
+   * The title to show on the toolbar when using the default toolbar. Will be ignored when using custom toolbar.
+   */
   title: string;
+
   'data-grid'?: Layout;
+
+  /**
+   * A custom toolbar to use.
+   */
   toolbar?: React.ReactNode;
+
   onClose?: () => void;
 }
 
@@ -40,24 +49,26 @@ export const Window = styled(
             '& > :not(.custom-resize-handle)': {
               pointerEvents: windowManagerState.designMode ? 'none' : undefined,
             },
-            '& .window-toolbar-items': {
-              pointerEvents: 'auto',
-            },
             ...sx,
           }}
           {...otherProps}
         >
-          <WindowToolbar
-            title={title}
-            toolbarItemContainerProps={{ className: 'window-toolbar-items' }}
-          >
-            {toolbar}
-            {windowManagerState.designMode && (
-              <IconButton color="inherit" onClick={() => onClose && onClose()}>
-                <CloseIcon />
-              </IconButton>
-            )}
-          </WindowToolbar>
+          {toolbar ? (
+            toolbar
+          ) : (
+            <WindowToolbar title={title}>
+              {windowManagerState.designMode && (
+                <IconButton
+                  color="inherit"
+                  className="window-toolbar-close"
+                  sx={{ pointerEvents: 'auto' }}
+                  onClick={() => onClose && onClose()}
+                >
+                  <CloseIcon />
+                </IconButton>
+              )}
+            </WindowToolbar>
+          )}
           <Box width="100%" height="100%" overflow="auto">
             {childComponents}
           </Box>

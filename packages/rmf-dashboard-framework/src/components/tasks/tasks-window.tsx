@@ -1,9 +1,11 @@
+import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Box,
   Button,
   Grid,
+  IconButton,
   Menu,
   MenuItem,
   styled,
@@ -20,7 +22,7 @@ import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { MicroAppProps } from '../../micro-apps';
 import { AppEvents } from '../app-events';
-import { Window } from '../window';
+import { Window, WindowManagerStateContext, WindowToolbar } from '../window';
 import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
 import {
@@ -294,86 +296,100 @@ export const TasksWindow = React.memo(
         setAutoRefresh(newSelectedTabIndex === TaskTablePanel.QueueTable);
       };
 
+      const windowManagerState = React.useContext(WindowManagerStateContext);
+
       return (
         <Window
           ref={ref}
           title="Tasks"
           onClose={onClose}
           toolbar={
-            <Box display="flex" gap={1} marginRight={1}>
-              <Tooltip title="Export task history of the past 31 days" placement="top">
-                <Button
-                  sx={{
-                    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                    paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
-                    paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
-                    marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
+            <WindowToolbar title="Tasks">
+              <Box display="flex" gap={1} marginRight={1}>
+                <Tooltip title="Export task history of the past 31 days" placement="top">
+                  <Button
+                    sx={{
+                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
+                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
+                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
+                    }}
+                    id="export-button"
+                    aria-controls={openExportMenu ? 'export-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openExportMenu ? 'true' : undefined}
+                    variant="outlined"
+                    onClick={handleClickExportMenu}
+                    color="inherit"
+                    startIcon={
+                      <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
+                    }
+                  >
+                    Export past 31 days
+                  </Button>
+                </Tooltip>
+                <Menu
+                  id="export-menu"
+                  MenuListProps={{
+                    'aria-labelledby': 'export-button',
                   }}
-                  id="export-button"
-                  aria-controls={openExportMenu ? 'export-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={openExportMenu ? 'true' : undefined}
-                  variant="outlined"
-                  onClick={handleClickExportMenu}
+                  anchorEl={anchorExportElement}
+                  open={openExportMenu}
+                  onClose={handleCloseExportMenu}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      exportTasksToCsv(true);
+                      handleCloseExportMenu();
+                    }}
+                    disableRipple
+                  >
+                    Export Minimal
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      exportTasksToCsv(false);
+                      handleCloseExportMenu();
+                    }}
+                    disableRipple
+                  >
+                    Export Full
+                  </MenuItem>
+                </Menu>
+                <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
+                  <Button
+                    sx={{
+                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
+                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
+                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
+                    }}
+                    id="refresh-button"
+                    variant="outlined"
+                    onClick={() => {
+                      AppEvents.refreshTaskApp.next();
+                    }}
+                    aria-label="Refresh"
+                    color="inherit"
+                    startIcon={
+                      <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
+                    }
+                  >
+                    Refresh Task Queue
+                  </Button>
+                </Tooltip>
+              </Box>
+              {windowManagerState.designMode && (
+                <IconButton
                   color="inherit"
-                  startIcon={
-                    <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                  }
+                  className="window-toolbar-close"
+                  sx={{ pointerEvents: 'auto' }}
+                  onClick={() => onClose && onClose()}
                 >
-                  Export past 31 days
-                </Button>
-              </Tooltip>
-              <Menu
-                id="export-menu"
-                MenuListProps={{
-                  'aria-labelledby': 'export-button',
-                }}
-                anchorEl={anchorExportElement}
-                open={openExportMenu}
-                onClose={handleCloseExportMenu}
-              >
-                <MenuItem
-                  onClick={() => {
-                    exportTasksToCsv(true);
-                    handleCloseExportMenu();
-                  }}
-                  disableRipple
-                >
-                  Export Minimal
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    exportTasksToCsv(false);
-                    handleCloseExportMenu();
-                  }}
-                  disableRipple
-                >
-                  Export Full
-                </MenuItem>
-              </Menu>
-              <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
-                <Button
-                  sx={{
-                    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                    paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
-                    paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
-                    marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
-                  }}
-                  id="refresh-button"
-                  variant="outlined"
-                  onClick={() => {
-                    AppEvents.refreshTaskApp.next();
-                  }}
-                  aria-label="Refresh"
-                  color="inherit"
-                  startIcon={
-                    <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                  }
-                >
-                  Refresh Task Queue
-                </Button>
-              </Tooltip>
-            </Box>
+                  <CloseIcon />
+                </IconButton>
+              )}
+            </WindowToolbar>
           }
           {...otherProps}
         >
