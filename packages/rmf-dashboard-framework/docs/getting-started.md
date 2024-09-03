@@ -58,7 +58,7 @@ pnpm --filter basic-dashboard^... build
 
 ### Creating a Basic Dashboard
 
-At this point, you should be able to follow the [demo dashboard example](../examples/demo/main.tsx). You may need to install additional deps if you want to use the same fonts and the demo.
+At this point, you should be able to follow the [demo dashboard example](../examples/demo/main.tsx). You may need to install additional deps if you want to use the same fonts as the demo.
 
 ```bash
 pnpm add -w @fontsource/roboto
