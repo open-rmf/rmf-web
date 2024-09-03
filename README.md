@@ -172,4 +172,6 @@ pnpm run start
 
 - Creating tasks from the web dashboard when running a simulated Open-RMF deployment will require the task start time suit simulation time, which starts from unix millis 0. Try creating the same task with a start date of before the year of 1970.
 
+- If floorplans for map levels are not loading, please check and verify that walls have been added to the levels in `.building.yaml` using `traffic-editor` or `rmf_site`. The dashboard uses the bounding box encompassing all wall vertices to create scene boundary for rendering, therefore if no wall vertices are present, the scene boundary becomes invalid and the floor fails to render.
+
 - Check if the issue has already been [reported or fixed](https://github.com/open-rmf/rmf-web/issues).
