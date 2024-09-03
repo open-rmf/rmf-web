@@ -1,11 +1,9 @@
-import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Box,
   Button,
   Grid,
-  IconButton,
   Menu,
   MenuItem,
   styled,
@@ -22,7 +20,7 @@ import { useAppController } from '../../hooks/use-app-controller';
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { MicroAppProps } from '../../micro-apps';
 import { AppEvents } from '../app-events';
-import { Window, WindowManagerStateContext, WindowToolbar } from '../window';
+import { Window, WindowCloseButton, WindowToolbar } from '../window';
 import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
 import {
@@ -296,8 +294,6 @@ export const TasksWindow = React.memo(
         setAutoRefresh(newSelectedTabIndex === TaskTablePanel.QueueTable);
       };
 
-      const windowManagerState = React.useContext(WindowManagerStateContext);
-
       return (
         <Window
           ref={ref}
@@ -379,16 +375,7 @@ export const TasksWindow = React.memo(
                   </Button>
                 </Tooltip>
               </Box>
-              {windowManagerState.designMode && (
-                <IconButton
-                  color="inherit"
-                  className="window-toolbar-close"
-                  sx={{ pointerEvents: 'auto' }}
-                  onClick={() => onClose && onClose()}
-                >
-                  <CloseIcon />
-                </IconButton>
-              )}
+              <WindowCloseButton onClick={() => onClose && onClose()} />
             </WindowToolbar>
           }
           {...otherProps}

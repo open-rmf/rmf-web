@@ -1,10 +1,10 @@
 import type {} from '@emotion/styled';
-import CloseIcon from '@mui/icons-material/Close';
-import { Box, IconButton, Paper, PaperProps, styled, useTheme } from '@mui/material';
+import { Box, Paper, PaperProps, styled, useTheme } from '@mui/material';
 import React from 'react';
 import { Layout } from 'react-grid-layout';
 
 import { WindowManagerStateContext } from './context';
+import WindowCloseButton from './window-close-button';
 import { WindowToolbar } from './window-toolbar';
 
 export interface WindowProps extends PaperProps {
@@ -57,16 +57,7 @@ export const Window = styled(
             toolbar
           ) : (
             <WindowToolbar title={title}>
-              {windowManagerState.designMode && (
-                <IconButton
-                  color="inherit"
-                  className="window-toolbar-close"
-                  sx={{ pointerEvents: 'auto' }}
-                  onClick={() => onClose && onClose()}
-                >
-                  <CloseIcon />
-                </IconButton>
-              )}
+              <WindowCloseButton onClick={() => onClose && onClose()} />
             </WindowToolbar>
           )}
           <Box width="100%" height="100%" overflow="auto">
