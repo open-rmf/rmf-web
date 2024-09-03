@@ -1,5 +1,6 @@
 import {
   AccountCircle,
+  AdminPanelSettings,
   Help,
   LocalFireDepartment,
   Logout,
@@ -428,7 +429,7 @@ export const AppBar = React.memo(
                 </ListItemIcon>
               </MenuItem>
               <Divider />
-              {/* <MenuItem
+              <MenuItem
                 disabled={!profile.user.is_admin}
                 id="admin-action-btn"
                 onClick={() => {
@@ -440,7 +441,7 @@ export const AppBar = React.memo(
                   <AdminPanelSettings fontSize="small" />
                 </ListItemIcon>
                 Admin actions
-              </MenuItem> */}
+              </MenuItem>
               <Divider />
               <MenuItem id="logout-btn" onClick={handleLogout}>
                 <ListItemIcon>
