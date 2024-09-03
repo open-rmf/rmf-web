@@ -5,10 +5,13 @@
 
 import UpdateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import SaveIcon from '@mui/icons-material/Save';
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import SendIcon from '@mui/icons-material/Send';
 import {
   Box,
   Button,
-  Checkbox,
   Chip,
   Dialog,
   DialogActions,
@@ -29,7 +32,9 @@ import {
   Radio,
   RadioGroup,
   styled,
+  Switch,
   TextField,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -83,6 +88,7 @@ import {
   PatrolTaskForm,
 } from './types/patrol';
 import { getDefaultTaskDescription, getTaskRequestCategory } from './types/utils';
+import { createTaskPriority, parseTaskPriority } from './utils';
 
 export interface TaskDefinition {
   taskDefinitionId: string;
@@ -214,7 +220,7 @@ function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
       description,
       unix_millis_earliest_start_time: 0,
       unix_millis_request_time: Date.now(),
-      priority: { type: 'binary', value: 0 },
+      priority: createTaskPriority(false),
       requester: '',
     };
   }
@@ -462,7 +468,7 @@ export function CreateTaskForm({
     }
   }
   const [warnTime, setWarnTime] = React.useState<Date | null>(existingWarnTime);
-  const handleWarnTimeCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleWarnTimeSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       setWarnTime(new Date());
     } else {
@@ -630,10 +636,8 @@ export function CreateTaskForm({
       return;
     }
 
-    const requester = scheduling ? `${user}__scheduled` : user;
-
     const request = { ...taskRequest };
-    request.requester = requester;
+    request.requester = user;
     request.unix_millis_request_time = Date.now();
 
     if (taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId) {
@@ -683,6 +687,10 @@ export function CreateTaskForm({
 
       if (warnTime !== null) {
         requestBookingLabel['unix_millis_warn_time'] = `${warnTime.valueOf()}`;
+      }
+
+      if (scheduling) {
+        requestBookingLabel['scheduled'] = 'true';
       }
 
       request.labels = serializeTaskBookingLabel(requestBookingLabel);
@@ -786,6 +794,15 @@ export function CreateTaskForm({
     }
   };
 
+  const handlePrioritySwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTaskRequest((prev) => {
+      return {
+        ...prev,
+        priority: createTaskPriority(event.target.checked),
+      };
+    });
+  };
+
   return (
     <>
       <StyledDialog
@@ -842,7 +859,7 @@ export function CreateTaskForm({
               />
 
               <Grid>
-                <Grid container spacing={theme.spacing(2)}>
+                <Grid container spacing={theme.spacing(2)} alignItems="center">
                   <Grid item xs={12}>
                     <TextField
                       select
@@ -873,25 +890,12 @@ export function CreateTaskForm({
                       })}
                     </TextField>
                   </Grid>
-                  <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
-                    <DateTimePicker
-                      value={new Date()}
-                      onChange={() => 0}
-                      label="Start Time"
-                      disabled
-                    />
-                  </Grid>
                   <Grid item xs={1}>
-                    <Checkbox
-                      checked={warnTime !== null}
-                      onChange={handleWarnTimeCheckboxChange}
-                      inputProps={{ 'aria-label': 'controlled' }}
-                      sx={{
-                        '& .MuiSvgIcon-root': { fontSize: isScreenHeightLessThan800 ? 22 : 32 },
-                      }}
-                    />
+                    <Tooltip title="Ongoing tasks where estimated finish times are past their specified warning times will be flagged.">
+                      <Switch checked={warnTime !== null} onChange={handleWarnTimeSwitchChange} />
+                    </Tooltip>
                   </Grid>
-                  <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
+                  <Grid item xs={8}>
                     <DateTimePicker
                       disabled={warnTime === null}
                       value={warnTime}
@@ -899,7 +903,26 @@ export function CreateTaskForm({
                         setWarnTime(date);
                       }}
                       label="Warn Time"
+                      sx={{ marginLeft: theme.spacing(1) }}
                     />
+                  </Grid>
+                  <Grid item xs={3} justifyContent="flex-end">
+                    <Tooltip title="Prioritized tasks will added to the front of the task execution queue">
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={parseTaskPriority(taskRequest.priority)}
+                            onChange={handlePrioritySwitchChange}
+                          />
+                        }
+                        label="Prioritize"
+                        sx={{
+                          color: parseTaskPriority(taskRequest.priority)
+                            ? undefined
+                            : theme.palette.action.disabled,
+                        }}
+                      />
+                    </Tooltip>
                   </Grid>
                 </Grid>
                 <Divider
@@ -908,29 +931,29 @@ export function CreateTaskForm({
                   style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
                 />
                 {renderTaskDescriptionForm(taskDefinitionId)}
-                <Grid container justifyContent="center">
-                  <Button
-                    aria-label="Save as a favorite task"
-                    variant="contained"
-                    color="primary"
-                    size={isScreenHeightLessThan800 ? 'small' : 'medium'}
-                    onClick={() => {
-                      !callToUpdateFavoriteTask &&
-                        setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-                      setOpenFavoriteDialog(true);
-                    }}
-                    style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
-                    // FIXME: Favorite tasks are disabled for custom compose
-                    // tasks for now, as it will require a re-write of
-                    // FavoriteTask's pydantic model with better typing.
-                    disabled={taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId}
-                  >
-                    {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
-                  </Button>
-                </Grid>
               </Grid>
             </Grid>
           </DialogContent>
+          <DialogActions>
+            <Button
+              aria-label="Save as a favorite task"
+              variant={callToUpdateFavoriteTask ? 'contained' : 'outlined'}
+              color="primary"
+              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              startIcon={callToUpdateFavoriteTask ? <SaveIcon /> : <FavoriteBorder />}
+              onClick={() => {
+                !callToUpdateFavoriteTask &&
+                  setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                setOpenFavoriteDialog(true);
+              }}
+              // FIXME: Favorite tasks are disabled for custom compose
+              // tasks for now, as it will require a re-write of
+              // FavoriteTask's pydantic model with better typing.
+              disabled={taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId}
+            >
+              {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
+            </Button>
+          </DialogActions>
           <DialogActions>
             <Button
               variant="outlined"
@@ -948,6 +971,7 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
               size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              startIcon={<ScheduleSendIcon />}
             >
               {scheduleToEdit ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
@@ -960,6 +984,7 @@ export function CreateTaskForm({
               aria-label="Submit Now"
               onClick={handleSubmitNow}
               size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              startIcon={<SendIcon />}
             >
               <Loading
                 hideChildren
@@ -995,6 +1020,7 @@ export function CreateTaskForm({
               }
               helperText="Required"
               error={favoriteTaskTitleError}
+              fullWidth
             />
           )}
           {callToDeleteFavoriteTask && (

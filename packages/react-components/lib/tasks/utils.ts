@@ -1,4 +1,4 @@
-import type { TaskRequest, TaskStateOutput as TaskState } from 'api-client';
+import type { Priority, TaskRequest, TaskStateOutput as TaskState } from 'api-client';
 import { TaskType as RmfTaskType } from 'rmf-models/ros/rmf_task_msgs/msg';
 
 export function taskTypeToStr(taskType: number): string {
@@ -210,4 +210,27 @@ export function parseDestination(state?: TaskState, request?: TaskRequest): stri
   }
 
   return 'n/a';
+}
+
+export function createTaskPriority(prioritize: boolean): Priority {
+  return { type: 'binary', value: prioritize ? 1 : 0 };
+}
+
+// FIXME(ac): This method of parsing is crude, and will be fixed using schemas
+// when we migrate to jsonforms.
+export function parseTaskPriority(priority: Priority | null | undefined): boolean {
+  if (!priority) {
+    return false;
+  }
+
+  if (
+    typeof priority == 'object' &&
+    'type' in priority &&
+    priority['type'] === 'binary' &&
+    'value' in priority &&
+    typeof priority['value'] == 'number'
+  ) {
+    return (priority['value'] as number) > 0;
+  }
+  return false;
 }
