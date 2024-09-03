@@ -148,7 +148,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
         clearInterval(interval);
         debug(`cleared interval ${interval}`);
       };
-    }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale]);
+    }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale, authenticator.token]);
 
     React.useEffect(() => {
       if (!rmf) {
@@ -201,7 +201,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
           sub.unsubscribe();
         }
       };
-    }, [rmf, resourceManager]);
+    }, [rmf, resourceManager, appConfig.defaultMapLevel]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     // Since the configurable zoom level is for supporting the lowest resolution
@@ -307,7 +307,14 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
         });
         setRobots(newRobots);
       })();
-    }, [fleets, robotsStore, resourceManager, currentLevel, currentLevelOfRobots]);
+    }, [
+      fleets,
+      robotsStore,
+      resourceManager,
+      currentLevel,
+      currentLevelOfRobots,
+      resources.fleets,
+    ]);
 
     const { current: robotLocations } = React.useRef<
       Record<string, [number, number, number, string]>
@@ -485,7 +492,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
           sub.unsubscribe();
         }
       };
-    }, [robotLocations, sceneBoundingBox, buildingMap]);
+    }, [robotLocations, sceneBoundingBox, buildingMap, appConfig.defaultRobotZoom]);
 
     React.useEffect(() => {
       if (!sceneBoundingBox) {

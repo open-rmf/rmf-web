@@ -135,6 +135,10 @@
         }
     },
     "properties": {
+        "alertAudioPath": {
+            "description": "Url to a file to be played when an alert occurs on the dashboard.",
+            "type": "string"
+        },
         "allowedTasks": {
             "description": "List of allowed tasks that can be requested",
             "items": {

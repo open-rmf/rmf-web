@@ -126,6 +126,11 @@ export interface RuntimeConfig {
   allowedTasks: TaskResource[];
 
   /**
+   * Url to a file to be played when an alert occurs on the dashboard.
+   */
+  alertAudioPath?: string;
+
+  /**
    * Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.
    */
   resources: { [theme: string]: Resources; default: Resources };

@@ -181,6 +181,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
     }
   }, [taskState]);
 
+  const theme = useTheme();
+
   const returnDialogContent = () => {
     const contents = [
       {
@@ -220,8 +222,6 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           `Idle Behavior : ${commission.idle_behavior ?? 'n/a'}`,
       });
     }
-
-    const theme = useTheme();
 
     return (
       <>

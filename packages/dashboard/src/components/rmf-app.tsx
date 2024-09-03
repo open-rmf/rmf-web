@@ -24,7 +24,7 @@ export function RmfApp(props: RmfAppProps): JSX.Element {
       );
       return undefined;
     }
-  }, [authenticator]);
+  }, [authenticator, appConfig]);
 
   return (
     <UserProfileProvider authenticator={authenticator} basePath={appConfig.rmfServerUrl}>
