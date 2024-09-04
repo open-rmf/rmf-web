@@ -54,6 +54,39 @@ createMicroApp(
 );
 ```
 
+### MicroApp Settings
+
+Your component may want to expose some settings for the user to change, you can do that with `rmf-dashboard-framework`'s `useSettings` and `useAppController` hooks.
+
+foo.tsx
+
+```tsx
+export const Foo = () => {
+  const settings = useSettings();
+  const fooSettings = settings.microAppSettings['example.foo'];
+  const { updateSettings } = useAppController(); // call `updateSettings` to save new settings.
+
+  return <div>{fooSettings.message}</div>;
+};
+
+export default Foo;
+```
+
+An alternative is to use the `settings` and `updateSettings` params in the `props` callback.
+
+foo-app.ts
+
+```ts
+createMicroApp(
+  'example.foo',
+  'Foo',
+  () => import('./foo'),
+  (settings, updateSettings) => ({ message: settings.microAppSettings['example.foo'].message }),
+);
+```
+
+Using the hooks is the recommended approach as the gives you the most flexibility in how to manage the settings.
+
 ### Integrating with RMF
 
 In most cases, you want your MicroApp to display some information from RMF, `rmf-dashboard-framework` provide hooks for you to do that. The most important hook is `useRmfApi`, this will return a `RmfApi` instance that you can use to interact with RMF.

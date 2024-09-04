@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { useAppController } from 'rmf-dashboard-framework/hooks/use-app-controller';
 
 import { Window, WindowProps } from '../components/window';
 import { useSettings } from '../hooks/use-settings';
@@ -25,7 +26,10 @@ export function createMicroApp<P>(
   appId: string,
   displayName: string,
   loadComponent: () => Promise<{ default: React.ComponentType<P> }>,
-  props: (settings: Settings) => React.PropsWithoutRef<P> & React.Attributes,
+  props: (
+    settings: Settings,
+    updateSettings: (settings: Settings) => void,
+  ) => React.PropsWithoutRef<P> & React.Attributes,
 ): MicroAppManifest {
   const LazyComponent = React.lazy(loadComponent);
   return {
@@ -34,10 +38,11 @@ export function createMicroApp<P>(
     Component: React.forwardRef<HTMLDivElement>(
       ({ children, ...otherProps }: React.PropsWithChildren<MicroAppProps>, ref) => {
         const settings = useSettings();
+        const { updateSettings } = useAppController();
         return (
           <Window ref={ref} title={displayName} {...otherProps}>
             <Suspense fallback={null}>
-              <LazyComponent {...props(settings)} />
+              <LazyComponent {...props(settings, updateSettings)} />
             </Suspense>
             {/* this contains the resize handle */}
             {children}
