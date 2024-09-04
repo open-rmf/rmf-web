@@ -818,7 +818,9 @@ export function CreateTaskForm({
     Robot = 'Robot',
   }
 
-  const [dispatchType, setDispatchType] = React.useState<DispatchType>(DispatchType.Automatic);
+  const [dispatchType, setDispatchType] = React.useState<DispatchType>(
+    requestTask && requestTask.fleet_name ? DispatchType.Fleet : DispatchType.Automatic,
+  );
   const [robotDispatchTarget, setRobotDispatchTarget] = React.useState<RobotDispatchTarget | null>(
     null,
   );
@@ -994,7 +996,7 @@ export function CreateTaskForm({
                     <TextField
                       select
                       id="dispatch-type"
-                      label="Dispatch type"
+                      label="Dispatch Type"
                       variant="outlined"
                       fullWidth
                       margin="normal"
@@ -1011,7 +1013,7 @@ export function CreateTaskForm({
                       <TextField
                         select
                         id="dispatch-fleet-type"
-                        label="Select fleet"
+                        label="Select Fleet"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -1032,7 +1034,7 @@ export function CreateTaskForm({
                       <TextField
                         select
                         id="dispatch-robot-type"
-                        label="Select robot"
+                        label="Select Robot"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -1071,7 +1073,7 @@ export function CreateTaskForm({
                 <Divider
                   orientation="horizontal"
                   flexItem
-                  style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
+                  sx={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
                 />
                 {renderTaskDescriptionForm(taskDefinitionId)}
               </Grid>
@@ -1110,7 +1112,7 @@ export function CreateTaskForm({
             <Button
               variant="contained"
               color="primary"
-              disabled={submitting || !formFullyFilled}
+              disabled={submitting || !formFullyFilled || robotDispatchTarget}
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
               size={isScreenHeightLessThan800 ? 'small' : 'medium'}
