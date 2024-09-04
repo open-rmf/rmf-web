@@ -812,7 +812,7 @@ export function CreateTaskForm({
     });
   };
 
-  enum DispatchType {
+  const enum DispatchType {
     Automatic = 'Automatic',
     Fleet = 'Fleet',
     Robot = 'Robot',
@@ -994,7 +994,7 @@ export function CreateTaskForm({
                   style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
                 />
                 <Grid container spacing={theme.spacing(2)} alignItems="center">
-                  <Grid item xs={6}>
+                  <Grid item xs={dispatchType === DispatchType.Automatic ? 12 : 6}>
                     <TextField
                       select
                       id="dispatch-type"
@@ -1048,28 +1048,30 @@ export function CreateTaskForm({
                           Object.keys(fleets).flatMap((fleetName) => {
                             const fleetRobots = [
                               <Divider key={`${fleetName}_divider`} />,
-                              <MenuItem value={fleetName} key={fleetName} disabled>
+                              <MenuItem
+                                value={fleetName}
+                                key={fleetName}
+                                dense
+                                sx={{ textDecoration: 'underline' }}
+                                disabled
+                              >
                                 {fleetName}
                               </MenuItem>,
                             ];
                             return fleetRobots.concat(
                               fleets[fleetName].map((robotName) => (
-                                <MenuItem value={robotName} key={robotName}>
+                                <MenuItem
+                                  value={robotName}
+                                  key={robotName}
+                                  sx={{ pl: theme.spacing(4) }}
+                                >
                                   {robotName}
                                 </MenuItem>
                               )),
                             );
                           })}
                       </TextField>
-                    ) : (
-                      <TextField
-                        disabled
-                        id="dispatch-automatic-type"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                      />
-                    )}
+                    ) : null}
                   </Grid>
                 </Grid>
                 <Divider
@@ -1114,7 +1116,7 @@ export function CreateTaskForm({
             <Button
               variant="contained"
               color="primary"
-              disabled={submitting || !formFullyFilled || robotDispatchTarget}
+              disabled={submitting || !formFullyFilled || robotDispatchTarget !== null}
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
               size={isScreenHeightLessThan800 ? 'small' : 'medium'}
