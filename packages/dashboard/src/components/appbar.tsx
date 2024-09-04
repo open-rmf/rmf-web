@@ -206,12 +206,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           fleet: robotDispatchTarget.fleet,
           request: taskRequest,
         };
-        console.debug(`dispatch robot task:`);
-        console.debug(robotTask);
+        console.debug(`dispatch robot task: ${robotTask}`);
         await rmf.tasksApi.postRobotTaskTasksRobotTaskPost(robotTask);
       } else {
-        console.debug('dispatch task:');
-        console.debug(taskRequest);
+        console.debug(`dispatch task: ${taskRequest}`);
         await rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
           type: 'dispatch_task_request',
           request: taskRequest,
@@ -227,9 +225,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       if (!rmf) {
         throw new Error('tasks api not available');
       }
-      console.debug('schedule task:');
-      console.debug(taskRequest);
-      console.debug(schedule);
+      console.debug(`schedule task: ${taskRequest}\nschedule: ${schedule}`);
       const scheduleRequest = toApiSchedule(taskRequest, schedule);
       await rmf.tasksApi.postScheduledTaskScheduledTasksPost(scheduleRequest);
       AppEvents.refreshTaskApp.next();

@@ -858,6 +858,8 @@ export function CreateTaskForm({
       }
     }
     if (robotFleet === null) {
+      // Technically this will never happen, as users can only select robots
+      // that have fleets already registered.
       console.error(`Failed to find fleet name for robot [${ev.target.value}]`);
       return;
     }
