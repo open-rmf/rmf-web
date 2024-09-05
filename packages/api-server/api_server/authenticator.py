@@ -83,6 +83,7 @@ class JwtAuthenticator:
         async def dep(
             auth_header: str = Depends(OpenIdConnect(openIdConnectUrl=self.oidc_url)),
         ):
+            logging.info(f"auth_header: {auth_header}")
             parts = auth_header.split(" ")
             if len(parts) != 2 or parts[0].lower() != "bearer":
                 raise HTTPException(401, "invalid bearer format")
@@ -105,6 +106,7 @@ class StubAuthenticator(Authenticator):
         if not token:
             return User(username="stub", is_admin=True)
         # decode the jwt without verifying signature
+        logging.info(f"token: {token}")
         parts = token.split(".")
         # add padding to ignore incorrect padding errors
         payload = base64.b64decode(parts[1] + "==")
@@ -115,6 +117,7 @@ class StubAuthenticator(Authenticator):
         async def dep(authorization: str | None = Header(None)):
             if not authorization:
                 return await self.verify_token(None)
+            logging.info(f"authorization: {authorization}")
             token = authorization.split(" ")[1]
             return await self.verify_token(token)
 
