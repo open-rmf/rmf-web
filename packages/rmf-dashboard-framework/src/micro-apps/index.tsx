@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
-import { useAppController } from 'rmf-dashboard-framework/hooks/use-app-controller';
 
 import { Window, WindowProps } from '../components/window';
+import { useAppController } from '../hooks/use-app-controller';
 import { useSettings } from '../hooks/use-settings';
 import { Settings } from '../services/settings';
 
@@ -15,7 +15,7 @@ export interface MicroAppManifest {
 
 /**
  * Creates a micro app from a component. The component must be loaded using dynamic import.
- * Note that the map should be created in a different module than the component.
+ * Note that the micro app should be created in a different module than the component.
  *
  * Example:
  * ```ts

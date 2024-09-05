@@ -32,8 +32,6 @@ import { DashboardThemes } from './theme';
 
 const DefaultAlertDuration = 2000;
 
-export interface DashboardHome {}
-
 export interface DashboardTab {
   name: string;
   route: string;

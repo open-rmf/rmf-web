@@ -5,8 +5,9 @@ Welcome to RMF Dashboard Framework! This tutorial will guide you through the ini
 ### Setup
 
 Prerequisites:
-* pnpm
-* Latest Nodejs LTS
+
+- pnpm
+- Latest Nodejs LTS
 
 Follow https://pnpm.io/installation to install pnpm, you can then install nodejs using pnpm
 
@@ -16,32 +17,29 @@ pnpm env use --global lts
 
 Clone this repo and install deps
 
+<!-- TODO(koonpeng): install from npmjs after package is published. -->
+
 ```bash
 pnpm create vite -t react-ts basic-dashboard
 cd basic-dashboard
-# TODO(koonpeng): install from npmjs after package is published.
 git clone --depth 1 https://github.com/open-rmf/rmf-web
 ```
 
 <!-- TODO(koonpeng): not needed after package is published -->
-Add modify the following to resolve `rmf-dashboard-framework` as if it is installed from npmjs.
 
-pnpm-workspace.yaml (create if not exist)
-```yaml
-packages:
-  - "."
-  - "rmf-web/**/*"
-```
+Modify the following to resolve `rmf-dashboard-framework` as if it is installed from npmjs.
 
 package.json
+
 ```
 "dependencies": {
   ...
-  "rmf-dashboard-framework": "workspace:*"
+  "rmf-dashboard-framework": "rmf-web/packages/rmf-dashboard-framework"
 }
 ```
 
 tsconfig.app.json
+
 ```
 "paths": {
   "rmf-dashboard-framework/*": ["./node_modules/rmf-dashboard-framework/src/*"]
@@ -51,9 +49,13 @@ tsconfig.app.json
 Finally install and build the deps
 
 ```bash
-# TODO(koonpeng): -w flag not needed after rmf-dashboard-framework is published
-pnpm install --filter basic-dashboard...
-pnpm --filter basic-dashboard^... build
+# install and build rmf-dashboard-framework
+cd rmf-web
+pnpm install --filter=rmf-dashboard-framework...
+pnpm --filter=rmf-dashboard-framework^... build
+# install basic-dashboard deps
+cd ..
+pnpm install
 ```
 
 ### Creating a Basic Dashboard
@@ -69,6 +71,7 @@ pnpm add -w @fontsource/roboto
 Before starting the dev server, we need a rmf api server backend for the frontend to connect to. If you are targeting an existing deployment, change the `apiServerUrl` prop to connect to the correct url. If you do not have an existing server, you can start a local server with docker.
 
 <!-- FIXME(koonpeng): ROS_DOMAIN_ID and RMW_IMPLEMENTATION will be confusing to people not familiar with ROS. Also we can't really set the RMW_IMPLEMENTATION if the image does not have it installed. -->
+
 ```bash
 docker run \
   --network host -it --rm \
