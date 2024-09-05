@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 
+import { LoginCardProps } from '../components/login-card';
 import { LoginPage } from './login-page';
 
 export default {
@@ -21,5 +22,5 @@ type Story = StoryObj<typeof LoginPage>;
 
 export const Default: Story = {
   storyName: 'LoginPage',
-  render: (args) => <LoginPage {...args} logo="/resources/ros-health.png" />,
+  render: (args: LoginCardProps) => <LoginPage {...args} logo="/resources/ros-health.png" />,
 };

@@ -1,4 +1,4 @@
-import { Typography, useTheme } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
@@ -16,7 +16,6 @@ export const Demo: StoryFn<WindowContainerProps> = () => {
   const [layout, setLayout] = React.useState(defaultLayout);
   const [designMode, setDesignMode] = React.useState(true);
   const counter = React.useRef(defaultLayout.length - 1);
-  const theme = useTheme();
   return (
     <div>
       <button
@@ -44,10 +43,6 @@ export const Demo: StoryFn<WindowContainerProps> = () => {
         designMode={designMode}
         layout={layout}
         onLayoutChange={(newLayout) => setLayout(newLayout)}
-        style={{
-          height: '90vh',
-          background: theme.palette.background.default,
-        }}
       >
         {layout.map(({ i }) => (
           <Window

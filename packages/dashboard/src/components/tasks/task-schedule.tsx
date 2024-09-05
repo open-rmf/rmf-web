@@ -8,7 +8,7 @@ import {
 import { DayProps } from '@aldabil/react-scheduler/views/Day';
 import { MonthProps } from '@aldabil/react-scheduler/views/Month';
 import { WeekProps } from '@aldabil/react-scheduler/views/Week';
-import { Button, Typography } from '@mui/material';
+import { Button, Theme, Typography, useTheme } from '@mui/material';
 import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
 import React from 'react';
 import {
@@ -19,12 +19,12 @@ import {
   Schedule,
 } from 'react-components';
 
-import { allowedTasks } from '../../app-config';
-import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
-import useGetUsername from '../../hooks/useFetchUser';
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
+import { useCreateTaskFormData } from '../../hooks/use-create-task-form';
+import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useTaskRegistry } from '../../hooks/use-task-registry';
+import { useUserProfile } from '../../hooks/use-user-profile';
 import { AppEvents } from '../app-events';
-import { RmfAppContext } from '../rmf-app';
 import {
   apiScheduleToSchedule,
   getScheduledTaskColor,
@@ -49,6 +49,7 @@ interface CustomCalendarEditorProps {
 const disablingCellsWithoutEvents = (
   events: ProcessedEvent[],
   { start, ...props }: CellRenderedProps,
+  theme: Theme,
 ): React.ReactElement => {
   const filteredEvents = events.filter((event) => start.getTime() !== event.start.getTime());
   const disabled = filteredEvents.length > 0 || events.length === 0;
@@ -57,7 +58,7 @@ const disablingCellsWithoutEvents = (
     <Button
       style={{
         height: '100%',
-        background: disabled ? '#eee' : 'transparent',
+        background: disabled ? theme.palette.action.disabled : 'transparent',
         cursor: disabled ? 'default' : 'pointer',
       }}
       disableRipple={disabled}
@@ -67,12 +68,13 @@ const disablingCellsWithoutEvents = (
 };
 
 export const TaskSchedule = () => {
-  const rmf = React.useContext(RmfAppContext);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const rmfApi = useRmfApi();
+  const { showAlert } = useAppController();
 
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets } =
-    useCreateTaskFormData(rmf);
-  const username = useGetUsername(rmf);
+    useCreateTaskFormData(rmfApi);
+  const username = useUserProfile().user.username;
+  const taskRegistry = useTaskRegistry();
   const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
   const [refreshTaskScheduleCount, setRefreshTaskScheduleCount] = React.useState(0);
   const exceptDateRef = React.useRef<Date>(new Date());
@@ -117,11 +119,8 @@ export const TaskSchedule = () => {
       // deleting or editing schedules.
       setCurrentView(params);
 
-      if (!rmf) {
-        return;
-      }
       const tasks = (
-        await rmf.tasksApi.getScheduledTasksScheduledTasksGet(
+        await rmfApi.tasksApi.getScheduledTasksScheduledTasksGet(
           params.end.toISOString(),
           params.start.toISOString(),
         )
@@ -139,8 +138,8 @@ export const TaskSchedule = () => {
             s,
             t,
             getEventId,
-            () => getScheduledTaskTitle(t, allowedTasks),
-            () => getScheduledTaskColor(t, allowedTasks),
+            () => getScheduledTaskTitle(t, taskRegistry.taskDefinitions),
+            () => getScheduledTaskColor(t, taskRegistry.taskDefinitions),
           );
           events.forEach((ev) => {
             eventsMap.current[Number(ev.event_id)] = t;
@@ -150,7 +149,7 @@ export const TaskSchedule = () => {
         }),
       );
     },
-    [rmf],
+    [rmfApi, taskRegistry.taskDefinitions],
   );
 
   const CustomCalendarEditor = ({ scheduler, value, onChange }: CustomCalendarEditorProps) => {
@@ -194,20 +193,20 @@ export const TaskSchedule = () => {
 
   const dispatchTaskCallback = React.useCallback<Required<CreateTaskFormProps>['onDispatchTask']>(
     async (taskRequest, robotDispatchTarget) => {
-      if (!rmf) {
+      if (!rmfApi) {
         throw new Error('tasks api not available');
       }
-      await dispatchTask(rmf, taskRequest, robotDispatchTarget);
+      await dispatchTask(rmfApi, taskRequest, robotDispatchTarget);
       AppEvents.refreshTaskApp.next();
     },
-    [rmf],
+    [rmfApi],
   );
 
   const editScheduledTaskCallback = React.useCallback<
     Required<CreateTaskFormProps>['onScheduleTask']
   >(
     async (taskRequest, schedule) => {
-      if (!rmf) {
+      if (!rmfApi) {
         throw new Error('tasks api not available');
       }
 
@@ -220,7 +219,7 @@ export const TaskSchedule = () => {
         console.debug(
           `Editing schedule id [${currentScheduleTask.id}] with new schedule: ${schedule}`,
         );
-        await editScheduledTaskSchedule(rmf, taskRequest, schedule, currentScheduleTask.id);
+        await editScheduledTaskSchedule(rmfApi, taskRequest, schedule, currentScheduleTask.id);
         return;
       }
 
@@ -229,7 +228,7 @@ export const TaskSchedule = () => {
         `Editing schedule id [${currentScheduleTask.id}] event [${exceptDateRef.current}] with new schedule: ${schedule}`,
       );
       await editScheduledTaskEvent(
-        rmf,
+        rmfApi,
         taskRequest,
         schedule,
         exceptDateRef.current,
@@ -239,7 +238,7 @@ export const TaskSchedule = () => {
       setEventScope(EventScopes.CURRENT);
       AppEvents.refreshTaskSchedule.next();
     },
-    [rmf, currentScheduleTask, eventScope],
+    [rmfApi, currentScheduleTask, eventScope],
   );
 
   const handleSubmitDeleteSchedule: React.MouseEventHandler = async (ev) => {
@@ -250,19 +249,16 @@ export const TaskSchedule = () => {
       if (!task) {
         throw new Error(`unable to find task for event ${currentEventIdRef.current}`);
       }
-      if (!rmf) {
-        throw new Error('tasks api not available');
-      }
 
       if (eventScope === EventScopes.CURRENT) {
         const eventDate = toISOStringWithTimezone(exceptDateRef.current);
         console.debug(`Deleting schedule id ${task.id}, event date ${eventDate}`);
-        await rmf.tasksApi.addExceptDateScheduledTasksTaskIdExceptDatePost(task.id, {
+        await rmfApi.tasksApi.addExceptDateScheduledTasksTaskIdExceptDatePost(task.id, {
           except_date: eventDate,
         });
       } else {
         console.debug(`Deleting schedule with id ${task.id}`);
-        await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
+        await rmfApi.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
       }
       AppEvents.refreshTaskSchedule.next();
 
@@ -275,12 +271,14 @@ export const TaskSchedule = () => {
     }
   };
 
+  const theme = useTheme();
+
   const defaultDaySettings: DayProps = {
     startHour: 0,
     endHour: 23,
     step: 60,
     cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }, theme),
   };
   const defaultWeekSettings: WeekProps = {
     weekDays: [0, 1, 2, 3, 4, 5, 6],
@@ -289,7 +287,7 @@ export const TaskSchedule = () => {
     endHour: 23,
     step: 60,
     cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }, theme),
   };
   const defaultMonthSettings: MonthProps = {
     weekDays: [0, 1, 2, 3, 4, 5, 6],
@@ -297,7 +295,7 @@ export const TaskSchedule = () => {
     startHour: 0,
     endHour: 23,
     cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }, theme),
   };
 
   return (
@@ -339,7 +337,7 @@ export const TaskSchedule = () => {
         <CreateTaskForm
           user={username ? username : 'unknown user'}
           fleets={fleets}
-          tasksToDisplay={allowedTasks}
+          tasksToDisplay={taskRegistry.taskDefinitions}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
           pickupPoints={pickupPoints}

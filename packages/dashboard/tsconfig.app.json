@@ -21,7 +21,11 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "paths": {
+      "rmf-dashboard/*": ["./src/*"]
+    }
   },
-  "include": ["src", "app-config.json"]
+  "include": ["src", "examples", "app-config.json"]
 }

@@ -3,13 +3,13 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Box,
   Button,
+  Grid,
   Menu,
   MenuItem,
   styled,
   Tab,
   TableContainer,
   Tabs,
-  Toolbar,
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
@@ -24,10 +24,10 @@ import {
   Window,
 } from 'react-components';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
-import { RmfAppContext } from '../rmf-app';
 import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
 import { exportCsvFull, exportCsvMinimal } from './utils';
@@ -59,33 +59,33 @@ function TabPanel(props: TabPanelProps) {
   // Removing top padding for Schedule as there is too much whitespace after
   // the day-week-month view has been shifted to the right.
   return (
-    <div
-      role="tabpanel"
-      hidden={selectedTabIndex !== index}
-      id={tabPanelId(index)}
-      aria-labelledby={tabId(index)}
-      {...other}
-    >
-      {selectedTabIndex === index && (
-        <Box
-          component="div"
-          sx={{ p: 3, pt: selectedTabIndex === TaskTablePanel.Schedule ? 0 : 3 }}
-        >
-          {children}
-        </Box>
-      )}
-    </div>
+    index === selectedTabIndex && (
+      <Box
+        role="tabpanel"
+        id={tabPanelId(index)}
+        aria-labelledby={tabId(index)}
+        flexGrow={1}
+        display="flex"
+        {...other}
+      >
+        {selectedTabIndex === index && (
+          <Box sx={{ p: 3, pt: selectedTabIndex === TaskTablePanel.Schedule ? 0 : 3 }} flexGrow={1}>
+            {children}
+          </Box>
+        )}
+      </Box>
+    )
   );
 }
 
-export const TasksApp = React.memo(
+export const TasksWindow = React.memo(
   React.forwardRef(
     (
       { onClose, children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
       ref: React.Ref<HTMLDivElement>,
     ) => {
-      const rmf = React.useContext(RmfAppContext);
-      const appController = React.useContext(AppControllerContext);
+      const rmfApi = useRmfApi();
+      const appController = useAppController();
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
@@ -146,10 +146,6 @@ export const TasksApp = React.memo(
       // TODO: parameterize this variable
       const GET_LIMIT = 10;
       React.useEffect(() => {
-        if (!rmf) {
-          return;
-        }
-
         if (selectedPanelIndex !== TaskTablePanel.QueueTable) {
           console.debug('Stop subscribing to task queue updates when viewing schedule tab');
           return;
@@ -193,7 +189,7 @@ export const TasksApp = React.memo(
             labelFilter = `${filterColumn.substring(6)}=${filterValue}`;
           }
 
-          const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+          const resp = await rmfApi.tasksApi.queryTaskStatesTasksGet(
             filterColumn && filterColumn === 'id_' ? filterValue : undefined,
             filterColumn && filterColumn === 'category' ? filterValue : undefined,
             filterColumn && filterColumn === 'requester' ? filterValue : undefined,
@@ -222,7 +218,7 @@ export const TasksApp = React.memo(
           }));
         })();
       }, [
-        rmf,
+        rmfApi,
         refreshTaskAppCount,
         tasksState.page,
         filterFields.model,
@@ -231,10 +227,6 @@ export const TasksApp = React.memo(
       ]);
 
       const getPastMonthTasks = async (timestamp: Date) => {
-        if (!rmf) {
-          return [];
-        }
-
         const currentMillis = timestamp.getTime();
         const oneMonthMillis = 31 * 24 * 60 * 60 * 1000;
         const allTasks: TaskState[] = [];
@@ -242,7 +234,7 @@ export const TasksApp = React.memo(
         let queryIndex = 0;
         do {
           queries = (
-            await rmf.tasksApi.queryTaskStatesTasksGet(
+            await rmfApi.tasksApi.queryTaskStatesTasksGet(
               undefined,
               undefined,
               undefined,
@@ -308,59 +300,57 @@ export const TasksApp = React.memo(
           title="Tasks"
           onClose={onClose}
           toolbar={
-            <Toolbar variant="dense">
-              <div>
-                <Tooltip title="Export task history of the past 31 days" placement="top">
-                  <Button
-                    sx={{
-                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
-                    }}
-                    id="export-button"
-                    aria-controls={openExportMenu ? 'export-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={openExportMenu ? 'true' : undefined}
-                    variant="outlined"
-                    onClick={handleClickExportMenu}
-                    color="inherit"
-                    startIcon={
-                      <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                    }
-                  >
-                    Export past 31 days
-                  </Button>
-                </Tooltip>
-                <Menu
-                  id="export-menu"
-                  MenuListProps={{
-                    'aria-labelledby': 'export-button',
+            <Box display="flex" gap={1} marginRight={1}>
+              <Tooltip title="Export task history of the past 31 days" placement="top">
+                <Button
+                  sx={{
+                    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                    paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
+                    paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
+                    marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
                   }}
-                  anchorEl={anchorExportElement}
-                  open={openExportMenu}
-                  onClose={handleCloseExportMenu}
+                  id="export-button"
+                  aria-controls={openExportMenu ? 'export-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={openExportMenu ? 'true' : undefined}
+                  variant="outlined"
+                  onClick={handleClickExportMenu}
+                  color="inherit"
+                  startIcon={
+                    <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
+                  }
                 >
-                  <MenuItem
-                    onClick={() => {
-                      exportTasksToCsv(true);
-                      handleCloseExportMenu();
-                    }}
-                    disableRipple
-                  >
-                    Export Minimal
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      exportTasksToCsv(false);
-                      handleCloseExportMenu();
-                    }}
-                    disableRipple
-                  >
-                    Export Full
-                  </MenuItem>
-                </Menu>
-              </div>
+                  Export past 31 days
+                </Button>
+              </Tooltip>
+              <Menu
+                id="export-menu"
+                MenuListProps={{
+                  'aria-labelledby': 'export-button',
+                }}
+                anchorEl={anchorExportElement}
+                open={openExportMenu}
+                onClose={handleCloseExportMenu}
+              >
+                <MenuItem
+                  onClick={() => {
+                    exportTasksToCsv(true);
+                    handleCloseExportMenu();
+                  }}
+                  disableRipple
+                >
+                  Export Minimal
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    exportTasksToCsv(false);
+                    handleCloseExportMenu();
+                  }}
+                  disableRipple
+                >
+                  Export Full
+                </MenuItem>
+              </Menu>
               <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
                 <Button
                   sx={{
@@ -383,65 +373,73 @@ export const TasksApp = React.memo(
                   Refresh Task Queue
                 </Button>
               </Tooltip>
-            </Toolbar>
+            </Box>
           }
           {...otherProps}
         >
-          <Tabs value={selectedPanelIndex} onChange={handlePanelChange} aria-label="Task App Tabs">
-            <Tab
-              label="Queue"
-              id={tabId(TaskTablePanel.QueueTable)}
-              aria-controls={tabPanelId(TaskTablePanel.QueueTable)}
-              sx={{
-                fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-              }}
-            />
-            <Tab
-              label="Schedule"
-              id={tabId(TaskTablePanel.Schedule)}
-              aria-controls={tabPanelId(TaskTablePanel.Schedule)}
-              sx={{
-                fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-              }}
-            />
-          </Tabs>
-          <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>
-            <TableContainer>
-              <TaskDataGridTable
-                tasks={tasksState}
-                onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
-                  setSelectedTask(task);
-                  if (task.assigned_to) {
-                    AppEvents.robotSelect.next([task.assigned_to.group, task.assigned_to.name]);
-                  }
-                  setOpenTaskSummary(true);
+          <Grid container direction="column" wrap="nowrap" height="100%">
+            <Tabs
+              value={selectedPanelIndex}
+              onChange={handlePanelChange}
+              aria-label="Task App Tabs"
+            >
+              <Tab
+                label="Queue"
+                id={tabId(TaskTablePanel.QueueTable)}
+                aria-controls={tabPanelId(TaskTablePanel.QueueTable)}
+                sx={{
+                  fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
                 }}
-                setFilterFields={setFilterFields}
-                setSortFields={setSortFields}
-                onPageChange={(newPage: number) =>
-                  setTasksState((old: Tasks) => ({ ...old, page: newPage + 1 }))
-                }
-                onPageSizeChange={(newPageSize: number) =>
-                  setTasksState((old: Tasks) => ({ ...old, pageSize: newPageSize }))
-                }
               />
-            </TableContainer>
-          </TabPanel>
-          <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.Schedule}>
-            <StyledDiv>
-              <TaskSchedule />
-            </StyledDiv>
-          </TabPanel>
-          <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
-          {openTaskSummary && (
-            <TaskSummary
-              onClose={() => setOpenTaskSummary(false)}
-              task={selectedTask ?? undefined}
-            />
-          )}
+              <Tab
+                label="Schedule"
+                id={tabId(TaskTablePanel.Schedule)}
+                aria-controls={tabPanelId(TaskTablePanel.Schedule)}
+                sx={{
+                  fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                }}
+              />
+            </Tabs>
+            <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>
+              <TableContainer sx={{ height: '100%' }}>
+                <TaskDataGridTable
+                  tasks={tasksState}
+                  onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
+                    setSelectedTask(task);
+                    if (task.assigned_to) {
+                      AppEvents.robotSelect.next([task.assigned_to.group, task.assigned_to.name]);
+                    }
+                    setOpenTaskSummary(true);
+                  }}
+                  setFilterFields={setFilterFields}
+                  setSortFields={setSortFields}
+                  onPageChange={(newPage: number) =>
+                    setTasksState((old: Tasks) => ({ ...old, page: newPage + 1 }))
+                  }
+                  onPageSizeChange={(newPageSize: number) =>
+                    setTasksState((old: Tasks) => ({ ...old, pageSize: newPageSize }))
+                  }
+                />
+              </TableContainer>
+            </TabPanel>
+            <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.Schedule}>
+              <StyledDiv>
+                <TaskSchedule />
+              </StyledDiv>
+            </TabPanel>
+            <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
+            {openTaskSummary && (
+              <TaskSummary
+                onClose={() => setOpenTaskSummary(false)}
+                task={selectedTask ?? undefined}
+              />
+            )}
+          </Grid>
           {children}
         </Window>
       );
     },
   ),
 );
+
+export default TasksWindow;

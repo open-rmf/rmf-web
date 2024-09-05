@@ -1,8 +1,14 @@
-import { render, waitFor } from '@testing-library/react';
+import { render as render_, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
+import { AppControllerProvider } from '../../hooks/use-app-controller';
+import { makeMockAppController } from '../../utils/test-utils.test';
 import { UserProfileCard } from './user-profile';
+
+const render = (ui: React.ReactNode) =>
+  render_(<AppControllerProvider value={makeMockAppController()}>{ui}</AppControllerProvider>);
 
 describe('UserProfileCard', () => {
   it('renders username', () => {

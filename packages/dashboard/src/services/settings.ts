@@ -1,7 +1,8 @@
-export type ThemeMode = 'default';
+export type ThemeMode = 'default' | 'dark';
 
 export interface Settings {
   themeMode: ThemeMode;
+  microAppSettings: { [k: string]: unknown };
 }
 
 export function saveSettings(settings: Settings): void {
@@ -11,13 +12,12 @@ export function saveSettings(settings: Settings): void {
 export function loadSettings(): Settings {
   const settingsStr = localStorage.getItem('settings');
   if (!settingsStr) {
-    return defaultSettings();
+    return defaultSettings;
   }
   return JSON.parse(settingsStr);
 }
 
-export function defaultSettings(): Settings {
-  return {
-    themeMode: 'default',
-  };
-}
+const defaultSettings: Settings = {
+  themeMode: 'default',
+  microAppSettings: {},
+};

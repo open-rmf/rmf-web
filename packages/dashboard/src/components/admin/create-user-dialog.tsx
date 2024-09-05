@@ -2,7 +2,7 @@ import { TextField } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, useAsync } from 'react-components';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
 
 export interface CreateUserDialogProps {
   open: boolean;
@@ -19,7 +19,7 @@ export function CreateUserDialog({
   const [creating, setCreating] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState(false);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   const validateForm = () => {
     let error = false;

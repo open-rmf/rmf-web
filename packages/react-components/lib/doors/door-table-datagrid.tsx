@@ -232,32 +232,28 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
   ];
 
   return (
-    <div style={{ height: '100%', width: '100%', overflowX: 'auto' }}>
-      <DataGrid
-        autoHeight
-        getRowId={(l) => l.index}
-        rows={doors}
-        pageSize={5}
-        rowHeight={38}
-        columns={columns}
-        rowsPerPageOptions={[5]}
-        sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-          overflowX: 'scroll',
-        }}
-        autoPageSize={isScreenHeightLessThan800}
-        density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
-        localeText={{
-          noRowsLabel: 'No doors available.',
-        }}
-        onRowClick={handleEvent}
-        initialState={{
-          sorting: {
-            sortModel: [{ field: 'doorName', sort: 'asc' }],
-          },
-        }}
-        disableVirtualization={true}
-      />
-    </div>
+    <DataGrid
+      getRowId={(l) => l.index}
+      rows={doors}
+      pageSize={5}
+      rowHeight={38}
+      columns={columns}
+      rowsPerPageOptions={[5]}
+      sx={{
+        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+      }}
+      autoPageSize={isScreenHeightLessThan800}
+      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+      localeText={{
+        noRowsLabel: 'No doors available.',
+      }}
+      onRowClick={handleEvent}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: 'doorName', sort: 'asc' }],
+        },
+      }}
+      disableVirtualization={true}
+    />
   );
 }

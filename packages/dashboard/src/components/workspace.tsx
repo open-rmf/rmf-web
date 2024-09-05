@@ -4,152 +4,224 @@ import { Box, Fab, IconButton, Menu, MenuItem, Typography, useTheme } from '@mui
 import React from 'react';
 import { WindowContainer, WindowLayout } from 'react-components';
 
-import { AppControllerContext } from './app-contexts';
-import { AppRegistry } from './app-registry';
+import { useAppController } from '../hooks/use-app-controller';
+import { MicroAppManifest } from './micro-app';
 
-export interface WorkspaceWindow {
-  key: string;
-  appName: keyof typeof AppRegistry;
-}
-
-export interface WorkspaceState {
-  layout: WindowLayout[];
-  windows: WorkspaceWindow[];
+export interface InitialWindow {
+  layout: Omit<WindowLayout, 'i'>;
+  microApp: MicroAppManifest;
 }
 
 export interface WorkspaceProps {
-  state: WorkspaceState;
-  designMode?: boolean;
-  onStateChange?: (state: WorkspaceState) => void;
+  /**
+   * Initial windows in the workspace, this only affects the initial list of windows, changing it
+   * will not affect the current state of the workspace.
+   */
+  initialWindows: InitialWindow[];
+
+  /**
+   * Whether to allow customizing the workspace.
+   */
+  allowDesignMode?: boolean;
+
+  /**
+   * List of micro apps available when customizing the workspace.
+   */
+  appRegistry?: MicroAppManifest[];
+
+  onLayoutChange?: (windows: { layout: WindowLayout; microApp: MicroAppManifest }[]) => void;
 }
 
-export function Workspace({
-  state,
-  designMode = false,
-  onStateChange,
-}: WorkspaceProps): JSX.Element {
-  const [addMenuAnchor, setAddMenuAnchor] = React.useState<HTMLElement | null>(null);
+export const Workspace = React.memo(
+  ({
+    initialWindows,
+    allowDesignMode = false,
+    appRegistry = [],
+    onLayoutChange,
+  }: WorkspaceProps) => {
+    const theme = useTheme();
+    const appController = useAppController();
+    const windowId = React.useRef(0);
+    const windowApps = React.useRef<Record<string, MicroAppManifest>>({});
+    const [layout, setLayout] = React.useState(() =>
+      initialWindows.map<WindowLayout>((w) => {
+        const l = { i: `window-${windowId.current}`, ...w.layout };
+        windowApps.current[l.i] = w.microApp;
+        ++windowId.current;
+        return l;
+      }),
+    );
+    const [designMode, setDesignMode] = React.useState(false);
+    const [addMenuAnchor, setAddMenuAnchor] = React.useState<HTMLElement | null>(null);
 
-  return (
-    <>
-      <WindowContainer
-        layout={state.layout}
-        onLayoutChange={(newLayout) =>
-          onStateChange && onStateChange({ ...state, layout: newLayout })
-        }
-        designMode={designMode}
-      >
-        {state.windows.map((w) => {
-          const MicroApp = AppRegistry[w.appName] || null;
-          return MicroApp ? (
-            <MicroApp
-              key={w.key}
-              onClose={() => {
-                onStateChange &&
-                  onStateChange({
-                    layout: state.layout.filter((l) => l.i !== w.key),
-                    windows: state.windows.filter((w2) => w2.key !== w.key),
-                  });
-              }}
-            />
-          ) : (
-            <div></div>
-          );
-        })}
-      </WindowContainer>
-      {designMode && (
-        <Fab
-          color="primary"
-          sx={{ position: 'absolute', right: '2vw', bottom: '2vw' }}
-          onClick={(e) => setAddMenuAnchor(e.currentTarget)}
+    React.useEffect(() => {
+      if (!allowDesignMode) {
+        return;
+      }
+
+      appController.setExtraAppbarItems(
+        <IconButton
+          color="inherit"
+          sx={{ opacity: designMode ? undefined : theme.palette.action.disabledOpacity }}
+          onClick={() => setDesignMode((prev) => !prev)}
         >
-          <AddIcon />
-        </Fab>
-      )}
-      <Menu
-        anchorEl={addMenuAnchor}
-        anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
-        transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        open={!!addMenuAnchor}
-        onClose={() => setAddMenuAnchor(null)}
-      >
-        {Object.keys(AppRegistry).map((appName) => (
-          <MenuItem
-            key={appName}
-            onClick={() => {
-              const newKey = `${appName}-${state.layout.length}`;
-              onStateChange &&
-                onStateChange({
-                  layout: [...state.layout, { i: newKey, x: 0, y: 0, w: 2, h: 2 }],
-                  windows: [
-                    ...state.windows,
-                    { key: newKey, appName: appName as keyof typeof AppRegistry },
-                  ],
-                });
-              setAddMenuAnchor(null);
+          <DesignModeIcon />
+        </IconButton>,
+      );
+      return () => appController.setExtraAppbarItems(null);
+    }, [allowDesignMode, appController, designMode, theme]);
+
+    return (
+      <>
+        <WindowContainer
+          layout={layout}
+          onLayoutChange={(newLayout) => {
+            onLayoutChange &&
+              onLayoutChange(
+                newLayout.map((l) => ({ layout: l, microApp: windowApps.current[l.i] })),
+              );
+            setLayout(newLayout);
+          }}
+          designMode={designMode}
+        >
+          {layout.map((l) => {
+            const microApp: MicroAppManifest | undefined = windowApps.current[l.i];
+            if (!microApp) {
+              return null;
+            }
+            return (
+              <microApp.Component
+                key={l.i}
+                onClose={() => {
+                  const newLayout = layout.filter((l2) => l2.i !== l.i);
+                  console.log(layout, newLayout);
+                  onLayoutChange &&
+                    onLayoutChange(
+                      newLayout.map((l) => ({ layout: l, microApp: windowApps.current[l.i] })),
+                    );
+                  setLayout(newLayout);
+                  delete windowApps.current[l.i];
+                }}
+              />
+            );
+          })}
+        </WindowContainer>
+        {layout.length === 0 && allowDesignMode && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            {appName}
-          </MenuItem>
-        ))}
-      </Menu>
-    </>
-  );
-}
-
-export interface ManagedWorkspaceProps {
-  workspaceId: string;
-}
-
-export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
-  const theme = useTheme();
-  const appController = React.useContext(AppControllerContext);
-  const [workspaceState, setWorkspaceState] = React.useState<WorkspaceState>(() => {
-    const json = localStorage.getItem(`workspace-${workspaceId}`);
-    return json ? JSON.parse(json) : { layout: [], windows: [] };
-  });
-  const [designMode, setDesignMode] = React.useState(false);
-
-  React.useEffect(() => {
-    appController.setExtraAppbarIcons(
-      <IconButton
-        color="inherit"
-        sx={{ opacity: designMode ? undefined : theme.palette.action.disabledOpacity }}
-        onClick={() => setDesignMode((prev) => !prev)}
-      >
-        <DesignModeIcon />
-      </IconButton>,
+            <Typography variant="h6">
+              Click <DesignModeIcon /> in the app bar to start customizing the layout
+            </Typography>
+          </Box>
+        )}
+        {designMode && (
+          <>
+            <Fab
+              color="primary"
+              sx={{ position: 'fixed', right: '2vw', bottom: '2vw' }}
+              onClick={(e) => setAddMenuAnchor(e.currentTarget)}
+            >
+              <AddIcon />
+            </Fab>
+            <Menu
+              anchorEl={addMenuAnchor}
+              anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+              transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              open={!!addMenuAnchor}
+              onClose={() => setAddMenuAnchor(null)}
+            >
+              {appRegistry.map((manifest) => (
+                <MenuItem
+                  key={manifest.appId}
+                  onClick={() => {
+                    const newKey = `window-${windowId.current}`;
+                    windowApps.current[newKey] = manifest;
+                    ++windowId.current;
+                    const newLayout = [...layout, { i: newKey, x: 0, y: 0, w: 2, h: 2 }];
+                    onLayoutChange &&
+                      onLayoutChange(
+                        newLayout.map((l) => ({ layout: l, microApp: windowApps.current[l.i] })),
+                      );
+                    React.startTransition(() => setLayout(newLayout));
+                    setAddMenuAnchor(null);
+                  }}
+                >
+                  {manifest.displayName}
+                </MenuItem>
+              ))}
+            </Menu>
+          </>
+        )}
+      </>
     );
-    return () => appController.setExtraAppbarIcons(null);
-  }, [appController, designMode, theme]);
+  },
+);
+
+interface SavedWorkspaceLayout {
+  layout: WindowLayout;
+  appId: string;
+}
+
+/**
+ * A workspace that saves the state into `localStorage`.
+ */
+export interface LocallyPersistentWorkspaceProps
+  extends Omit<WorkspaceProps, 'initialWindows' | 'onLayoutChange'> {
+  /**
+   * Default list of windows when there is nothing saved yet.
+   */
+  defaultWindows: InitialWindow[];
+  storageKey: string;
+}
+
+export const LocallyPersistentWorkspace = ({
+  defaultWindows,
+  storageKey,
+  appRegistry = [],
+  ...otherProps
+}: LocallyPersistentWorkspaceProps) => {
+  const initialWindows = React.useMemo<InitialWindow[]>(() => {
+    const json = localStorage.getItem(storageKey);
+    if (!json) {
+      return defaultWindows;
+    }
+    const saved: SavedWorkspaceLayout[] = JSON.parse(json);
+    const loadedLayout: InitialWindow[] = [];
+    for (const s of saved) {
+      const microApp = appRegistry.find((app) => app.appId === s.appId);
+      if (!microApp) {
+        console.warn(`fail to load micro app [${s.appId}]`);
+        continue;
+      }
+      loadedLayout.push({ layout: s.layout, microApp });
+    }
+    return loadedLayout;
+  }, [defaultWindows, storageKey, appRegistry]);
 
   return (
-    <Box component="div" sx={{ display: 'contents', position: 'relative' }}>
-      <Workspace
-        state={workspaceState}
-        onStateChange={(newState) => {
-          setWorkspaceState(newState);
-          localStorage.setItem(`workspace-${workspaceId}`, JSON.stringify(newState));
-        }}
-        designMode={designMode}
-      />
-      {workspaceState.windows.length === 0 && (
-        <Box
-          component="div"
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Typography variant="h6">
-            Click <DesignModeIcon /> in the app bar to start customizing the layout
-          </Typography>
-        </Box>
-      )}
-    </Box>
+    <Workspace
+      initialWindows={initialWindows}
+      appRegistry={appRegistry}
+      onLayoutChange={(newLayout) => {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify(
+            newLayout.map<SavedWorkspaceLayout>((l) => ({
+              layout: l.layout,
+              appId: l.microApp.appId,
+            })),
+          ),
+        );
+      }}
+      {...otherProps}
+    />
   );
-}
+};

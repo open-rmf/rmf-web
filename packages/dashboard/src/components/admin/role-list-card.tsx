@@ -20,7 +20,7 @@ import { Permission } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
 import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';
 import { PermissionsCard, PermissionsCardProps } from './permissions-card';
 
@@ -105,7 +105,7 @@ export function RoleListCard({
   const [openDialog, setOpenDialog] = React.useState(false);
   const [selectedDeleteRole, setSelectedDeleteRole] = React.useState<string | null>(null);
   const [deleting, setDeleting] = React.useState(false);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   const refresh = React.useCallback(async () => {
     if (!getRoles) return;

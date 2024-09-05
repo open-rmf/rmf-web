@@ -5,31 +5,27 @@ import { TaskInfo } from 'react-components';
 // import { UserProfileContext } from 'rmf-auth';
 import { of, switchMap } from 'rxjs';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
-import { createMicroApp } from '../micro-app';
 // import { Enforcer } from '../permissions';
-import { RmfAppContext } from '../rmf-app';
 
-export const TaskDetailsApp = createMicroApp('Task Details', () => {
+export const TaskDetailsCard = () => {
   const theme = useTheme();
-  const rmf = React.useContext(RmfAppContext);
-  const appController = React.useContext(AppControllerContext);
+  const rmfApi = useRmfApi();
+  const appController = useAppController();
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
     const sub = AppEvents.taskSelect
       .pipe(
         switchMap((selectedTask) =>
-          selectedTask ? rmf.getTaskStateObs(selectedTask.booking.id) : of(null),
+          selectedTask ? rmfApi.getTaskStateObs(selectedTask.booking.id) : of(null),
         ),
       )
       .subscribe(setTaskState);
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmfApi]);
 
   // const profile = React.useContext(UserProfileContext);
   const taskCancellable =
@@ -43,10 +39,7 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
       return;
     }
     try {
-      if (!rmf) {
-        throw new Error('tasks api not available');
-      }
-      await rmf.tasksApi?.postCancelTaskTasksCancelTaskPost({
+      await rmfApi.tasksApi?.postCancelTaskTasksCancelTaskPost({
         type: 'cancel_task_request',
         task_id: taskState.booking.id,
       });
@@ -55,7 +48,7 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
     } catch (e) {
       appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
     }
-  }, [appController, taskState, rmf]);
+  }, [appController, taskState, rmfApi]);
 
   return (
     <Grid container direction="column" wrap="nowrap" height="100%">
@@ -89,4 +82,6 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
       )}
     </Grid>
   );
-});
+};
+
+export default TaskDetailsCard;

@@ -7,7 +7,7 @@ import {
 } from 'api-client';
 import { getTaskBookingLabelFromTaskState, RobotDispatchTarget, Schedule } from 'react-components';
 
-import { RmfIngress } from '../rmf-app';
+import { RmfApi } from '../../services/rmf-api';
 import { toISOStringWithTimezone } from './task-schedule-utils';
 
 export function exportCsvFull(timestamp: Date, allTasks: TaskState[]) {
@@ -126,7 +126,7 @@ export const toApiSchedule = (
 };
 
 export async function dispatchTask(
-  rmf: RmfIngress,
+  rmf: RmfApi,
   taskRequest: TaskRequest,
   robotDispatchTarget: RobotDispatchTarget | null,
 ) {
@@ -149,14 +149,14 @@ export async function dispatchTask(
   });
 }
 
-export async function scheduleTask(rmf: RmfIngress, taskRequest: TaskRequest, schedule: Schedule) {
+export async function scheduleTask(rmf: RmfApi, taskRequest: TaskRequest, schedule: Schedule) {
   console.debug(`schedule task: ${taskRequest}\nschedule: ${schedule}`);
   const scheduleRequest = toApiSchedule(taskRequest, schedule);
   await rmf.tasksApi.postScheduledTaskScheduledTasksPost(scheduleRequest);
 }
 
 export async function editScheduledTaskEvent(
-  rmf: RmfIngress,
+  rmf: RmfApi,
   taskRequest: TaskRequest,
   newEventSchedule: Schedule,
   newEventDate: Date,
@@ -181,7 +181,7 @@ export async function editScheduledTaskEvent(
 }
 
 export async function editScheduledTaskSchedule(
-  rmf: RmfIngress,
+  rmf: RmfApi,
   taskRequest: TaskRequest,
   newSchedule: Schedule,
   scheduleTaskId: number,

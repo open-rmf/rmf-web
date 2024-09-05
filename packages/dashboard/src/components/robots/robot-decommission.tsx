@@ -11,9 +11,9 @@ import { RobotState } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
-import { RmfAppContext } from '../rmf-app';
 
 export interface RobotDecommissionButtonProp extends Omit<ButtonProps, 'onClick' | 'autoFocus'> {
   fleet: string;
@@ -24,9 +24,9 @@ export function RobotDecommissionButton({
   fleet,
   robotState,
   ...otherProps
-}: RobotDecommissionButtonProp): JSX.Element {
-  const rmf = React.useContext(RmfAppContext);
-  const appController = React.useContext(AppControllerContext);
+}: RobotDecommissionButtonProp) {
+  const rmfApi = useRmfApi();
+  const appController = useAppController();
   const [reassignTasks, setReassignTasks] = React.useState(true);
   const [allowIdleBehavior, setAllowIdleBehavior] = React.useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
@@ -60,10 +60,7 @@ export function RobotDecommissionButton({
       return;
     }
     try {
-      if (!rmf) {
-        throw new Error('fleets api not available');
-      }
-      const resp = await rmf.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(
+      const resp = await rmfApi.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(
         fleet,
         robotState.name,
         reassignTasks,
@@ -109,17 +106,14 @@ export function RobotDecommissionButton({
     }
     resetDecommissionConfiguration();
     AppEvents.refreshRobotApp.next();
-  }, [appController, fleet, robotState, reassignTasks, allowIdleBehavior, rmf]);
+  }, [appController, fleet, robotState, reassignTasks, allowIdleBehavior, rmfApi]);
 
   const handleRecommission = React.useCallback<React.MouseEventHandler>(async () => {
     if (!robotState || !robotState.name) {
       return;
     }
     try {
-      if (!rmf) {
-        throw new Error('fleets api not available');
-      }
-      const resp = await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(
+      const resp = await rmfApi.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(
         fleet,
         robotState.name,
       );
@@ -141,7 +135,7 @@ export function RobotDecommissionButton({
     }
     resetDecommissionConfiguration();
     AppEvents.refreshRobotApp.next();
-  }, [appController, fleet, robotState, rmf]);
+  }, [appController, fleet, robotState, rmfApi]);
 
   return (
     <>

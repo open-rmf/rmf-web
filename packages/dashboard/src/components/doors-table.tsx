@@ -1,37 +1,30 @@
+import { TableContainer } from '@mui/material';
 import { BuildingMap } from 'api-client';
 import React from 'react';
 import { DoorDataGridTable, DoorTableData } from 'react-components';
 import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg/DoorMode';
 import { throttleTime } from 'rxjs';
 
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { getApiErrorMessage } from '../utils/api';
 import { AppEvents } from './app-events';
-import { createMicroApp } from './micro-app';
-import { RmfAppContext } from './rmf-app';
 
-export const DoorsApp = createMicroApp('Doors', () => {
-  const rmf = React.useContext(RmfAppContext);
+export const DoorsTable = () => {
+  const rmfApi = useRmfApi();
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
   const [doorTableData, setDoorTableData] = React.useState<Record<string, DoorTableData>>({});
 
   React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-    const sub = rmf.buildingMapObs.subscribe(setBuildingMap);
+    const sub = rmfApi.buildingMapObs.subscribe(setBuildingMap);
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmfApi]);
 
   React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-
     let doorIndex = 0;
     buildingMap?.levels.map((level) =>
       level.doors.map(async (door) => {
         try {
-          const sub = rmf
+          const sub = rmfApi
             .getDoorStateObs(door.name)
             .pipe(throttleTime(3000, undefined, { leading: true, trailing: true }))
             .subscribe((doorState) => {
@@ -45,11 +38,11 @@ export const DoorsApp = createMicroApp('Doors', () => {
                     doorType: door.door_type,
                     doorState: doorState,
                     onClickOpen: () =>
-                      rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+                      rmfApi?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
                         mode: RmfDoorMode.MODE_OPEN,
                       }),
                     onClickClose: () =>
-                      rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+                      rmfApi?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
                         mode: RmfDoorMode.MODE_CLOSED,
                       }),
                   },
@@ -62,26 +55,30 @@ export const DoorsApp = createMicroApp('Doors', () => {
         }
       }),
     );
-  }, [rmf, buildingMap]);
+  }, [rmfApi, buildingMap]);
 
   return (
-    <DoorDataGridTable
-      doors={Object.values(doorTableData)}
-      onDoorClick={(_ev, doorData) => {
-        if (!buildingMap) {
-          AppEvents.doorSelect.next(null);
-          return;
-        }
+    <TableContainer sx={{ height: '100% ' }}>
+      <DoorDataGridTable
+        doors={Object.values(doorTableData)}
+        onDoorClick={(_ev, doorData) => {
+          if (!buildingMap) {
+            AppEvents.doorSelect.next(null);
+            return;
+          }
 
-        for (const level of buildingMap.levels) {
-          for (const door of level.doors) {
-            if (door.name === doorData.doorName) {
-              AppEvents.doorSelect.next([level.name, door]);
-              return;
+          for (const level of buildingMap.levels) {
+            for (const door of level.doors) {
+              if (door.name === doorData.doorName) {
+                AppEvents.doorSelect.next([level.name, door]);
+                return;
+              }
             }
           }
-        }
-      }}
-    />
+        }}
+      />
+    </TableContainer>
   );
-});
+};
+
+export default DoorsTable;

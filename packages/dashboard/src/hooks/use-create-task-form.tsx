@@ -2,9 +2,9 @@ import React from 'react';
 import { getPlaces } from 'react-components';
 import { Subscription } from 'rxjs';
 
-import { RmfIngress } from '../components/rmf-app';
+import { RmfApi } from '../services/rmf-api';
 
-export const useCreateTaskFormData = (rmf: RmfIngress | undefined) => {
+export const useCreateTaskFormData = (rmfApi: RmfApi | undefined) => {
   const [waypointNames, setWaypointNames] = React.useState<string[]>([]);
   const [cleaningZoneNames, setCleaningZoneNames] = React.useState<string[]>([]);
   const [pickupPoints, setPickupPoints] = React.useState<Record<string, string>>({});
@@ -12,13 +12,13 @@ export const useCreateTaskFormData = (rmf: RmfIngress | undefined) => {
   const [fleets, setFleets] = React.useState<Record<string, string[]>>({});
 
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmfApi) {
       return;
     }
 
     const subs: Subscription[] = [];
     subs.push(
-      rmf.buildingMapObs.subscribe((map) => {
+      rmfApi.buildingMapObs.subscribe((map) => {
         const places = getPlaces(map);
         const waypointNames: string[] = [];
         const pickupPoints: Record<string, string> = {};
@@ -44,7 +44,7 @@ export const useCreateTaskFormData = (rmf: RmfIngress | undefined) => {
       }),
     );
     subs.push(
-      rmf.fleetsObs.subscribe((fleetStates) => {
+      rmfApi.fleetsObs.subscribe((fleetStates) => {
         const result: Record<string, string[]> = {};
         for (const fleet of fleetStates) {
           if (!fleet.name || !fleet.robots) {
@@ -57,7 +57,7 @@ export const useCreateTaskFormData = (rmf: RmfIngress | undefined) => {
     );
 
     return () => subs.forEach((s) => s.unsubscribe());
-  }, [rmf]);
+  }, [rmfApi]);
 
   return { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets };
 };

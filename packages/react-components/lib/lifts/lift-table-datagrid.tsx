@@ -236,31 +236,28 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
   ];
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <DataGrid
-        autoHeight={true}
-        getRowId={(l) => l.index}
-        rows={lifts}
-        pageSize={5}
-        rowHeight={38}
-        columns={columns}
-        rowsPerPageOptions={[5]}
-        sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-        }}
-        autoPageSize={isScreenHeightLessThan800}
-        density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
-        localeText={{
-          noRowsLabel: 'No lifts available.',
-        }}
-        onRowClick={handleEvent}
-        initialState={{
-          sorting: {
-            sortModel: [{ field: 'name', sort: 'asc' }],
-          },
-        }}
-        disableVirtualization={true}
-      />
-    </div>
+    <DataGrid
+      getRowId={(l) => l.index}
+      rows={lifts}
+      pageSize={5}
+      rowHeight={38}
+      columns={columns}
+      rowsPerPageOptions={[5]}
+      sx={{
+        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+      }}
+      autoPageSize={isScreenHeightLessThan800}
+      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+      localeText={{
+        noRowsLabel: 'No lifts available.',
+      }}
+      onRowClick={handleEvent}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: 'name', sort: 'asc' }],
+        },
+      }}
+      disableVirtualization={true}
+    />
   );
 }
