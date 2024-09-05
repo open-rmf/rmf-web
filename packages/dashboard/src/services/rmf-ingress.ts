@@ -223,6 +223,7 @@ export class RmfIngress {
     return this._ingestorStateObsStore[guid];
   }
 
+  // NOTE: This only emits once and doesn't update when the fleet changes.
   fleetsObs: Observable<FleetState[]> = new Observable<FleetState[]>((subscriber) => {
     (async () => {
       const fleets = (await this.fleetsApi.getFleetsFleetsGet()).data;

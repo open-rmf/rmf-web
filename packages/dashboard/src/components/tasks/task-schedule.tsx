@@ -9,11 +9,7 @@ import { DayProps } from '@aldabil/react-scheduler/views/Day';
 import { MonthProps } from '@aldabil/react-scheduler/views/Month';
 import { WeekProps } from '@aldabil/react-scheduler/views/Week';
 import { Button, Typography } from '@mui/material';
-import {
-  RobotTaskRequest,
-  ScheduledTask,
-  ScheduledTaskScheduleOutput as ApiSchedule,
-} from 'api-client';
+import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
 import React from 'react';
 import {
   ConfirmationDialog,
@@ -37,7 +33,7 @@ import {
   scheduleWithSelectedDay,
   toISOStringWithTimezone,
 } from './task-schedule-utils';
-import { toApiSchedule } from './utils';
+import { dispatchTask, editScheduledTaskEvent, editScheduledTaskSchedule } from './utils';
 
 enum EventScopes {
   ALL = 'all',
@@ -196,35 +192,20 @@ export const TaskSchedule = () => {
     );
   };
 
-  const dispatchTask = React.useCallback<Required<CreateTaskFormProps>['dispatchTask']>(
+  const dispatchTaskCallback = React.useCallback<Required<CreateTaskFormProps>['onDispatchTask']>(
     async (taskRequest, robotDispatchTarget) => {
       if (!rmf) {
         throw new Error('tasks api not available');
       }
-      if (robotDispatchTarget) {
-        const robotTask: RobotTaskRequest = {
-          type: 'robot_task_request',
-          robot: robotDispatchTarget.robot,
-          fleet: robotDispatchTarget.fleet,
-          request: taskRequest,
-        };
-        console.debug(`dispatch robot task:`);
-        console.debug(robotTask);
-        await rmf.tasksApi.postRobotTaskTasksRobotTaskPost(robotTask);
-      } else {
-        console.debug('dispatch task:');
-        console.debug(taskRequest);
-        await rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
-          type: 'dispatch_task_request',
-          request: taskRequest,
-        });
-      }
+      await dispatchTask(rmf, taskRequest, robotDispatchTarget);
       AppEvents.refreshTaskApp.next();
     },
     [rmf],
   );
 
-  const scheduleTask = React.useCallback<Required<CreateTaskFormProps>['scheduleTask']>(
+  const editScheduledTaskCallback = React.useCallback<
+    Required<CreateTaskFormProps>['onScheduleTask']
+  >(
     async (taskRequest, schedule) => {
       if (!rmf) {
         throw new Error('tasks api not available');
@@ -234,20 +215,25 @@ export const TaskSchedule = () => {
         throw new Error('No schedule task selected for submission.');
       }
 
-      const scheduleRequest = toApiSchedule(taskRequest, schedule);
-
-      let exceptDate: string | undefined = undefined;
-      if (eventScope === EventScopes.CURRENT) {
-        exceptDate = toISOStringWithTimezone(exceptDateRef.current);
-        console.debug(`Editing schedule id ${currentScheduleTask.id}, event date ${exceptDate}`);
-      } else {
-        console.debug(`Editing schedule id ${currentScheduleTask.id}`);
+      // Edit entire schedule
+      if (eventScope !== EventScopes.CURRENT) {
+        console.debug(
+          `Editing schedule id [${currentScheduleTask.id}] with new schedule: ${schedule}`,
+        );
+        await editScheduledTaskSchedule(rmf, taskRequest, schedule, currentScheduleTask.id);
+        return;
       }
 
-      await rmf.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
+      // Edit a single event
+      console.debug(
+        `Editing schedule id [${currentScheduleTask.id}] event [${exceptDateRef.current}] with new schedule: ${schedule}`,
+      );
+      await editScheduledTaskEvent(
+        rmf,
+        taskRequest,
+        schedule,
+        exceptDateRef.current,
         currentScheduleTask.id,
-        scheduleRequest,
-        exceptDate,
       );
 
       setEventScope(EventScopes.CURRENT);
@@ -366,8 +352,8 @@ export const TaskSchedule = () => {
             setEventScope(EventScopes.CURRENT);
             AppEvents.refreshTaskSchedule.next();
           }}
-          dispatchTask={dispatchTask}
-          scheduleTask={scheduleTask}
+          onDispatchTask={dispatchTaskCallback}
+          onScheduleTask={editScheduledTaskCallback}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
             showAlert('success', 'Successfully created task');

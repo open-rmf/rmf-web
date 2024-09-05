@@ -36,7 +36,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { AlertRequest, FireAlarmTriggerState, RobotTaskRequest, TaskFavorite } from 'api-client';
+import { AlertRequest, FireAlarmTriggerState, TaskFavorite } from 'api-client';
 import { formatDistance } from 'date-fns';
 import React from 'react';
 import {
@@ -70,7 +70,7 @@ import {
 import { AppControllerContext, SettingsContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { RmfAppContext } from './rmf-app';
-import { toApiSchedule } from './tasks/utils';
+import { dispatchTask, scheduleTask } from './tasks/utils';
 import { UserProfileContext } from './user-profile-provider';
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
@@ -194,40 +194,23 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf]);
 
-  const dispatchTask = React.useCallback<Required<CreateTaskFormProps>['dispatchTask']>(
+  const dispatchTaskCallback = React.useCallback<Required<CreateTaskFormProps>['onDispatchTask']>(
     async (taskRequest, robotDispatchTarget) => {
       if (!rmf) {
         throw new Error('tasks api not available');
       }
-      if (robotDispatchTarget) {
-        const robotTask: RobotTaskRequest = {
-          type: 'robot_task_request',
-          robot: robotDispatchTarget.robot,
-          fleet: robotDispatchTarget.fleet,
-          request: taskRequest,
-        };
-        console.debug(`dispatch robot task: ${robotTask}`);
-        await rmf.tasksApi.postRobotTaskTasksRobotTaskPost(robotTask);
-      } else {
-        console.debug(`dispatch task: ${taskRequest}`);
-        await rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
-          type: 'dispatch_task_request',
-          request: taskRequest,
-        });
-      }
+      await dispatchTask(rmf, taskRequest, robotDispatchTarget);
       AppEvents.refreshTaskApp.next();
     },
     [rmf],
   );
 
-  const scheduleTask = React.useCallback<Required<CreateTaskFormProps>['scheduleTask']>(
+  const scheduleTaskCallback = React.useCallback<Required<CreateTaskFormProps>['onScheduleTask']>(
     async (taskRequest, schedule) => {
       if (!rmf) {
         throw new Error('tasks api not available');
       }
-      console.debug(`schedule task: ${taskRequest}\nschedule: ${schedule}`);
-      const scheduleRequest = toApiSchedule(taskRequest, schedule);
-      await rmf.tasksApi.postScheduledTaskScheduledTasksPost(scheduleRequest);
+      await scheduleTask(rmf, taskRequest, schedule);
       AppEvents.refreshTaskApp.next();
     },
     [rmf],
@@ -573,8 +556,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           favoritesTasks={favoritesTasks}
           open={openCreateTaskForm}
           onClose={() => setOpenCreateTaskForm(false)}
-          dispatchTask={dispatchTask}
-          scheduleTask={scheduleTask}
+          onDispatchTask={dispatchTaskCallback}
+          onScheduleTask={scheduleTaskCallback}
           submitFavoriteTask={submitFavoriteTask}
           deleteFavoriteTask={deleteFavoriteTask}
           onSuccess={() => {

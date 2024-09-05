@@ -314,8 +314,8 @@ export interface CreateTaskFormProps
   scheduleToEdit?: Schedule;
   // requestTask is provided only when editing a schedule
   requestTask?: TaskRequest;
-  dispatchTask(task: TaskRequest, robotDispatchTarget: RobotDispatchTarget | null): Promise<void>;
-  scheduleTask(task: TaskRequest, schedule: Schedule): Promise<void>;
+  onDispatchTask(task: TaskRequest, robotDispatchTarget: RobotDispatchTarget | null): Promise<void>;
+  onScheduleTask(task: TaskRequest, schedule: Schedule): Promise<void>;
   onSuccess?(task: TaskRequest): void;
   onFail?(error: Error, task?: TaskRequest): void;
   onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
@@ -346,8 +346,8 @@ export function CreateTaskForm({
   favoritesTasks = [],
   scheduleToEdit,
   requestTask,
-  dispatchTask,
-  scheduleTask,
+  onDispatchTask,
+  onScheduleTask,
   onClose,
   onSuccess,
   onFail,
@@ -705,11 +705,11 @@ export function CreateTaskForm({
     try {
       setSubmitting(true);
       if (scheduling) {
-        await scheduleTask(request, schedule);
+        await onScheduleTask(request, schedule);
       } else if (dispatchType === DispatchType.Robot) {
-        await dispatchTask(request, robotDispatchTarget);
+        await onDispatchTask(request, robotDispatchTarget);
       } else {
-        await dispatchTask(request, null);
+        await onDispatchTask(request, null);
       }
       setSubmitting(false);
 
