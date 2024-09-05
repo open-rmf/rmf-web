@@ -5,38 +5,29 @@ import { LiftDataGridTable, LiftTableData } from 'react-components';
 import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { throttleTime } from 'rxjs';
 
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { getApiErrorMessage } from '../utils/api';
 import { AppEvents } from './app-events';
 import { LiftSummary } from './lift-summary';
-import { createMicroApp } from './micro-app';
-import { RmfAppContext } from './rmf-app';
 
-export const LiftsApp = createMicroApp('Lifts', () => {
-  const rmf = React.useContext(RmfAppContext);
+export const LiftsTable = () => {
+  const rmfApi = useRmfApi();
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
   const [liftTableData, setLiftTableData] = React.useState<Record<string, LiftTableData[]>>({});
   const [openLiftSummary, setOpenLiftSummary] = React.useState(false);
   const [selectedLift, setSelectedLift] = React.useState<Lift | null>(null);
 
   React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-
-    const sub = rmf.buildingMapObs.subscribe((newMap) => {
+    const sub = rmfApi.buildingMapObs.subscribe((newMap) => {
       setBuildingMap(newMap);
     });
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmfApi]);
 
   React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-
     buildingMap?.lifts.map(async (lift, i) => {
       try {
-        const sub = rmf
+        const sub = rmfApi
           .getLiftStateObs(lift.name)
           .pipe(throttleTime(3000, undefined, { leading: true, trailing: true }))
           .subscribe((liftState) => {
@@ -56,13 +47,9 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                     lift: lift,
                     liftState: liftState,
                     onRequestSubmit: async (_ev, doorState, requestType, destination) => {
-                      if (!rmf) {
-                        console.error('rmf ingress is undefined');
-                        return;
-                      }
                       const fleet_session_ids: string[] = [];
                       if (requestType === RmfLiftRequest.REQUEST_END_SESSION) {
-                        const fleets = (await rmf.fleetsApi.getFleetsFleetsGet()).data;
+                        const fleets = (await rmfApi.fleetsApi.getFleetsFleetsGet()).data;
                         for (const fleet of fleets) {
                           if (!fleet.robots) {
                             continue;
@@ -73,7 +60,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                         }
                       }
 
-                      return rmf?.liftsApi.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
+                      return rmfApi?.liftsApi.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
                         destination,
                         door_mode: doorState,
                         request_type: requestType,
@@ -90,10 +77,10 @@ export const LiftsApp = createMicroApp('Lifts', () => {
         console.error(`Failed to get lift state: ${getApiErrorMessage(error)}`);
       }
     });
-  }, [rmf, buildingMap]);
+  }, [rmfApi, buildingMap]);
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ height: '100%' }}>
       <LiftDataGridTable
         lifts={Object.values(liftTableData).flatMap((l) => l)}
         onLiftClick={(_ev, liftData) => {
@@ -117,4 +104,6 @@ export const LiftsApp = createMicroApp('Lifts', () => {
       )}
     </TableContainer>
   );
-});
+};
+
+export default LiftsTable;

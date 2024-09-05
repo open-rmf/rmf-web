@@ -2,15 +2,14 @@ import { TableContainer, Typography } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-components';
 
-import { AppControllerContext } from '../app-contexts';
-import { createMicroApp } from '../micro-app';
-import { RmfAppContext } from '../rmf-app';
+import { useAppController } from '../../hooks/use-app-controller';
+import { useRmfApi } from '../../hooks/use-rmf-api';
 
 const RefreshMutexGroupTableInterval = 5000;
 
-export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
-  const rmf = React.useContext(RmfAppContext);
-  const appController = React.useContext(AppControllerContext);
+export const RobotMutexGroupsTable = () => {
+  const rmfApi = useRmfApi();
+  const appController = useAppController();
 
   const [mutexGroups, setMutexGroups] = React.useState<Record<string, MutexGroupData>>({});
   const [selectedMutexGroup, setSelectedMutexGroup] = React.useState<MutexGroupData | null>(null);
@@ -40,13 +39,8 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
   };
 
   React.useEffect(() => {
-    if (!rmf) {
-      console.error('Unable to get latest robot information, fleets API unavailable');
-      return;
-    }
-
     const refreshMutexGroupTable = async () => {
-      const fleets = (await rmf.fleetsApi.getFleetsFleetsGet()).data;
+      const fleets = (await rmfApi.fleetsApi.getFleetsFleetsGet()).data;
       const updatedMutexGroups: Record<string, MutexGroupData> = {};
       for (const fleet of fleets) {
         if (!fleet.name || !fleet.robots) {
@@ -112,7 +106,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
     return () => {
       clearInterval(refreshInterval);
     };
-  }, [rmf]);
+  }, [rmfApi]);
 
   const handleUnlockMutexGroup = React.useCallback<React.MouseEventHandler>(async () => {
     if (!selectedMutexGroup || !selectedMutexGroup.lockedBy) {
@@ -125,11 +119,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
     }
 
     try {
-      if (!rmf) {
-        throw new Error('fleets api not available');
-      }
-
-      await rmf.fleetsApi?.unlockMutexGroupFleetsNameUnlockMutexGroupPost(
+      await rmfApi.fleetsApi?.unlockMutexGroupFleetsNameUnlockMutexGroupPost(
         fleet,
         robot,
         selectedMutexGroup.name,
@@ -147,10 +137,10 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
       );
     }
     setSelectedMutexGroup(null);
-  }, [selectedMutexGroup, rmf, appController]);
+  }, [selectedMutexGroup, rmfApi, appController]);
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ height: '100%' }}>
       <MutexGroupTable
         mutexGroups={Object.values(mutexGroups)}
         onMutexGroupClick={(_ev, mutexGroup) => {
@@ -177,4 +167,6 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
       </ConfirmationDialog>
     </TableContainer>
   );
-});
+};
+
+export default RobotMutexGroupsTable;

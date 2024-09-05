@@ -19,7 +19,7 @@
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "pyright": "1.1.369",
-    "typescript": "~5.4.3",
+    "typescript": "~5.5.4",
     "typescript-eslint": "^7.5.0"
   },
   "lint-staged": {
@@ -34,6 +34,9 @@
   "pnpm": {
     "overrides": {
       "typescript-json-schema>@types/node": "*"
+    },
+    "patchedDependencies": {
+      "@react-three/fiber": "patches/@react-three__fiber.patch"
     }
   },
   "overrides": {

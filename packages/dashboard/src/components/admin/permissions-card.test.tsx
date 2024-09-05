@@ -1,9 +1,14 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render as render_, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { AppControllerProvider } from '../../hooks/use-app-controller';
 import { getActionText, RmfAction } from '../../services/permissions';
+import { makeMockAppController } from '../../utils/test-utils.test';
 import { PermissionsCard } from './permissions-card';
+
+const render = (ui: React.ReactNode) =>
+  render_(<AppControllerProvider value={makeMockAppController()}>{ui}</AppControllerProvider>);
 
 // TODO(AA): To remove after
 // https://github.com/testing-library/react-testing-library/issues/1216

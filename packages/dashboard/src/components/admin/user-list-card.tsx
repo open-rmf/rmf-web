@@ -24,7 +24,7 @@ import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';
 import { useNavigate } from 'react-router';
 
-import { AppControllerContext } from '../app-contexts';
+import { useAppController } from '../../hooks/use-app-controller';
 import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 const ItemsPerPage = 20;
@@ -69,7 +69,7 @@ export function UserListCard({
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
   const [openCreateDialog, setOpenCreateDialog] = React.useState(false);
-  const { showAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = useAppController();
 
   const refresh = React.useCallback(async () => {
     if (!searchUsers) return;
@@ -159,7 +159,6 @@ export function UserListCard({
           {users.length === 0 && searching && <div style={{ height: 100 }} />}
         </Loading>
         <TablePagination
-          component="div"
           count={hasMore ? -1 : page * ItemsPerPage + users.length}
           page={page}
           rowsPerPage={ItemsPerPage}

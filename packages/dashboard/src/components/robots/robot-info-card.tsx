@@ -4,19 +4,15 @@ import React from 'react';
 import { RobotInfo } from 'react-components';
 import { combineLatest, EMPTY, mergeMap, of, switchMap, throttleTime } from 'rxjs';
 
+import { useRmfApi } from '../../hooks/use-rmf-api';
 import { AppEvents } from '../app-events';
-import { createMicroApp } from '../micro-app';
-import { RmfAppContext } from '../rmf-app';
 
-export const RobotInfoApp = createMicroApp('Robot Info', () => {
-  const rmf = React.useContext(RmfAppContext);
+export const RobotInfoCard = () => {
+  const rmfApi = useRmfApi();
 
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
   const [taskState, setTaskState] = React.useState<TaskStateOutput | null>(null);
   React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
     const sub = AppEvents.robotSelect
       .pipe(
         switchMap((data) => {
@@ -24,12 +20,12 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
             return of([null, null]);
           }
           const [fleet, name] = data;
-          return rmf.getFleetStateObs(fleet).pipe(
+          return rmfApi.getFleetStateObs(fleet).pipe(
             throttleTime(3000, undefined, { leading: true, trailing: true }),
             mergeMap((fleetState) => {
               const robotState = fleetState?.robots?.[name];
               const taskObs = robotState?.task_id
-                ? rmf.getTaskStateObs(robotState.task_id)
+                ? rmfApi.getTaskStateObs(robotState.task_id)
                 : of(null);
               return robotState ? combineLatest([of(robotState), taskObs]) : EMPTY;
             }),
@@ -41,7 +37,7 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
         setTaskState(taskState);
       });
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmfApi]);
 
   const taskProgress = React.useMemo(() => {
     if (
@@ -87,4 +83,6 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
       )}
     </CardContent>
   );
-});
+};
+
+export default RobotInfoCard;

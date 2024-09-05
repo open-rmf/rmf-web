@@ -1,60 +1,9 @@
-import React from 'react';
-import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
-
 import testConfig from '../app-config.json';
+import { AllowedTask } from './components';
+import { Resources } from './hooks/use-resources';
 import { Authenticator } from './services/authenticator';
 import { KeycloakAuthenticator } from './services/keycloak';
 import { StubAuthenticator } from './services/stub-authenticator';
-
-export interface RobotResource {
-  /**
-   * Path to an image to be used as the robot's icon.
-   */
-  icon?: string;
-
-  /**
-   * Scale of the image to match the robot's dimensions.
-   */
-  scale?: number;
-}
-
-export interface FleetResource {
-  // TODO(koonpeng): configure robot resources based on robot model, this will require https://github.com/open-rmf/rmf_api_msgs/blob/main/rmf_api_msgs/schemas/robot_state.json to expose the robot model.
-  // [robotModel: string]: RobotResource;
-  default: RobotResource;
-}
-
-export interface LogoResource {
-  /**
-   * Path to an image to be used as the logo on the app bar.
-   */
-  header: string;
-}
-
-export interface Resources {
-  fleets: { [fleetName: string]: FleetResource };
-  logos: LogoResource;
-}
-
-/**
- * Configuration for task definitions.
- */
-export interface TaskResource {
-  /**
-   * The task definition to configure.
-   */
-  taskDefinitionId: 'patrol' | 'delivery' | 'compose-clean' | 'custom_compose';
-
-  /**
-   * Configure the display name for the task definition.
-   */
-  displayName?: string;
-
-  /**
-   * The color of the event when rendered on the task scheduler in the form of a CSS color string.
-   */
-  scheduleEventColor?: string;
-}
 
 export interface StubAuthConfig {}
 
@@ -123,7 +72,7 @@ export interface RuntimeConfig {
   /**
    * List of allowed tasks that can be requested
    */
-  allowedTasks: TaskResource[];
+  allowedTasks: AllowedTask[];
 
   /**
    * Url to a file to be played when an alert occurs on the dashboard.
@@ -135,8 +84,6 @@ export interface RuntimeConfig {
    */
   resources: { [theme: string]: Resources; default: Resources };
 
-  // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
-  // system is implemented.
   cartIds: string[];
 }
 
@@ -168,7 +115,7 @@ export interface AppConfig extends RuntimeConfig {
 
 declare const APP_CONFIG: AppConfig;
 
-const appConfig: AppConfig = (() => {
+export const appConfig: AppConfig = (() => {
   if (import.meta.env.PROD) {
     return APP_CONFIG;
   } else {
@@ -178,9 +125,7 @@ const appConfig: AppConfig = (() => {
   }
 })();
 
-export const AppConfigContext = React.createContext(appConfig);
-
-const authenticator: Authenticator = (() => {
+export const authenticator: Authenticator = (() => {
   // must use if statement instead of switch for vite tree shaking to work
   if (APP_CONFIG_AUTH_PROVIDER === 'keycloak') {
     return new KeycloakAuthenticator(
@@ -193,23 +138,3 @@ const authenticator: Authenticator = (() => {
     throw new Error('unknown auth provider');
   }
 })();
-
-export const AuthenticatorContext = React.createContext(authenticator);
-
-export const ResourcesContext = React.createContext<Resources>(appConfig.resources.default);
-
-// FIXME(koonepng): This should be fully definition in app config when the dashboard actually
-// supports configurating all the fields.
-export const allowedTasks: TaskDefinition[] = appConfig.allowedTasks.map((taskResource) => {
-  const taskDefinition = getDefaultTaskDefinition(taskResource.taskDefinitionId);
-  if (!taskDefinition) {
-    throw Error(`Invalid tasks configured for dashboard: [${taskResource.taskDefinitionId}]`);
-  }
-  if (taskResource.displayName !== undefined) {
-    taskDefinition.taskDisplayName = taskResource.displayName;
-  }
-  if (taskResource.scheduleEventColor !== undefined) {
-    taskDefinition.scheduleEventColor = taskResource.scheduleEventColor;
-  }
-  return taskDefinition;
-});

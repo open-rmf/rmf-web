@@ -378,7 +378,6 @@ export function TaskDataGridTable({
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
-        autoHeight
         getRowId={(r) => r.state.booking.id}
         rows={taskData}
         rowCount={tasks.total}

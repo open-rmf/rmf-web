@@ -22,9 +22,9 @@ export interface Authenticator extends EventEmitter<AuthenticatorEventType> {
 
   /**
    * Note: This redirects to external login page so it will never return.
-   * @param successRedirectUri The uri to redirect to after a successful login
+   * @param successRedirectUri The uri to redirect to after a successful login, if not provided, defaults to the current url.
    */
-  login(successRedirectUri: string): Promise<never>;
+  login(successRedirectUri?: string): Promise<never>;
 
   /**
    * Note: This redirects to external logout page so it will never return.

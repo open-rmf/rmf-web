@@ -20,10 +20,9 @@ import React from 'react';
 import { base } from 'react-components';
 import { Subscription } from 'rxjs';
 
-import { AppConfigContext } from '../app-config';
-import { AppControllerContext } from './app-contexts';
+import { useAppController } from '../hooks/use-app-controller';
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { AppEvents } from './app-events';
-import { RmfAppContext } from './rmf-app';
 import { TaskCancelButton } from './tasks/task-cancellation';
 
 interface AlertDialogProps {
@@ -34,19 +33,15 @@ interface AlertDialogProps {
 const AlertDialog = React.memo((props: AlertDialogProps) => {
   const { alertRequest, onDismiss } = props;
   const [isOpen, setIsOpen] = React.useState(true);
-  const { showAlert } = React.useContext(AppControllerContext);
-  const rmf = React.useContext(RmfAppContext);
+  const { showAlert } = useAppController();
+  const rmfApi = useRmfApi();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const [additionalAlertMessage, setAdditionalAlertMessage] = React.useState<string | null>(null);
 
   const respondToAlert = async (alert_id: string, response: string) => {
-    if (!rmf) {
-      return;
-    }
-
     try {
       const resp = (
-        await rmf.alertsApi.respondToAlertAlertsRequestAlertIdRespondPost(alert_id, response)
+        await rmfApi.alertsApi.respondToAlertAlertsRequestAlertIdRespondPost(alert_id, response)
       ).data;
       console.log(
         `Alert [${alertRequest.id}]: responded with [${resp.response}] at ${resp.unix_millis_response_time}`,
@@ -90,9 +85,6 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
     if (alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Info || !alertRequest.task_id) {
       return;
     }
-    if (!rmf) {
-      return;
-    }
 
     (async () => {
       if (!alertRequest.task_id) {
@@ -102,7 +94,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
       let logs: TaskEventLog | null = null;
       try {
         logs = (
-          await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
+          await rmfApi.tasksApi.getTaskLogTasksTaskIdLogGet(
             alertRequest.task_id,
             `0,${Number.MAX_SAFE_INTEGER}`,
           )
@@ -124,7 +116,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
         setAdditionalAlertMessage(consolidatedErrorMessages);
       }
     })();
-  }, [rmf, alertRequest.id, alertRequest.task_id, alertRequest.tier]);
+  }, [rmfApi, alertRequest.id, alertRequest.task_id, alertRequest.tier]);
 
   const theme = useTheme();
 
@@ -254,25 +246,20 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
   );
 });
 
-export const AlertManager = React.memo(() => {
-  const rmf = React.useContext(RmfAppContext);
+export interface AlertManagerProps {
+  alertAudioPath?: string;
+}
+
+export const AlertManager = React.memo(({ alertAudioPath }: AlertManagerProps) => {
+  const rmfApi = useRmfApi();
   const [openAlerts, setOpenAlerts] = React.useState<Record<string, AlertRequest>>({});
-  const appConfig = React.useContext(AppConfigContext);
   const alertAudio: HTMLAudioElement | undefined = React.useMemo(
-    () => (appConfig.alertAudioPath ? new Audio(appConfig.alertAudioPath) : undefined),
-    [appConfig.alertAudioPath],
+    () => (alertAudioPath ? new Audio(alertAudioPath) : undefined),
+    [alertAudioPath],
   );
 
   React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-
     const pushAlertsToBeDisplayed = async (alertRequest: AlertRequest) => {
-      if (!rmf) {
-        console.error('Alerts API not available');
-        return;
-      }
       if (!alertRequest.display) {
         setOpenAlerts((prev) => {
           const filteredAlerts = Object.fromEntries(
@@ -285,7 +272,7 @@ export const AlertManager = React.memo(() => {
 
       try {
         const resp = (
-          await rmf.alertsApi.getAlertResponseAlertsRequestAlertIdResponseGet(alertRequest.id)
+          await rmfApi.alertsApi.getAlertResponseAlertsRequestAlertIdResponseGet(alertRequest.id)
         ).data;
         console.log(
           `Alert [${alertRequest.id}]: was responded with [${resp.response}] at ${resp.unix_millis_response_time}`,
@@ -312,7 +299,7 @@ export const AlertManager = React.memo(() => {
     const subs: Subscription[] = [];
 
     subs.push(
-      rmf.alertRequestsObsStore.subscribe((alertRequest) => {
+      rmfApi.alertRequestsObsStore.subscribe((alertRequest) => {
         if (!alertRequest.display) {
           setOpenAlerts((prev) => {
             const filteredAlerts = Object.fromEntries(
@@ -327,7 +314,7 @@ export const AlertManager = React.memo(() => {
     );
 
     subs.push(
-      rmf.alertResponsesObsStore.subscribe((alertResponse) => {
+      rmfApi.alertResponsesObsStore.subscribe((alertResponse) => {
         setOpenAlerts((prev) => {
           return Object.fromEntries(
             Object.entries(prev).filter(([key]) => key !== alertResponse.id),
@@ -350,7 +337,7 @@ export const AlertManager = React.memo(() => {
         sub.unsubscribe();
       }
     };
-  }, [rmf, alertAudio]);
+  }, [rmfApi, alertAudio]);
 
   const removeOpenAlert = (id: string) => {
     const filteredAlerts = Object.fromEntries(

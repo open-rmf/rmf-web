@@ -83,7 +83,7 @@
     "puppeteer": "*",
     "require-from-string": "^2.0.2",
     "storybook": "^8.2.6",
-    "typescript": "~5.4.3",
+    "typescript": "~5.5.4",
     "typescript-eslint": "^7.5.0",
     "vitest": "^2.0.4"
   }

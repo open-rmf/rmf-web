@@ -1,28 +1,26 @@
-import { AppBar, AppBarProps, Toolbar, Typography, useMediaQuery } from '@mui/material';
+import { AppBar, AppBarProps, Box, Grid, Toolbar, Typography } from '@mui/material';
 import React from 'react';
 
 export interface WindowToolbarProps extends AppBarProps {
   title: string;
+  toolbarItemContainerProps?: React.ComponentProps<typeof Box>;
 }
 
-export const WindowToolbar: React.FC<WindowToolbarProps> = ({ title, children, ...otherProps }) => {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+export const WindowToolbar: React.FC<WindowToolbarProps> = ({
+  title,
+  toolbarItemContainerProps,
+  children,
+  ...otherProps
+}) => {
   return (
-    <AppBar
-      position="static"
-      elevation={0}
-      style={{ height: isScreenHeightLessThan800 ? 30 : 50 }}
-      {...otherProps}
-    >
-      <Toolbar variant="dense" style={{ paddingRight: 0 }}>
-        <Typography
-          fontSize={`${isScreenHeightLessThan800 ? '1rem' : '1.7rem'}`}
-          style={{ flexGrow: 1 }}
-          mb={isScreenHeightLessThan800 ? 2 : 0}
-        >
-          {title}
-        </Typography>
-        {children}
+    <AppBar position="static" elevation={1} {...otherProps}>
+      <Toolbar variant="dense" disableGutters sx={{ paddingLeft: 2 }}>
+        <Grid container justifyContent="space-between" alignItems="center" wrap="nowrap">
+          <Typography variant="h6">{title}</Typography>
+          <Box display="flex" alignItems="center" {...toolbarItemContainerProps}>
+            {children}
+          </Box>
+        </Grid>
       </Toolbar>
     </AppBar>
   );

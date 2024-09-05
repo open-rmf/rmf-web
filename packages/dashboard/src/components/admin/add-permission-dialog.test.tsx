@@ -1,9 +1,14 @@
-import { render } from '@testing-library/react';
+import { render as render_ } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
+import { AppControllerProvider } from '../../hooks/use-app-controller';
 import { RmfAction } from '../../services/permissions';
+import { makeMockAppController } from '../../utils/test-utils.test';
 import { AddPermissionDialog } from './add-permission-dialog';
+
+const render = (ui: React.ReactNode) =>
+  render_(<AppControllerProvider value={makeMockAppController()}>{ui}</AppControllerProvider>);
 
 describe('AddPermissionDialog', () => {
   it('calls savePermission when form is submitted', async () => {

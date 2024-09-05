@@ -13,8 +13,8 @@ import {
 import React from 'react';
 import { base } from 'react-components';
 
-import { AppControllerContext } from './app-contexts';
-import { RmfAppContext } from './rmf-app';
+import { useAppController } from '../hooks/use-app-controller';
+import { useRmfApi } from '../hooks/use-rmf-api';
 import { TaskCancelButton } from './tasks/task-cancellation';
 import { TaskInspector } from './tasks/task-inspector';
 
@@ -52,8 +52,8 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const [actionTaken, setActionTaken] = React.useState(!onOverride && !onResume);
   const [newTaskState, setNewTaskState] = React.useState<TaskState | null>(null);
   const [openTaskInspector, setOpenTaskInspector] = React.useState(false);
-  const appController = React.useContext(AppControllerContext);
-  const rmf = React.useContext(RmfAppContext);
+  const appController = useAppController();
+  const rmfApi = useRmfApi();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   React.useEffect(() => {
@@ -63,16 +63,11 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   }, [deliveryAlert]);
 
   React.useEffect(() => {
-    if (!rmf) {
-      console.error('Tasks api not available.');
-      setNewTaskState(null);
-      return;
-    }
     if (!taskState) {
       setNewTaskState(null);
       return;
     }
-    const sub = rmf.getTaskStateObs(taskState.booking.id).subscribe((taskStateUpdate) => {
+    const sub = rmfApi.getTaskStateObs(taskState.booking.id).subscribe((taskStateUpdate) => {
       setNewTaskState(taskStateUpdate);
       if (
         deliveryAlert.action === DeliveryAlertAction.Waiting &&
@@ -81,7 +76,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
       ) {
         (async () => {
           try {
-            await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+            await rmfApi.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
               deliveryAlert.id,
               deliveryAlert.category,
               deliveryAlert.tier,
@@ -100,7 +95,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
       }
     });
     return () => sub.unsubscribe();
-  }, [rmf, deliveryAlert, taskState, appController]);
+  }, [rmfApi, deliveryAlert, taskState, appController]);
 
   const titleUpdateText = (action: DeliveryAlertAction) => {
     switch (action) {
@@ -457,9 +452,9 @@ interface DeliveryAlertData {
 }
 
 export const DeliveryAlertStore = React.memo(() => {
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = useRmfApi();
   const [alerts, setAlerts] = React.useState<Record<string, DeliveryAlertData>>({});
-  const appController = React.useContext(AppControllerContext);
+  const appController = useAppController();
 
   const filterAndPushDeliveryAlert = (deliveryAlert: DeliveryAlert, taskState?: TaskState) => {
     // Check if a delivery alert for a task is already open, if so, replace it
@@ -493,10 +488,7 @@ export const DeliveryAlertStore = React.memo(() => {
   };
 
   React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-    const sub = rmf.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
+    const sub = rmfApi.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
       // DEBUG
       console.log(
         `Got a delivery alert [${deliveryAlert.id}] with action [${deliveryAlert.action}]`,
@@ -505,7 +497,8 @@ export const DeliveryAlertStore = React.memo(() => {
       let state: TaskState | undefined = undefined;
       if (deliveryAlert.task_id) {
         try {
-          state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(deliveryAlert.task_id)).data;
+          state = (await rmfApi.tasksApi.getTaskStateTasksTaskIdStateGet(deliveryAlert.task_id))
+            .data;
         } catch {
           console.error(`Failed to fetch task state for ${deliveryAlert.task_id}`);
         }
@@ -513,15 +506,12 @@ export const DeliveryAlertStore = React.memo(() => {
       filterAndPushDeliveryAlert(deliveryAlert, state);
     });
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmfApi]);
 
   const onOverride = React.useCallback<Required<DeliveryWarningDialogProps>['onOverride']>(
     async (delivery_alert) => {
       try {
-        if (!rmf) {
-          throw new Error('delivery alert api not available');
-        }
-        await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+        await rmfApi.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
           delivery_alert.id,
           delivery_alert.category,
           delivery_alert.tier,
@@ -549,7 +539,7 @@ export const DeliveryAlertStore = React.memo(() => {
         );
       }
     },
-    [rmf, appController],
+    [rmfApi, appController],
   );
 
   const removeDeliveryAlertDialog = (id: string) => {
@@ -559,10 +549,7 @@ export const DeliveryAlertStore = React.memo(() => {
   const onResume = React.useCallback<Required<DeliveryWarningDialogProps>['onResume']>(
     async (delivery_alert) => {
       try {
-        if (!rmf) {
-          throw new Error('delivery alert api not available');
-        }
-        await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+        await rmfApi.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
           delivery_alert.id,
           delivery_alert.category,
           delivery_alert.tier,
@@ -586,7 +573,7 @@ export const DeliveryAlertStore = React.memo(() => {
         );
       }
     },
-    [rmf, appController],
+    [rmfApi, appController],
   );
 
   return (

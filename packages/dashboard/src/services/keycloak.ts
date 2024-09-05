@@ -45,7 +45,6 @@ export class KeycloakAuthenticator
       return false;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const roles: string[] | undefined = (this._inst.idTokenParsed as any).realm_access?.roles;
     if (roles && roles.includes('superuser')) {
       return true;
@@ -105,7 +104,7 @@ export class KeycloakAuthenticator
     return;
   }
 
-  async login(successRedirectUri: string): Promise<never> {
+  async login(successRedirectUri?: string): Promise<never> {
     await this._inst.login({
       redirectUri: successRedirectUri,
     });

@@ -2,187 +2,101 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import 'react-grid-layout/css/styles.css';
 import './app.css';
 
-import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { appConfig } from './app-config';
+import { InitialWindow, LocallyPersistentWorkspace, RmfDashboard, Workspace } from './components';
+import { MicroAppManifest } from './components/micro-app';
+import doorsApp from './micro-apps/doors-app';
+import liftsApp from './micro-apps/lifts-app';
+import createMapApp from './micro-apps/map-app';
+import robotMutexGroupsApp from './micro-apps/robot-mutex-groups-app';
+import robotsApp from './micro-apps/robots-app';
+import tasksApp from './micro-apps/tasks-app';
+import StubAuthenticator from './services/stub-authenticator';
 
-import { AppConfigContext, AuthenticatorContext, ResourcesContext } from './app-config';
-import {
-  AdminRouter,
-  AppBase,
-  AppEvents,
-  ManagedWorkspace,
-  PrivateRoute,
-  RmfApp,
-  SettingsContext,
-  Workspace,
-  WorkspaceState,
-} from './components';
-import { LoginPage } from './pages';
-import {
-  AdminRoute,
-  CustomRoute1,
-  CustomRoute2,
-  DashboardRoute,
-  LoginRoute,
-  RobotsRoute,
-  TasksRoute,
-} from './utils/url';
+const mapApp = createMapApp({
+  attributionPrefix: appConfig.attributionPrefix,
+  defaultMapLevel: appConfig.defaultMapLevel,
+  defaultRobotZoom: appConfig.defaultRobotZoom,
+  defaultZoom: appConfig.defaultZoom,
+});
 
-const dashboardWorkspace: WorkspaceState = {
-  layout: [{ i: 'map', x: 0, y: 0, w: 12, h: 12 }],
-  windows: [{ key: 'map', appName: 'Map' }],
-};
+const appRegistry: MicroAppManifest[] = [
+  mapApp,
+  doorsApp,
+  liftsApp,
+  robotsApp,
+  robotMutexGroupsApp,
+  tasksApp,
+];
 
-const robotsWorkspace: WorkspaceState = {
-  layout: [
-    { i: 'robots', x: 0, y: 0, w: 7, h: 4 },
-    { i: 'map', x: 8, y: 0, w: 5, h: 8 },
-    { i: 'doors', x: 0, y: 0, w: 7, h: 4 },
-    { i: 'lifts', x: 0, y: 0, w: 7, h: 4 },
-    { i: 'mutexGroups', x: 8, y: 0, w: 5, h: 4 },
-  ],
-  windows: [
-    { key: 'robots', appName: 'Robots' },
-    { key: 'map', appName: 'Map' },
-    { key: 'doors', appName: 'Doors' },
-    { key: 'lifts', appName: 'Lifts' },
-    { key: 'mutexGroups', appName: 'Mutex Groups' },
-  ],
-};
+const homeWorkspace: InitialWindow[] = [
+  {
+    layout: { x: 0, y: 0, w: 12, h: 6 },
+    microApp: mapApp,
+  },
+];
 
-const tasksWorkspace: WorkspaceState = {
-  layout: [
-    { i: 'tasks', x: 0, y: 0, w: 7, h: 12 },
-    { i: 'map', x: 8, y: 0, w: 5, h: 12 },
-  ],
-  windows: [
-    { key: 'tasks', appName: 'Tasks' },
-    { key: 'map', appName: 'Map' },
-  ],
-};
+const robotsWorkspace: InitialWindow[] = [
+  {
+    layout: { x: 0, y: 0, w: 7, h: 4 },
+    microApp: robotsApp,
+  },
+  { layout: { x: 8, y: 0, w: 5, h: 8 }, microApp: mapApp },
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: doorsApp },
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: liftsApp },
+  { layout: { x: 8, y: 0, w: 5, h: 4 }, microApp: robotMutexGroupsApp },
+];
 
-export default function App(): JSX.Element | null {
-  const authenticator = React.useContext(AuthenticatorContext);
-  const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
-  const [user, setUser] = React.useState<string | null>(authenticator.user || null);
+const tasksWorkspace: InitialWindow[] = [
+  { layout: { x: 0, y: 0, w: 7, h: 8 }, microApp: tasksApp },
+  { layout: { x: 8, y: 0, w: 5, h: 8 }, microApp: mapApp },
+];
 
-  React.useEffect(() => {
-    let cancel = false;
-    const onUserChanged = (newUser: string | null) => {
-      setUser(newUser);
-      AppEvents.justLoggedIn.next(true);
-    };
-    authenticator.on('userChanged', onUserChanged);
-    (async () => {
-      await authenticator.init();
-      if (cancel) {
-        return;
-      }
-      setUser(authenticator.user || null);
-      setAuthInitialized(true);
-    })();
-    return () => {
-      cancel = true;
-      authenticator.off('userChanged', onUserChanged);
-    };
-  }, [authenticator]);
-
-  const appConfig = React.useContext(AppConfigContext);
-  const settings = React.useContext(SettingsContext);
-  const resources = appConfig.resources[settings.themeMode] || appConfig.resources.default;
-
-  const loginRedirect = React.useMemo(() => <Navigate to={LoginRoute} />, []);
-
-  return authInitialized ? (
-    <ResourcesContext.Provider value={resources}>
-      {user ? (
-        <RmfApp>
-          <AppBase>
-            <Routes>
-              <Route path={LoginRoute} element={<Navigate to={DashboardRoute} />} />
-
-              <Route
-                path={DashboardRoute}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <Workspace key="dashboard" state={dashboardWorkspace} />
-                  </PrivateRoute>
-                }
-              />
-
-              <Route
-                path={RobotsRoute}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <Workspace key="robots" state={robotsWorkspace} />
-                  </PrivateRoute>
-                }
-              />
-
-              <Route
-                path={TasksRoute}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <Workspace key="tasks" state={tasksWorkspace} />
-                  </PrivateRoute>
-                }
-              />
-
-              {APP_CONFIG_ENABLE_CUSTOM_TABS && (
-                <Route
-                  path={CustomRoute1}
-                  element={
-                    <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                      <ManagedWorkspace key="custom1" workspaceId="custom1" />
-                    </PrivateRoute>
-                  }
-                />
-              )}
-
-              {APP_CONFIG_ENABLE_CUSTOM_TABS && (
-                <Route
-                  path={CustomRoute2}
-                  element={
-                    <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                      <ManagedWorkspace key="custom2" workspaceId="custom2" />
-                    </PrivateRoute>
-                  }
-                />
-              )}
-
-              {APP_CONFIG_ENABLE_ADMIN_TAB && (
-                <Route
-                  path={AdminRoute}
-                  element={
-                    <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                      <AdminRouter />
-                    </PrivateRoute>
-                  }
-                />
-              )}
-            </Routes>
-          </AppBase>
-        </RmfApp>
-      ) : (
-        <Routes>
-          <Route
-            path={LoginRoute}
-            element={
-              <LoginPage
-                title={'Dashboard'}
-                logo={resources.logos.header}
-                onLoginClick={() =>
-                  authenticator.login(`${window.location.origin}${DashboardRoute}`)
-                }
-              />
-            }
-          />
-          <Route path="*" element={<Navigate to={LoginRoute} />} />
-        </Routes>
-      )}
-    </ResourcesContext.Provider>
-  ) : null;
+export default function App() {
+  return (
+    <RmfDashboard
+      apiServerUrl="http://localhost:8000"
+      trajectoryServerUrl="http://localhost:8006"
+      authenticator={new StubAuthenticator()}
+      helpLink={appConfig.helpLink}
+      reportIssueLink={appConfig.reportIssue}
+      resources={appConfig.resources.default}
+      tasks={{
+        allowedTasks: appConfig.allowedTasks,
+        pickupZones: appConfig.pickupZones,
+        cartIds: appConfig.cartIds,
+      }}
+      tabs={[
+        {
+          name: 'Map',
+          route: '',
+          element: <Workspace initialWindows={homeWorkspace} />,
+        },
+        {
+          name: 'Robots',
+          route: 'robots',
+          element: <Workspace initialWindows={robotsWorkspace} />,
+        },
+        {
+          name: 'Tasks',
+          route: 'tasks',
+          element: <Workspace initialWindows={tasksWorkspace} />,
+        },
+        {
+          name: 'Custom',
+          route: 'custom',
+          element: (
+            <LocallyPersistentWorkspace
+              defaultWindows={[]}
+              allowDesignMode
+              appRegistry={appRegistry}
+              storageKey="custom-workspace"
+            />
+          ),
+        },
+      ]}
+    />
+  );
 }

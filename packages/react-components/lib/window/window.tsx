@@ -1,8 +1,6 @@
-import 'react-grid-layout/css/styles.css';
-
 import type {} from '@emotion/styled';
 import CloseIcon from '@mui/icons-material/Close';
-import { Grid, IconButton, Paper, PaperProps, styled, useTheme } from '@mui/material';
+import { Box, IconButton, Paper, PaperProps, styled, useTheme } from '@mui/material';
 import React from 'react';
 import { Layout } from 'react-grid-layout';
 
@@ -10,9 +8,7 @@ import { WindowManagerStateContext } from './context';
 import { WindowToolbar } from './window-toolbar';
 
 export interface WindowProps extends PaperProps {
-  key: string;
   title: string;
-  // children: React.ReactChildren;
   'data-grid'?: Layout;
   toolbar?: React.ReactNode;
   onClose?: () => void;
@@ -41,24 +37,31 @@ export const Window = styled(
           sx={{
             cursor: windowManagerState.designMode ? 'move' : undefined,
             borderRadius: theme.shape.borderRadius,
+            '& > :not(.custom-resize-handle)': {
+              pointerEvents: windowManagerState.designMode ? 'none' : undefined,
+            },
+            '& .window-toolbar-items': {
+              pointerEvents: 'auto',
+            },
             ...sx,
           }}
           {...otherProps}
         >
-          <Grid item className="rgl-draggable">
-            <WindowToolbar title={title}>
-              {toolbar}
-              {windowManagerState.designMode && (
-                <IconButton color="inherit" onClick={() => onClose && onClose()}>
-                  <CloseIcon />
-                </IconButton>
-              )}
-            </WindowToolbar>
-          </Grid>
-          <div style={{ overflow: 'auto', width: '100%', height: '100%', cursor: 'auto' }}>
+          <WindowToolbar
+            title={title}
+            toolbarItemContainerProps={{ className: 'window-toolbar-items' }}
+          >
+            {toolbar}
+            {windowManagerState.designMode && (
+              <IconButton color="inherit" onClick={() => onClose && onClose()}>
+                <CloseIcon />
+              </IconButton>
+            )}
+          </WindowToolbar>
+          <Box width="100%" height="100%" overflow="auto">
             {childComponents}
-          </div>
-          {resizeComponent}
+          </Box>
+          {windowManagerState.designMode && resizeComponent}
         </Paper>
       );
     },
