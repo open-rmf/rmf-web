@@ -115,7 +115,6 @@ class StubAuthenticator(Authenticator):
         async def dep(authorization: str | None = Header(None)):
             if not authorization:
                 return await self.verify_token(None)
-            print(token)
             token = authorization.split(" ")[1]
             return await self.verify_token(token)
 
