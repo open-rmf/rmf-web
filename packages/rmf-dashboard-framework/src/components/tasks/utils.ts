@@ -1,4 +1,9 @@
-import { PostScheduledTaskRequest, TaskRequest, TaskStateOutput as TaskState } from 'api-client';
+import {
+  PostScheduledTaskRequest,
+  Priority,
+  TaskRequest,
+  TaskStateOutput as TaskState,
+} from 'api-client';
 
 import { Schedule } from './create-task';
 import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
@@ -117,3 +122,26 @@ export const toApiSchedule = (
     schedules: apiSchedules,
   };
 };
+
+export function createTaskPriority(prioritize: boolean): Priority {
+  return { type: 'binary', value: prioritize ? 1 : 0 };
+}
+
+// FIXME(ac): This method of parsing is crude, and will be fixed using schemas
+// when we migrate to jsonforms.
+export function parseTaskPriority(priority: Priority | null | undefined): boolean {
+  if (!priority) {
+    return false;
+  }
+
+  if (
+    typeof priority == 'object' &&
+    'type' in priority &&
+    priority['type'] === 'binary' &&
+    'value' in priority &&
+    typeof priority['value'] == 'number'
+  ) {
+    return (priority['value'] as number) > 0;
+  }
+  return false;
+}
