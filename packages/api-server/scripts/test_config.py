@@ -11,6 +11,7 @@ config.update(
         "port": int(test_port),
         "log_level": "ERROR",
         "jwt_public_key": f"{here}/test.pub",
+        "jwt_secret": None,
         "iss": "test",
         "db_url": os.environ.get("RMF_API_SERVER_TEST_DB_URL", "sqlite://:memory:"),
         "timezone": "Asia/Singapore",
