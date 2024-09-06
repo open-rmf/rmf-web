@@ -17,9 +17,10 @@ class AppConfig:
     log_level: str
     builtin_admin: str
     jwt_public_key: str | None
+    jwt_secret: str | None
     oidc_url: str | None
     aud: str
-    iss: str | None
+    iss: str
     ros_args: list[str]
     timezone: str
 

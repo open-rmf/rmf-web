@@ -10,10 +10,12 @@ export class StubAuthenticator
 
   readonly token?: string;
 
-  constructor(user = 'stub', token: string | undefined = undefined) {
+  constructor() {
     super();
-    this.user = user;
-    this.token = token;
+    this.user = 'stub';
+    // hardcoded token that expires in 2035-01-01
+    this.token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHViIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic3R1YiIsImlhdCI6MTUxNjIzOTAyMiwiYXVkIjoicm1mX2FwaV9zZXJ2ZXIiLCJpc3MiOiJzdHViIiwiZXhwIjoyMDUxMjIyNDAwfQ.dN7xOpbeN2A4QXM8Mmc2ZzWqC8w1XNm8IYsJ0FdeKCc';
   }
 
   init(): Promise<void> {

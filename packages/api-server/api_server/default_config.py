@@ -16,6 +16,8 @@ config = {
     "builtin_admin": "admin",
     # path to a PEM encoded RSA public key which is used to verify JWT tokens, if the path is relative, it is based on the working dir.
     "jwt_public_key": None,
+    # jwt secret, this is mutually exclusive with `jwt_public_key`.
+    "jwt_secret": "rmfisawesome",
     # url to the oidc endpoint, used to authenticate rest requests, it should point to the well known endpoint, e.g.
     # http://localhost:8080/auth/realms/rmf-web/.well-known/openid-configuration.
     # NOTE: This is ONLY used for documentation purposes, the "jwt_public_key" will be the
@@ -26,8 +28,7 @@ config = {
     "aud": "rmf_api_server",
     # url or string that identifies the entity that issued the jwt token
     # Used to verify the "iss" claim
-    # If iss is set to None, it means that authentication should be disabled
-    "iss": None,
+    "iss": "stub",
     # list of arguments passed to the ros node, "--ros-args" is automatically prepended to the list.
     # e.g.
     #   Run with sim time: ["-p", "use_sim_time:=true"]
