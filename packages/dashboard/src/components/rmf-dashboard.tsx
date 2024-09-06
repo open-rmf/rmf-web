@@ -335,6 +335,7 @@ function DashboardContents({
             />
           ))}
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
