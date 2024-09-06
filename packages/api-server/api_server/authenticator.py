@@ -48,6 +48,8 @@ class JwtAuthenticator:
             )
 
         username = claims["preferred_username"]
+        # FIXME(koonpeng): We should use the "userId" as the identifier. Some idP may allow
+        # duplicated usernames.
         user = await User.load_or_create_from_db(username)
 
         return user
