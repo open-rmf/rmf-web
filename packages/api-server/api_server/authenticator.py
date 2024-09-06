@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, Protocol
+from typing import Any, Callable, Coroutine, Protocol
 
 import jwt
 import jwt.algorithms
@@ -94,18 +94,21 @@ if not app_config.aud:
 
 if app_config.jwt_public_key:
     with open(app_config.jwt_public_key, "br") as f:
-        key_or_secret = f.read()
+        authenticator = JwtAuthenticator(
+            f.read(),
+            app_config.aud,
+            app_config.iss,
+            oidc_url=app_config.oidc_url or "",
+        )
 elif app_config.jwt_secret:
-    key_or_secret = app_config.jwt_secret
+    authenticator = JwtAuthenticator(
+        app_config.jwt_secret,
+        app_config.aud,
+        app_config.iss,
+        oidc_url=app_config.oidc_url or "",
+    )
 else:
     raise ValueError("either jwt_public_key or jwt_secret is required")
-
-authenticator = JwtAuthenticator(
-    key_or_secret,
-    app_config.aud,
-    app_config.iss,
-    oidc_url=app_config.oidc_url or "",
-)
 
 
 user_dep = authenticator.fastapi_dep()
