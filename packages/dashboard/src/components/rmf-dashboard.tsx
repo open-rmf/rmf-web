@@ -275,7 +275,7 @@ function DashboardContents({
   extraAppbarItems,
 }: DashboardContentsProps) {
   const location = useLocation();
-  const currentTab = tabs.find((t) => matchPath(t.route, location.pathname));
+  const currentTab = tabs.find((t) => matchPath(`${baseUrl}${t.route}`, location.pathname));
 
   const [pendingTransition, startTransition] = useTransition();
   const navigate = useNavigate();
@@ -335,6 +335,7 @@ function DashboardContents({
             />
           ))}
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
