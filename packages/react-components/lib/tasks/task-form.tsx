@@ -106,23 +106,15 @@ export type TaskDescription =
 
 const classes = {
   title: 'dialogue-info-value',
-  selectFileBtn: 'create-task-selected-file-btn',
   taskList: 'create-task-task-list',
-  selectedTask: 'create-task-selected-task',
   actionBtn: 'dialogue-action-button',
 };
-const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
-  [`& .${classes.selectFileBtn}`]: {
-    marginBottom: theme.spacing(1),
-  },
+const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(() => ({
   [`& .${classes.taskList}`]: {
     flex: '1 1 auto',
     minHeight: 400,
     maxHeight: '50vh',
     overflow: 'auto',
-  },
-  [`& .${classes.selectedTask}`]: {
-    background: theme.palette.action.focus,
   },
   [`& .${classes.title}`]: {
     flex: '1 1 auto',
@@ -296,11 +288,7 @@ export interface RobotDispatchTarget {
   robot: string;
 }
 
-export interface CreateTaskFormProps
-  extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
-  /**
-   * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
-   */
+export interface TaskFormProps extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
   user: string;
   fleets?: Record<string, string[]>;
   tasksToDisplay?: TaskDefinition[];
@@ -311,11 +299,14 @@ export interface CreateTaskFormProps
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
-  scheduleToEdit?: Schedule;
-  // requestTask is provided only when editing a schedule
-  requestTask?: TaskRequest;
-  onDispatchTask(task: TaskRequest, robotDispatchTarget: RobotDispatchTarget | null): Promise<void>;
-  onScheduleTask(task: TaskRequest, schedule: Schedule): Promise<void>;
+  schedule?: Schedule;
+  taskRequest?: TaskRequest;
+  onDispatchTask?(
+    task: TaskRequest,
+    robotDispatchTarget: RobotDispatchTarget | null,
+  ): Promise<void>;
+  onScheduleTask?(task: TaskRequest, schedule: Schedule): Promise<void>;
+  onEditScheduleTask?(task: TaskRequest, schedule: Schedule): Promise<void>;
   onSuccess?(task: TaskRequest): void;
   onFail?(error: Error, task?: TaskRequest): void;
   onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
@@ -326,7 +317,7 @@ export interface CreateTaskFormProps
   onFailScheduling?(error: Error): void;
 }
 
-export function CreateTaskForm({
+export function TaskForm({
   user,
   fleets,
   tasksToDisplay = [
@@ -344,10 +335,11 @@ export function CreateTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
-  scheduleToEdit,
-  requestTask,
+  schedule,
+  taskRequest,
   onDispatchTask,
   onScheduleTask,
+  onEditScheduleTask,
   onClose,
   onSuccess,
   onFail,
@@ -358,7 +350,7 @@ export function CreateTaskForm({
   onSuccessScheduling,
   onFailScheduling,
   ...otherProps
-}: CreateTaskFormProps): JSX.Element {
+}: TaskFormProps): JSX.Element {
   const theme = useTheme();
 
   const [openFavoriteDialog, setOpenFavoriteDialog] = React.useState(false);
@@ -421,24 +413,24 @@ export function CreateTaskForm({
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
-  const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
-    requestTask ?? defaultTaskRequest,
+  const [currentTaskRequest, setCurrentTaskRequest] = React.useState<TaskRequest>(
+    taskRequest ?? defaultTaskRequest,
   );
-  const initialBookingLabel = requestTask ? getTaskBookingLabelFromTaskRequest(requestTask) : null;
+  const initialBookingLabel = taskRequest ? getTaskBookingLabelFromTaskRequest(taskRequest) : null;
   const [taskDefinitionId, setTaskDefinitionId] = React.useState<string>(() => {
     const fromLabel = initialBookingLabel && getTaskDefinitionId(initialBookingLabel);
     return fromLabel || tasksToDisplay[0].taskDefinitionId;
   });
 
   const [submitting, setSubmitting] = React.useState(false);
-  const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
+  const [formFullyFilled, setFormFullyFilled] = React.useState(taskRequest !== undefined || false);
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
   const defaultScheduleDate = new Date();
   defaultScheduleDate.setSeconds(0);
   defaultScheduleDate.setMilliseconds(0);
 
-  const [schedule, setSchedule] = React.useState<Schedule>(
-    scheduleToEdit ?? {
+  const [currentSchedule, setCurrentSchedule] = React.useState<Schedule>(
+    schedule ?? {
       startOn: defaultScheduleDate,
       days: [true, true, true, true, true, true, true],
       until: undefined,
@@ -446,7 +438,7 @@ export function CreateTaskForm({
     },
   );
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
-    scheduleToEdit?.until ? ScheduleUntilValue.ON : ScheduleUntilValue.NEVER,
+    schedule?.until ? ScheduleUntilValue.ON : ScheduleUntilValue.NEVER,
   );
 
   const handleScheduleUntilValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -458,15 +450,15 @@ export function CreateTaskForm({
       const date = new Date();
       date.setHours(23);
       date.setMinutes(59);
-      setSchedule((prev) => ({ ...prev, until: date }));
+      setCurrentSchedule((prev) => ({ ...prev, until: date }));
     } else {
-      setSchedule((prev) => ({ ...prev, until: undefined }));
+      setCurrentSchedule((prev) => ({ ...prev, until: undefined }));
     }
     setScheduleUntilValue(event.target.value);
   };
 
-  const existingBookingLabel = requestTask
-    ? getTaskBookingLabelFromTaskRequest(requestTask)
+  const existingBookingLabel = taskRequest
+    ? getTaskBookingLabelFromTaskRequest(taskRequest)
     : undefined;
   let existingWarnTime: Date | null = null;
   if (existingBookingLabel && 'unix_millis_warn_time' in existingBookingLabel) {
@@ -485,7 +477,7 @@ export function CreateTaskForm({
   };
 
   const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
-    setTaskRequest((prev) => {
+    setCurrentTaskRequest((prev) => {
       return {
         ...prev,
         category: newCategory,
@@ -498,7 +490,7 @@ export function CreateTaskForm({
   // FIXME: Favorite tasks are disabled for custom compose tasks for now, as it
   // will require a re-write of FavoriteTask's pydantic model with better typing.
   const handleCustomComposeTaskDescriptionChange = (newDesc: CustomComposeTaskDescription) => {
-    setTaskRequest((prev) => {
+    setCurrentTaskRequest((prev) => {
       return {
         ...prev,
         category: CustomComposeTaskDefinition.requestCategory,
@@ -516,7 +508,7 @@ export function CreateTaskForm({
       case PatrolTaskDefinition.taskDefinitionId:
         return (
           <PatrolTaskForm
-            taskDesc={taskRequest.description as PatrolTaskDescription}
+            taskDesc={currentTaskRequest.description as PatrolTaskDescription}
             patrolWaypoints={patrolWaypoints}
             onChange={(desc) =>
               handleTaskDescriptionChange(PatrolTaskDefinition.requestCategory, desc)
@@ -527,7 +519,7 @@ export function CreateTaskForm({
       case DeliveryTaskDefinition.taskDefinitionId:
         return (
           <DeliveryTaskForm
-            taskDesc={taskRequest.description as DeliveryTaskDescription}
+            taskDesc={currentTaskRequest.description as DeliveryTaskDescription}
             pickupPoints={pickupPoints}
             dropoffPoints={dropoffPoints}
             onChange={(desc) =>
@@ -539,10 +531,10 @@ export function CreateTaskForm({
       case ComposeCleanTaskDefinition.taskDefinitionId:
         return (
           <ComposeCleanTaskForm
-            taskDesc={taskRequest.description as ComposeCleanTaskDescription}
+            taskDesc={currentTaskRequest.description as ComposeCleanTaskDescription}
             cleaningZones={cleaningZones}
             onChange={(desc: ComposeCleanTaskDescription) => {
-              desc.category = taskRequest.description.category;
+              desc.category = currentTaskRequest.description.category;
               handleTaskDescriptionChange(ComposeCleanTaskDefinition.requestCategory, desc);
             }}
             onValidate={onValidate}
@@ -551,14 +543,14 @@ export function CreateTaskForm({
       case DeliveryPickupTaskDefinition.taskDefinitionId:
         return (
           <DeliveryPickupTaskForm
-            taskDesc={taskRequest.description as DeliveryPickupTaskDescription}
+            taskDesc={currentTaskRequest.description as DeliveryPickupTaskDescription}
             pickupPoints={pickupPoints}
             cartIds={cartIds}
             dropoffPoints={dropoffPoints}
             onChange={(desc: DeliveryPickupTaskDescription) => {
-              desc.category = taskRequest.description.category;
+              desc.category = currentTaskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
-                taskRequest.description.category;
+                currentTaskRequest.description.category;
               handleTaskDescriptionChange(DeliveryPickupTaskDefinition.requestCategory, desc);
             }}
             onValidate={onValidate}
@@ -567,14 +559,14 @@ export function CreateTaskForm({
       case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
         return (
           <DeliveryCustomTaskForm
-            taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
+            taskDesc={currentTaskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
             cartIds={cartIds}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => {
-              desc.category = taskRequest.description.category;
+              desc.category = currentTaskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
-                taskRequest.description.category;
+                currentTaskRequest.description.category;
               handleTaskDescriptionChange(
                 DeliverySequentialLotPickupTaskDefinition.requestCategory,
                 desc,
@@ -586,14 +578,14 @@ export function CreateTaskForm({
       case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
         return (
           <DeliveryCustomTaskForm
-            taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
+            taskDesc={currentTaskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
             cartIds={cartIds}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => {
-              desc.category = taskRequest.description.category;
+              desc.category = currentTaskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
-                taskRequest.description.category;
+                currentTaskRequest.description.category;
               handleTaskDescriptionChange(DeliveryAreaPickupTaskDefinition.requestCategory, desc);
             }}
             onValidate={onValidate}
@@ -602,7 +594,7 @@ export function CreateTaskForm({
       case CustomComposeTaskDefinition.taskDefinitionId:
         return (
           <CustomComposeTaskForm
-            taskDesc={taskRequest.description as CustomComposeTaskDescription}
+            taskDesc={currentTaskRequest.description as CustomComposeTaskDescription}
             onChange={(desc) => {
               handleCustomComposeTaskDescriptionChange(desc);
             }}
@@ -624,10 +616,10 @@ export function CreateTaskForm({
       onFail && onFail(err);
       return;
     }
-    taskRequest.category = category;
+    currentTaskRequest.category = category;
 
     const description = getDefaultTaskDescription(newTaskDefinitionId) ?? '';
-    taskRequest.description = description;
+    currentTaskRequest.description = description;
 
     if (
       newTaskDefinitionId !== CustomComposeTaskDefinition.taskDefinitionId &&
@@ -637,9 +629,8 @@ export function CreateTaskForm({
     }
   };
 
-  // no memo because deps would likely change
-  const handleSubmit = async (scheduling: boolean) => {
-    const request = { ...taskRequest };
+  const configureTaskRequest = (scheduling: boolean): TaskRequest | null => {
+    const request = { ...currentTaskRequest };
     request.requester = user;
     request.unix_millis_request_time = Date.now();
 
@@ -651,7 +642,7 @@ export function CreateTaskForm({
       } catch (e) {
         console.error('Invalid custom compose task description');
         onFail && onFail(e as Error, request);
-        return;
+        return null;
       }
     }
 
@@ -685,7 +676,7 @@ export function CreateTaskForm({
           `Failed to generate booking label for task request of definition ID: ${taskDefinitionId}`,
         );
         onFail && onFail(error, request);
-        return;
+        return null;
       }
 
       if (warnTime !== null) {
@@ -700,42 +691,81 @@ export function CreateTaskForm({
       console.log(`labels: ${request.labels}`);
     } catch (e) {
       console.error('Failed to generate string for task request label');
+      onFail && onFail(e as Error, request);
+      return null;
+    }
+    return request;
+  };
+
+  const handleSubmitNow: React.MouseEventHandler = async (ev) => {
+    ev.preventDefault();
+    if (!onDispatchTask) {
+      return;
+    }
+
+    const request = configureTaskRequest(false);
+    if (!request) {
+      return;
     }
 
     try {
       setSubmitting(true);
-      if (scheduling) {
-        await onScheduleTask(request, schedule);
-      } else if (dispatchType === DispatchType.Robot) {
+      if (dispatchType === DispatchType.Robot) {
         await onDispatchTask(request, robotDispatchTarget);
       } else {
         await onDispatchTask(request, null);
       }
       setSubmitting(false);
 
-      if (scheduling) {
-        onSuccessScheduling && onSuccessScheduling();
-      } else {
-        onSuccess && onSuccess(request);
-      }
+      onSuccess && onSuccess(request);
     } catch (e) {
       setSubmitting(false);
-      if (scheduling) {
-        onFailScheduling && onFailScheduling(e as Error);
-      } else {
-        onFail && onFail(e as Error, request);
-      }
+      onFail && onFail(e as Error, request);
     }
-  };
-
-  const handleSubmitNow: React.MouseEventHandler = async (ev) => {
-    ev.preventDefault();
-    await handleSubmit(false);
   };
 
   const handleSubmitSchedule: React.FormEventHandler = async (ev) => {
     ev.preventDefault();
-    await handleSubmit(true);
+    if (!onScheduleTask) {
+      return;
+    }
+
+    const request = configureTaskRequest(false);
+    if (!request) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await onScheduleTask(request, currentSchedule);
+      setSubmitting(false);
+      onSuccessScheduling && onSuccessScheduling();
+    } catch (e) {
+      setSubmitting(false);
+      onFailScheduling && onFailScheduling(e as Error);
+    }
+  };
+
+  const handleEditSchedule: React.FormEventHandler = async (ev) => {
+    ev.preventDefault();
+    if (!onEditScheduleTask) {
+      return;
+    }
+
+    const request = configureTaskRequest(false);
+    if (!request) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await onEditScheduleTask(request, currentSchedule);
+      setSubmitting(false);
+      onSuccessScheduling && onSuccessScheduling();
+    } catch (e) {
+      setSubmitting(false);
+      onFailScheduling && onFailScheduling(e as Error);
+    }
   };
 
   const handleSubmitFavoriteTask: React.MouseEventHandler = async (ev) => {
@@ -793,7 +823,7 @@ export function CreateTaskForm({
         return;
       }
 
-      setTaskRequest(defaultTaskRequest);
+      setCurrentTaskRequest(defaultTaskRequest);
       setOpenFavoriteDialog(false);
       setCallToDeleteFavoriteTask(false);
       setCallToUpdateFavoriteTask(false);
@@ -804,7 +834,7 @@ export function CreateTaskForm({
   };
 
   const handlePrioritySwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTaskRequest((prev) => {
+    setCurrentTaskRequest((prev) => {
       return {
         ...prev,
         priority: createTaskPriority(event.target.checked),
@@ -819,7 +849,7 @@ export function CreateTaskForm({
   }
 
   const [dispatchType, setDispatchType] = React.useState<DispatchType>(
-    requestTask && requestTask.fleet_name ? DispatchType.Fleet : DispatchType.Automatic,
+    taskRequest && taskRequest.fleet_name ? DispatchType.Fleet : DispatchType.Automatic,
   );
   const [robotDispatchTarget, setRobotDispatchTarget] = React.useState<RobotDispatchTarget | null>(
     null,
@@ -827,7 +857,7 @@ export function CreateTaskForm({
 
   const handleChangeDispatchType = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setDispatchType(ev.target.value as DispatchType);
-    setTaskRequest((prev) => {
+    setCurrentTaskRequest((prev) => {
       return {
         ...prev,
         fleet_name: undefined,
@@ -837,7 +867,7 @@ export function CreateTaskForm({
   };
 
   const handleDispatchFleetTargetChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setTaskRequest((prev) => {
+    setCurrentTaskRequest((prev) => {
       return {
         ...prev,
         fleet_name: ev.target.value.length > 0 ? ev.target.value : undefined,
@@ -869,16 +899,16 @@ export function CreateTaskForm({
   return (
     <>
       <StyledDialog
-        title="Create Task"
+        title={taskRequest ? 'Edit Schedule' : 'Create Task'}
         maxWidth={isScreenHeightLessThan800 ? 'md' : 'lg'}
         disableEnforceFocus
         {...otherProps}
       >
-        <form aria-label="create-task">
+        <form aria-label="task-form">
           <DialogTitle>
             <Grid container wrap="nowrap" alignItems="center">
               <Grid item xs className={classes.title} container justifyContent="center">
-                Create Task
+                {taskRequest ? 'Edit Schedule' : 'Create Task'}
               </Grid>
             </Grid>
           </DialogTitle>
@@ -902,7 +932,7 @@ export function CreateTaskForm({
                       setOpenDialog={setOpenFavoriteDialog}
                       listItemClick={() => {
                         setFavoriteTaskBuffer(favoriteTask);
-                        setTaskRequest({
+                        setCurrentTaskRequest({
                           category: favoriteTask.category,
                           description: favoriteTask.description,
                           unix_millis_earliest_start_time: 0,
@@ -974,13 +1004,13 @@ export function CreateTaskForm({
                       <FormControlLabel
                         control={
                           <Switch
-                            checked={parseTaskPriority(taskRequest.priority)}
+                            checked={parseTaskPriority(currentTaskRequest.priority)}
                             onChange={handlePrioritySwitchChange}
                           />
                         }
                         label="Prioritize"
                         sx={{
-                          color: parseTaskPriority(taskRequest.priority)
+                          color: parseTaskPriority(currentTaskRequest.priority)
                             ? undefined
                             : theme.palette.action.disabled,
                         }}
@@ -1019,7 +1049,7 @@ export function CreateTaskForm({
                         variant="outlined"
                         fullWidth
                         margin="normal"
-                        value={taskRequest.fleet_name ?? ''}
+                        value={currentTaskRequest.fleet_name ?? ''}
                         defaultValue=""
                         onChange={handleDispatchFleetTargetChange}
                       >
@@ -1113,22 +1143,37 @@ export function CreateTaskForm({
             >
               Cancel
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={submitting || !formFullyFilled || robotDispatchTarget !== null}
-              className={classes.actionBtn}
-              onClick={() => setOpenSchedulingDialog(true)}
-              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
-              startIcon={<ScheduleSendIcon />}
-            >
-              {scheduleToEdit ? 'Edit schedule' : 'Add to Schedule'}
-            </Button>
+            {onScheduleTask ? (
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={submitting || !formFullyFilled || robotDispatchTarget !== null}
+                className={classes.actionBtn}
+                onClick={() => setOpenSchedulingDialog(true)}
+                size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+                startIcon={<ScheduleSendIcon />}
+              >
+                Add to Schedule
+              </Button>
+            ) : null}
+            {onEditScheduleTask ? (
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={submitting || !formFullyFilled || robotDispatchTarget !== null}
+                className={classes.actionBtn}
+                onClick={() => setOpenSchedulingDialog(true)}
+                size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+                startIcon={<ScheduleSendIcon />}
+              >
+                Edit schedule
+              </Button>
+            ) : null}
             <Button
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting || !formFullyFilled || scheduleToEdit !== undefined}
+              disabled={submitting || !formFullyFilled || schedule !== undefined}
               className={classes.actionBtn}
               aria-label="Submit Now"
               onClick={handleSubmitNow}
@@ -1179,33 +1224,37 @@ export function CreateTaskForm({
       )}
       {openSchedulingDialog && (
         <ConfirmationDialog
-          confirmText="Schedule"
+          confirmText={schedule ? 'Edit Schedule' : 'Schedule'}
           cancelText="Cancel"
           open={openSchedulingDialog}
-          title="Schedule Task"
+          title={schedule ? 'Edit Scheduled Task' : 'Schedule Task'}
           submitting={false}
           onClose={() => setOpenSchedulingDialog(false)}
           onSubmit={(ev) => {
-            handleSubmitSchedule(ev);
+            if (schedule) {
+              handleEditSchedule(ev);
+            } else {
+              handleSubmitSchedule(ev);
+            }
             setOpenSchedulingDialog(false);
           }}
         >
           <Grid container spacing={theme.spacing(2)} marginTop={theme.spacing(1)}>
             <Grid item xs={6}>
               <DatePicker
-                value={schedule.startOn}
+                value={currentSchedule.startOn}
                 onChange={(date) => {
                   if (!date) {
                     console.error('DatePicker: invalid date');
                     return;
                   }
                   console.debug(`DatePicker: ${date}`);
-                  setSchedule((prev) => {
-                    date.setHours(schedule.at.getHours());
-                    date.setMinutes(schedule.at.getMinutes());
+                  setCurrentSchedule((prev) => {
+                    date.setHours(currentSchedule.at.getHours());
+                    date.setMinutes(currentSchedule.at.getMinutes());
                     date.setSeconds(0);
                     date.setMilliseconds(0);
-                    console.debug(`DatePicker setSchedule: ${date}`);
+                    console.debug(`DatePicker setCurrentSchedule: ${date}`);
                     return { ...prev, startOn: date };
                   });
                 }}
@@ -1214,7 +1263,7 @@ export function CreateTaskForm({
             </Grid>
             <Grid item xs={6}>
               <TimePicker
-                value={schedule.at}
+                value={currentSchedule.at}
                 onChange={(date) => {
                   if (!date) {
                     console.error('TimePicker: invalid date');
@@ -1222,14 +1271,14 @@ export function CreateTaskForm({
                   }
                   console.debug(`TimePicker: ${date}`);
                   if (!isNaN(date.valueOf())) {
-                    setSchedule((prev) => {
+                    setCurrentSchedule((prev) => {
                       const startOn = new Date(prev.startOn);
                       startOn.setHours(date.getHours());
                       startOn.setMinutes(date.getMinutes());
                       startOn.setSeconds(0);
                       startOn.setMilliseconds(0);
-                      console.debug(`TimePicker setSchedule date: ${date}`);
-                      console.debug(`TimePicker setSchedule startOn: ${startOn}`);
+                      console.debug(`TimePicker setCurrentSchedule date: ${date}`);
+                      console.debug(`TimePicker setCurrentSchedule startOn: ${startOn}`);
                       return { ...prev, at: date, startOn };
                     });
                   }
@@ -1239,8 +1288,8 @@ export function CreateTaskForm({
             </Grid>
             <Grid item xs={12}>
               <DaySelectorSwitch
-                value={schedule.days}
-                onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
+                value={currentSchedule.days}
+                onChange={(days) => setCurrentSchedule((prev) => ({ ...prev, days }))}
               />
             </Grid>
           </Grid>
@@ -1280,7 +1329,9 @@ export function CreateTaskForm({
                 <Grid item xs={4}>
                   <DatePicker
                     value={
-                      scheduleUntilValue === ScheduleUntilValue.NEVER ? new Date() : schedule.until
+                      scheduleUntilValue === ScheduleUntilValue.NEVER
+                        ? new Date()
+                        : currentSchedule.until
                     }
                     onChange={(date) => {
                       if (!date) {
@@ -1288,10 +1339,10 @@ export function CreateTaskForm({
                         return;
                       }
                       console.debug(`Until DatePicker: ${date}`);
-                      setSchedule((prev) => {
+                      setCurrentSchedule((prev) => {
                         date.setHours(23);
                         date.setMinutes(59);
-                        console.debug(`Until DatePicker setSchedule: ${date}`);
+                        console.debug(`Until DatePicker setCurrentSchedule: ${date}`);
                         return { ...prev, until: date };
                       });
                     }}

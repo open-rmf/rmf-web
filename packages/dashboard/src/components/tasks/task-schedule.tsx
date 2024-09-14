@@ -13,14 +13,14 @@ import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-c
 import React from 'react';
 import {
   ConfirmationDialog,
-  CreateTaskForm,
-  CreateTaskFormProps,
   EventEditDeletePopup,
   Schedule,
+  TaskForm,
+  TaskFormProps,
 } from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
-import { useCreateTaskFormData } from '../../hooks/use-create-task-form';
+import { useTaskFormData } from '../../hooks/use-create-task-form';
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { useTaskRegistry } from '../../hooks/use-task-registry';
 import { useUserProfile } from '../../hooks/use-user-profile';
@@ -72,7 +72,7 @@ export const TaskSchedule = () => {
   const { showAlert } = useAppController();
 
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets } =
-    useCreateTaskFormData(rmfApi);
+    useTaskFormData(rmfApi);
   const username = useUserProfile().user.username;
   const taskRegistry = useTaskRegistry();
   const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
@@ -191,7 +191,7 @@ export const TaskSchedule = () => {
     );
   };
 
-  const dispatchTaskCallback = React.useCallback<Required<CreateTaskFormProps>['onDispatchTask']>(
+  const dispatchTaskCallback = React.useCallback<Required<TaskFormProps>['onDispatchTask']>(
     async (taskRequest, robotDispatchTarget) => {
       if (!rmfApi) {
         throw new Error('tasks api not available');
@@ -203,7 +203,7 @@ export const TaskSchedule = () => {
   );
 
   const editScheduledTaskCallback = React.useCallback<
-    Required<CreateTaskFormProps>['onScheduleTask']
+    Required<TaskFormProps>['onEditScheduleTask']
   >(
     async (taskRequest, schedule) => {
       if (!rmfApi) {
@@ -220,6 +220,9 @@ export const TaskSchedule = () => {
           `Editing schedule id [${currentScheduleTask.id}] with new schedule: ${schedule}`,
         );
         await editScheduledTaskSchedule(rmfApi, taskRequest, schedule, currentScheduleTask.id);
+
+        setEventScope(EventScopes.CURRENT);
+        AppEvents.refreshTaskSchedule.next();
         return;
       }
 
@@ -334,7 +337,7 @@ export const TaskSchedule = () => {
         onSelectedDateChange={setSelectedDate}
       />
       {openCreateTaskForm && (
-        <CreateTaskForm
+        <TaskForm
           user={username ? username : 'unknown user'}
           fleets={fleets}
           tasksToDisplay={taskRegistry.taskDefinitions}
@@ -343,15 +346,16 @@ export const TaskSchedule = () => {
           pickupPoints={pickupPoints}
           dropoffPoints={dropoffPoints}
           open={openCreateTaskForm}
-          scheduleToEdit={scheduleToEdit}
-          requestTask={currentScheduleTask?.task_request}
+          schedule={scheduleToEdit}
+          taskRequest={currentScheduleTask?.task_request}
           onClose={() => {
             setOpenCreateTaskForm(false);
             setEventScope(EventScopes.CURRENT);
             AppEvents.refreshTaskSchedule.next();
           }}
           onDispatchTask={dispatchTaskCallback}
-          onScheduleTask={editScheduledTaskCallback}
+          onScheduleTask={undefined}
+          onEditScheduleTask={editScheduledTaskCallback}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
             showAlert('success', 'Successfully created task');

@@ -2,7 +2,7 @@ import { Grid, TextField, useTheme } from '@mui/material';
 import React from 'react';
 
 import { TaskBookingLabels } from '../booking-label';
-import { TaskDefinition } from '../create-task';
+import { TaskDefinition } from '../task-form';
 
 export const CustomComposeTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'custom_compose',

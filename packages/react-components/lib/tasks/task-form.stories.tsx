@@ -1,15 +1,15 @@
 import { Meta, StoryObj } from '@storybook/react';
 
-import { CreateTaskForm } from './create-task';
+import { TaskForm } from './task-form';
 
 export default {
   title: 'Tasks/Create Task',
-  component: CreateTaskForm,
+  component: TaskForm,
 } satisfies Meta;
 
-type Story = StoryObj<typeof CreateTaskForm>;
+type Story = StoryObj<typeof TaskForm>;
 
-export const CreateTask: Story = {
+export const OpenTaskForm: Story = {
   args: {
     onDispatchTask: async () => new Promise((res) => setTimeout(res, 500)),
     onScheduleTask: async () => new Promise((res) => setTimeout(res, 500)),
@@ -19,6 +19,6 @@ export const CreateTask: Story = {
     dropoffPoints: { test_waypoint_1: 'test_waypoint_1' },
   },
   render: (args) => {
-    return <CreateTaskForm {...args} open></CreateTaskForm>;
+    return <TaskForm {...args} open></TaskForm>;
   },
 };

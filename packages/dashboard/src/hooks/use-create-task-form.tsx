@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 
 import { RmfApi } from '../services/rmf-api';
 
-export const useCreateTaskFormData = (rmfApi: RmfApi | undefined) => {
+export const useTaskFormData = (rmfApi: RmfApi | undefined) => {
   const [waypointNames, setWaypointNames] = React.useState<string[]>([]);
   const [cleaningZoneNames, setCleaningZoneNames] = React.useState<string[]>([]);
   const [pickupPoints, setPickupPoints] = React.useState<Record<string, string>>({});
