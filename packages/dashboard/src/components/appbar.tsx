@@ -43,19 +43,19 @@ import {
 import { AlertRequest, FireAlarmTriggerState, TaskFavorite } from 'api-client';
 import { formatDistance } from 'date-fns';
 import React from 'react';
-import { ConfirmationDialog, CreateTaskForm, CreateTaskFormProps } from 'react-components';
+import { ConfirmationDialog, TaskForm, TaskFormProps } from 'react-components';
 import { Subscription } from 'rxjs';
 
 import { useAppController } from '../hooks/use-app-controller';
 import { useAuthenticator } from '../hooks/use-authenticator';
-import { useCreateTaskFormData } from '../hooks/use-create-task-form';
+import { useTaskFormData } from '../hooks/use-create-task-form';
 import { useResources } from '../hooks/use-resources';
 import { useRmfApi } from '../hooks/use-rmf-api';
 import { useSettings } from '../hooks/use-settings';
 import { useTaskRegistry } from '../hooks/use-task-registry';
 import { useUserProfile } from '../hooks/use-user-profile';
 import { AppEvents } from './app-events';
-import { toApiSchedule } from './tasks/utils';
+import { dispatchTask, scheduleTask } from './tasks/utils';
 import { DashboardThemes } from './theme';
 
 export const APP_BAR_HEIGHT = '3.5rem';
@@ -116,8 +116,8 @@ export const AppBar = React.memo(
       FireAlarmTriggerState | undefined
     >(undefined);
 
-    const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
-      useCreateTaskFormData(rmfApi);
+    const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets } =
+      useTaskFormData(rmfApi);
     const username = profile.user.username;
 
     async function handleLogout(): Promise<void> {
@@ -147,30 +147,23 @@ export const AppBar = React.memo(
       return () => subs.forEach((s) => s.unsubscribe());
     }, [rmfApi]);
 
-    const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
-      async (taskRequests, schedule) => {
-        if (!schedule) {
-          await Promise.all(
-            taskRequests.map((request) => {
-              console.debug('submitTask:');
-              console.debug(request);
-              return rmfApi.tasksApi.postDispatchTaskTasksDispatchTaskPost({
-                type: 'dispatch_task_request',
-                request,
-              });
-            }),
-          );
-        } else {
-          const scheduleRequests = taskRequests.map((req) => {
-            console.debug('schedule task:');
-            console.debug(req);
-            console.debug(schedule);
-            return toApiSchedule(req, schedule);
-          });
-          await Promise.all(
-            scheduleRequests.map((req) => rmfApi.tasksApi.postScheduledTaskScheduledTasksPost(req)),
-          );
+    const dispatchTaskCallback = React.useCallback<Required<TaskFormProps>['onDispatchTask']>(
+      async (taskRequest, robotDispatchTarget) => {
+        if (!rmfApi) {
+          throw new Error('tasks api not available');
         }
+        await dispatchTask(rmfApi, taskRequest, robotDispatchTarget);
+        AppEvents.refreshTaskApp.next();
+      },
+      [rmfApi],
+    );
+
+    const scheduleTaskCallback = React.useCallback<Required<TaskFormProps>['onScheduleTask']>(
+      async (taskRequest, schedule) => {
+        if (!rmfApi) {
+          throw new Error('tasks api not available');
+        }
+        await scheduleTask(rmfApi, taskRequest, schedule);
         AppEvents.refreshTaskApp.next();
       },
       [rmfApi],
@@ -189,9 +182,7 @@ export const AppBar = React.memo(
       return () => sub.unsubscribe();
     }, [rmfApi]);
 
-    const submitFavoriteTask = React.useCallback<
-      Required<CreateTaskFormProps>['submitFavoriteTask']
-    >(
+    const submitFavoriteTask = React.useCallback<Required<TaskFormProps>['submitFavoriteTask']>(
       async (taskFavoriteRequest) => {
         await rmfApi.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
         AppEvents.refreshFavoriteTasks.next();
@@ -199,9 +190,7 @@ export const AppBar = React.memo(
       [rmfApi],
     );
 
-    const deleteFavoriteTask = React.useCallback<
-      Required<CreateTaskFormProps>['deleteFavoriteTask']
-    >(
+    const deleteFavoriteTask = React.useCallback<Required<TaskFormProps>['deleteFavoriteTask']>(
       async (favoriteTask) => {
         if (!favoriteTask.id) {
           throw new Error('Id is needed');
@@ -464,8 +453,9 @@ export const AppBar = React.memo(
         </Menu>
 
         {openCreateTaskForm && (
-          <CreateTaskForm
+          <TaskForm
             user={username ? username : 'unknown user'}
+            fleets={fleets}
             tasksToDisplay={taskRegistry.taskDefinitions}
             patrolWaypoints={waypointNames}
             cleaningZones={cleaningZoneNames}
@@ -476,7 +466,9 @@ export const AppBar = React.memo(
             favoritesTasks={favoritesTasks}
             open={openCreateTaskForm}
             onClose={() => setOpenCreateTaskForm(false)}
-            submitTasks={submitTasks}
+            onDispatchTask={dispatchTaskCallback}
+            onScheduleTask={scheduleTaskCallback}
+            onEditScheduleTask={undefined}
             submitFavoriteTask={submitFavoriteTask}
             deleteFavoriteTask={deleteFavoriteTask}
             onSuccess={() => {

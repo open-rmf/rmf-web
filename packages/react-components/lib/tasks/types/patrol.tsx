@@ -16,7 +16,7 @@ import React from 'react';
 
 import { PositiveIntField } from '../../form-inputs';
 import { TaskBookingLabels } from '../booking-label';
-import { TaskDefinition } from '../create-task';
+import { TaskDefinition } from '../task-form';
 
 export const PatrolTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'patrol',
@@ -124,7 +124,6 @@ export function PatrolTaskForm({
     onValidate(isPatrolTaskDescriptionValid(desc));
     onChange(desc);
   };
-  onValidate(isPatrolTaskDescriptionValid(taskDesc));
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">

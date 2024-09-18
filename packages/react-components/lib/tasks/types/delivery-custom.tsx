@@ -2,7 +2,7 @@ import { Autocomplete, Grid, TextField, useMediaQuery, useTheme } from '@mui/mat
 import React from 'react';
 
 import { TaskBookingLabels } from '../booking-label';
-import { TaskDefinition } from '../create-task';
+import { TaskDefinition } from '../task-form';
 import { isNonEmptyString } from './utils';
 
 export const DeliveryPickupTaskDefinition: TaskDefinition = {

@@ -1,5 +1,14 @@
-import { PostScheduledTaskRequest, TaskRequest, TaskStateOutput as TaskState } from 'api-client';
-import { getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
+import {
+  AddExceptDateRequest,
+  PostScheduledTaskRequest,
+  RobotTaskRequest,
+  TaskRequest,
+  TaskStateOutput as TaskState,
+} from 'api-client';
+import { getTaskBookingLabelFromTaskState, RobotDispatchTarget, Schedule } from 'react-components';
+
+import { RmfApi } from '../../services/rmf-api';
+import { toISOStringWithTimezone } from './task-schedule-utils';
 
 export function exportCsvFull(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
@@ -115,3 +124,72 @@ export const toApiSchedule = (
     schedules: apiSchedules,
   };
 };
+
+export async function dispatchTask(
+  rmf: RmfApi,
+  taskRequest: TaskRequest,
+  robotDispatchTarget: RobotDispatchTarget | null,
+) {
+  if (robotDispatchTarget) {
+    const robotTask: RobotTaskRequest = {
+      type: 'robot_task_request',
+      robot: robotDispatchTarget.robot,
+      fleet: robotDispatchTarget.fleet,
+      request: taskRequest,
+    };
+    console.debug(`dispatch robot task: ${robotTask}`);
+    await rmf.tasksApi.postRobotTaskTasksRobotTaskPost(robotTask);
+    return;
+  }
+
+  console.debug(`dispatch task: ${taskRequest}`);
+  await rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+    type: 'dispatch_task_request',
+    request: taskRequest,
+  });
+}
+
+export async function scheduleTask(rmf: RmfApi, taskRequest: TaskRequest, schedule: Schedule) {
+  console.debug(`schedule task: ${taskRequest}\nschedule: ${schedule}`);
+  const scheduleRequest = toApiSchedule(taskRequest, schedule);
+  await rmf.tasksApi.postScheduledTaskScheduledTasksPost(scheduleRequest);
+}
+
+export async function editScheduledTaskEvent(
+  rmf: RmfApi,
+  taskRequest: TaskRequest,
+  newEventSchedule: Schedule,
+  newEventDate: Date,
+  originalScheduleTaskId: number,
+) {
+  const addExceptDateRequest: AddExceptDateRequest = {
+    except_date: toISOStringWithTimezone(newEventDate),
+  };
+  console.debug(
+    `Adding [${addExceptDateRequest.except_date}] to except date of scheduled task [${originalScheduleTaskId}]`,
+  );
+  await rmf.tasksApi.addExceptDateScheduledTasksTaskIdExceptDatePost(
+    originalScheduleTaskId,
+    addExceptDateRequest,
+  );
+
+  console.debug(
+    `creating new schedule for edited event: ${taskRequest}\nschedule: ${newEventSchedule}`,
+  );
+  const newScheduleRequest = toApiSchedule(taskRequest, newEventSchedule);
+  await rmf.tasksApi.postScheduledTaskScheduledTasksPost(newScheduleRequest);
+}
+
+export async function editScheduledTaskSchedule(
+  rmf: RmfApi,
+  taskRequest: TaskRequest,
+  newSchedule: Schedule,
+  scheduleTaskId: number,
+) {
+  const scheduleRequest = toApiSchedule(taskRequest, newSchedule);
+
+  await rmf.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
+    scheduleTaskId,
+    scheduleRequest,
+  );
+}

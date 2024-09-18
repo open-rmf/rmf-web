@@ -3,7 +3,7 @@ import React from 'react';
 
 import { PositiveIntField } from '../../form-inputs';
 import { TaskBookingLabels } from '../booking-label';
-import { TaskDefinition } from '../create-task';
+import { TaskDefinition } from '../task-form';
 import { isNonEmptyString, isPositiveNumber } from './utils';
 
 export const DeliveryTaskDefinition: TaskDefinition = {

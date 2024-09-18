@@ -13,14 +13,14 @@ import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-c
 import React from 'react';
 import {
   ConfirmationDialog,
-  CreateTaskForm,
-  CreateTaskFormProps,
   EventEditDeletePopup,
   Schedule,
+  TaskForm,
+  TaskFormProps,
 } from 'react-components';
 
 import { useAppController } from '../../hooks/use-app-controller';
-import { useCreateTaskFormData } from '../../hooks/use-create-task-form';
+import { useTaskFormData } from '../../hooks/use-create-task-form';
 import { useRmfApi } from '../../hooks/use-rmf-api';
 import { useTaskRegistry } from '../../hooks/use-task-registry';
 import { useUserProfile } from '../../hooks/use-user-profile';
@@ -33,7 +33,7 @@ import {
   scheduleWithSelectedDay,
   toISOStringWithTimezone,
 } from './task-schedule-utils';
-import { toApiSchedule } from './utils';
+import { dispatchTask, editScheduledTaskEvent, editScheduledTaskSchedule } from './utils';
 
 enum EventScopes {
   ALL = 'all',
@@ -71,8 +71,8 @@ export const TaskSchedule = () => {
   const rmfApi = useRmfApi();
   const { showAlert } = useAppController();
 
-  const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
-    useCreateTaskFormData(rmfApi);
+  const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets } =
+    useTaskFormData(rmfApi);
   const username = useUserProfile().user.username;
   const taskRegistry = useTaskRegistry();
   const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
@@ -191,30 +191,51 @@ export const TaskSchedule = () => {
     );
   };
 
-  const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
-    async (taskRequests, schedule) => {
-      if (!schedule || !currentScheduleTask) {
-        throw new Error('No schedule or task selected for submission.');
+  const dispatchTaskCallback = React.useCallback<Required<TaskFormProps>['onDispatchTask']>(
+    async (taskRequest, robotDispatchTarget) => {
+      if (!rmfApi) {
+        throw new Error('tasks api not available');
+      }
+      await dispatchTask(rmfApi, taskRequest, robotDispatchTarget);
+      AppEvents.refreshTaskApp.next();
+    },
+    [rmfApi],
+  );
+
+  const editScheduledTaskCallback = React.useCallback<
+    Required<TaskFormProps>['onEditScheduleTask']
+  >(
+    async (taskRequest, schedule) => {
+      if (!rmfApi) {
+        throw new Error('tasks api not available');
       }
 
-      const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, schedule));
-
-      let exceptDate: string | undefined = undefined;
-      if (eventScope === EventScopes.CURRENT) {
-        exceptDate = toISOStringWithTimezone(exceptDateRef.current);
-        console.debug(`Editing schedule id ${currentScheduleTask.id}, event date ${exceptDate}`);
-      } else {
-        console.debug(`Editing schedule id ${currentScheduleTask.id}`);
+      if (!currentScheduleTask) {
+        throw new Error('No schedule task selected for submission.');
       }
 
-      await Promise.all(
-        scheduleRequests.map((req) =>
-          rmfApi.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
-            currentScheduleTask.id,
-            req,
-            exceptDate,
-          ),
-        ),
+      // Edit entire schedule
+      if (eventScope !== EventScopes.CURRENT) {
+        console.debug(
+          `Editing schedule id [${currentScheduleTask.id}] with new schedule: ${schedule}`,
+        );
+        await editScheduledTaskSchedule(rmfApi, taskRequest, schedule, currentScheduleTask.id);
+
+        setEventScope(EventScopes.CURRENT);
+        AppEvents.refreshTaskSchedule.next();
+        return;
+      }
+
+      // Edit a single event
+      console.debug(
+        `Editing schedule id [${currentScheduleTask.id}] event [${exceptDateRef.current}] with new schedule: ${schedule}`,
+      );
+      await editScheduledTaskEvent(
+        rmfApi,
+        taskRequest,
+        schedule,
+        exceptDateRef.current,
+        currentScheduleTask.id,
       );
 
       setEventScope(EventScopes.CURRENT);
@@ -316,22 +337,25 @@ export const TaskSchedule = () => {
         onSelectedDateChange={setSelectedDate}
       />
       {openCreateTaskForm && (
-        <CreateTaskForm
+        <TaskForm
           user={username ? username : 'unknown user'}
+          fleets={fleets}
           tasksToDisplay={taskRegistry.taskDefinitions}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
           pickupPoints={pickupPoints}
           dropoffPoints={dropoffPoints}
           open={openCreateTaskForm}
-          scheduleToEdit={scheduleToEdit}
-          requestTask={currentScheduleTask?.task_request}
+          schedule={scheduleToEdit}
+          taskRequest={currentScheduleTask?.task_request}
           onClose={() => {
             setOpenCreateTaskForm(false);
             setEventScope(EventScopes.CURRENT);
             AppEvents.refreshTaskSchedule.next();
           }}
-          submitTasks={submitTasks}
+          onDispatchTask={dispatchTaskCallback}
+          onScheduleTask={undefined}
+          onEditScheduleTask={editScheduledTaskCallback}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
             showAlert('success', 'Successfully created task');
