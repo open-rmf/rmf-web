@@ -305,7 +305,9 @@ export interface TaskFormProps extends Omit<ConfirmationDialogProps, 'onConfirmC
     task: TaskRequest,
     robotDispatchTarget: RobotDispatchTarget | null,
   ): Promise<void>;
+  /** If provided, the button Schedule Task will be rendered and clicking it will call this callback */
   onScheduleTask?(task: TaskRequest, schedule: Schedule): Promise<void>;
+  /** If provided, the button Edit Schedule will be rendered and clicking it will call this callback */
   onEditScheduleTask?(task: TaskRequest, schedule: Schedule): Promise<void>;
   onSuccess?(task: TaskRequest): void;
   onFail?(error: Error, task?: TaskRequest): void;
