@@ -1,4 +1,4 @@
-[![Nightly](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml) [![Dashboard End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![ros-translator](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml) [![api-client](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
+[![Nightly](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml) [![Dashboard End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![rmf-dashboard-framework](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-dashboard-framework.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-dashboard-framework.yml) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![ros-translator](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml) [![api-client](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
 
 # RMF Web
 
@@ -10,7 +10,7 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 - [Getting started from source](#getting-started-from-source)
 - [API server](packages/api-server)
 - [API client](packages/api-client)
-- [Dashboard](packages/dashboard)
+- [RMF Dashboard Framework](packages/rmf-dashboard-framework)
 - [Configuration](#configuration)
 - [Contribution guide](#contribution-guide)
 - [Roadmap](https://github.com/orgs/open-rmf/projects/10)
@@ -19,14 +19,14 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 
 These docker images are useful when trying out [`rmf_demos`](https://github.com/open-rmf/rmf_demos).
 
-Start the dashboard with host network access, `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` configured accordingly. The dashboard will then accessible on `localhost:3000` by default.
+Start the demo dashboard with host network access, `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` configured accordingly. The demo dashboard will then accessible on `localhost:3000` by default.
 
 ```bash
 docker run \
   --network host -it --rm \
   -e RMF_SERVER_URL=http://localhost:8000 \
   -e TRAJECTORY_SERVER_URL=ws://localhost:8006 \
-  ghcr.io/open-rmf/rmf-web/dashboard:latest
+  ghcr.io/open-rmf/rmf-web/demo-dashboard:latest
 ```
 
 > **Note**
@@ -49,7 +49,7 @@ docker run \
 
 ### Prerequisites
 
-We currently support [Ubuntu 24.04](https://releases.ubuntu.com/noble/), [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/index.html) and Open-RMF's [22.09](https://github.com/open-rmf/rmf/releases/tag/22.09) release. Other distributions may work as well, but is not guaranteed.
+We currently support [Ubuntu 24.04](https://releases.ubuntu.com/noble/), [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/index.html) and the latest Open-RMF release. Other distributions may work as well, but is not guaranteed.
 
 Install pnpm and nodejs
 
@@ -89,7 +89,7 @@ pnpm install -w --filter <package>...
 
 ### Launching for development
 
-Source Open-RMF and launch the dashboard in development mode,
+Source Open-RMF and launch the demo dashboard in development mode,
 
 ```bash
 # For binary installation
@@ -102,7 +102,7 @@ cd packages/rmf-dashboard-framework
 pnpm start
 ```
 
-This starts up the API server (by default at port 8000) which sets up endpoints to communicate with an Open-RMF deployment, as well as begin compilation of the dashboard. Once completed, it can be viewed at [localhost:3000](http://localhost:3000).
+This starts up the API server (by default at port 8000) which sets up endpoints to communicate with an Open-RMF deployment, as well as begin compilation of the demo dashboard. Once completed, it can be viewed at [localhost:5173](http://localhost:5173).
 
 If presented with a login screen, use `user=admin password=admin`.
 
@@ -131,7 +131,7 @@ pnpm start
 - For general contribution guidelines, see [CONTRIBUTING](CONTRIBUTING.md).
 - Follow [typescript guidelines](https://basarat.gitbook.io/typescript/styleguide).
 - When introducing a new feature or component in [`react-components`](packages/react-components), write tests and stories.
-- When introducing a new feature in [`dashboard`](packages/dashboard), write tests as well as [e2e](packages/dashboard-e2e) test whenever possible.
+- When introducing a new feature in [`rmf-dashboard-framework`](packages/rmf-dashboard-framework), write tests as well as [e2e](packages/dashboard-e2e) test whenever possible.
 - When introducing API changes with [`api-server`](packages/api-server),
   - If the new changes are to be used externally (outside of the web packages, with other Open-RMF packages for example), make changes to [`rmf_api_msgs`](https://github.com/open-rmf/rmf_api_msgs), before generating the required models using [this script](packages/api-server/generate-models.sh) with modified commit hashes.
   - Don't forget to update the API client with the newly added changes with [these instructions](packages/api-client/README.md/#generating-rest-api-client).
@@ -142,7 +142,6 @@ pnpm start
 
 # Configuration
 
-- See the [rmf-dashboard](packages/dashboard/README.md#configuration) docs for the frontend build-time and run-time configurations.
 - See the [api-server](packages/api-server/README.md#configuration) docs for API server run-time configurations.
 
 # Troubleshooting
