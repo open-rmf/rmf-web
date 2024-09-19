@@ -1,6 +1,7 @@
 export * from './task-booking-label-utils';
 export * from './task-cancellation';
 export * from './task-details-card';
+export * from './task-form';
 export * from './task-info';
 export * from './task-inspector';
 export * from './task-logs';
@@ -10,3 +11,4 @@ export * from './task-summary';
 export * from './task-table';
 export * from './task-timeline';
 export * from './tasks-window';
+export * from './utils';

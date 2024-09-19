@@ -21,8 +21,8 @@ import {
   startOfMinute,
 } from 'date-fns';
 
-import { RecurringDays, Schedule, TaskDefinition } from './create-task';
 import { getTaskBookingLabelFromTaskRequest } from './task-booking-label-utils';
+import { RecurringDays, Schedule, TaskDefinition } from './task-form';
 import { getShortDescription } from './types';
 
 /**

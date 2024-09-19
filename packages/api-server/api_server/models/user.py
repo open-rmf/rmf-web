@@ -5,6 +5,9 @@ from .base import PydanticModel
 
 
 class User(PydanticModel):
+    # FIXME(koonpeng): We should use the "userId" as the identifier. Some idP may allow
+    # duplicated usernames.
+    # userId: str
     username: str
     is_admin: bool = False
     roles: list[str] = []

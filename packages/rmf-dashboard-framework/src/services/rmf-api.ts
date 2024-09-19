@@ -304,6 +304,7 @@ export class DefaultRmfApi implements RmfApi {
     return this._ingestorStateObsStore[guid];
   }
 
+  // NOTE: This only emits once and doesn't update when the fleet changes.
   fleetsObs: Observable<FleetState[]>;
   private _fleetStateObsStore: Record<string, Observable<FleetState>> = {};
   getFleetStateObs(name: string): Observable<FleetState> {

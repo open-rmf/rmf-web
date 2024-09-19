@@ -59,7 +59,7 @@ describe('AppBar', () => {
   });
 
   it('logout is triggered when logout button is clicked', async () => {
-    const authenticator = new StubAuthenticator('test');
+    const authenticator = new StubAuthenticator();
     const spy = vi.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
     const root = render(
       <Base>

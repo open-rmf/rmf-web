@@ -4,11 +4,12 @@ import { Subscription } from 'rxjs';
 import { getPlaces } from '../components/place';
 import { RmfApi } from '../services/rmf-api';
 
-export const useCreateTaskFormData = (rmfApi: RmfApi | undefined) => {
+export const useTaskFormData = (rmfApi: RmfApi | undefined) => {
   const [waypointNames, setWaypointNames] = React.useState<string[]>([]);
   const [cleaningZoneNames, setCleaningZoneNames] = React.useState<string[]>([]);
   const [pickupPoints, setPickupPoints] = React.useState<Record<string, string>>({});
   const [dropoffPoints, setDropoffPoints] = React.useState<Record<string, string>>({});
+  const [fleets, setFleets] = React.useState<Record<string, string[]>>({});
 
   React.useEffect(() => {
     if (!rmfApi) {
@@ -42,9 +43,21 @@ export const useCreateTaskFormData = (rmfApi: RmfApi | undefined) => {
         setWaypointNames(waypointNames);
       }),
     );
+    subs.push(
+      rmfApi.fleetsObs.subscribe((fleetStates) => {
+        const result: Record<string, string[]> = {};
+        for (const fleet of fleetStates) {
+          if (!fleet.name || !fleet.robots) {
+            continue;
+          }
+          result[fleet.name] = Object.keys(fleet.robots);
+        }
+        setFleets(result);
+      }),
+    );
 
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmfApi]);
 
-  return { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames };
+  return { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames, fleets };
 };

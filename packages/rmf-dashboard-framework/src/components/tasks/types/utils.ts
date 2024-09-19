@@ -1,10 +1,10 @@
 import { TaskRequest } from 'api-client';
 
-import { TaskDefinition, TaskDescription } from '../create-task';
 import {
   getTaskBookingLabelFromTaskRequest,
   getTaskDefinitionId,
 } from '../task-booking-label-utils';
+import { TaskDefinition, TaskDescription } from '../task-form';
 import {
   ComposeCleanTaskDefinition,
   makeComposeCleanTaskShortDescription,

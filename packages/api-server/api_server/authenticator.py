@@ -1,10 +1,8 @@
-import base64
-import json
-import logging
 from typing import Any, Callable, Coroutine, Protocol
 
 import jwt
-from fastapi import Depends, Header, HTTPException
+import jwt.algorithms
+from fastapi import Depends, HTTPException
 from fastapi.security import OpenIdConnect
 
 from .app_config import app_config
@@ -22,9 +20,12 @@ class Authenticator(Protocol):
 
 
 class JwtAuthenticator:
+    _algorithms = jwt.algorithms.get_default_algorithms()
+    del _algorithms["none"]
+
     def __init__(
         self,
-        pem_file: str,
+        key_or_secret: "jwt.algorithms.AllowedPublicKeys | str | bytes",
         aud: str,
         iss: str,
         *,
@@ -38,8 +39,7 @@ class JwtAuthenticator:
         self.aud = aud
         self.iss = iss
         self.oidc_url = oidc_url
-        with open(pem_file, "r", encoding="utf8") as f:
-            self._public_key = f.read()
+        self._key_or_secret = key_or_secret
 
     async def _get_user(self, claims: dict) -> User:
         if not "preferred_username" in claims:
@@ -48,17 +48,9 @@ class JwtAuthenticator:
             )
 
         username = claims["preferred_username"]
+        # FIXME(koonpeng): We should use the "userId" as the identifier. Some idP may allow
+        # duplicated usernames.
         user = await User.load_or_create_from_db(username)
-
-        is_admin = False
-        if "realm_access" in claims:
-            if "roles" in claims["realm_access"]:
-                roles = claims["realm_access"]["roles"]
-                if "superuser" in roles:
-                    is_admin = True
-
-        if user.is_admin != is_admin:
-            await user.update_admin(is_admin)
 
         return user
 
@@ -68,8 +60,8 @@ class JwtAuthenticator:
         try:
             claims = jwt.decode(
                 token,
-                self._public_key,
-                algorithms=["RS256"],
+                self._key_or_secret,
+                algorithms=list(self._algorithms),
                 audience=self.aud,
                 issuer=self.iss,
             )
@@ -77,6 +69,7 @@ class JwtAuthenticator:
 
             return user
         except jwt.InvalidTokenError as e:
+            print(e)
             raise AuthenticationError(str(e)) from e
 
     def fastapi_dep(self) -> Callable[..., Coroutine[Any, Any, User] | User]:
@@ -94,45 +87,30 @@ class JwtAuthenticator:
         return dep
 
 
-class StubAuthenticator(Authenticator):
-    """
-    StubAuthenticator will authenticate as an admin user called "stub" if no tokens are
-    present. If there is a bearer token in the `Authorization` header, then it decodes the jwt
-    WITHOUT verifying the signature and authenticated as the user given.
-    """
-
-    async def verify_token(self, token: str | None):
-        if not token:
-            return User(username="stub", is_admin=True)
-        # decode the jwt without verifying signature
-        parts = token.split(".")
-        # add padding to ignore incorrect padding errors
-        payload = base64.b64decode(parts[1] + "==")
-        username = json.loads(payload)["preferred_username"]
-        return await User.load_or_create_from_db(username)
-
-    def fastapi_dep(self):
-        async def dep(authorization: str | None = Header(None)):
-            if not authorization:
-                return await self.verify_token(None)
-            token = authorization.split(" ")[1]
-            return await self.verify_token(token)
-
-        return dep
-
+if app_config.jwt_public_key and app_config.jwt_secret:
+    raise ValueError("only one of jwt_public_key or jwt_secret must be set")
+if not app_config.iss:
+    raise ValueError("iss is required")
+if not app_config.aud:
+    raise ValueError("aud is required")
 
 if app_config.jwt_public_key:
-    if app_config.iss is None:
-        raise ValueError("iss is required")
+    with open(app_config.jwt_public_key, "br") as f:
+        authenticator = JwtAuthenticator(
+            f.read(),
+            app_config.aud,
+            app_config.iss,
+            oidc_url=app_config.oidc_url or "",
+        )
+elif app_config.jwt_secret:
     authenticator = JwtAuthenticator(
-        app_config.jwt_public_key,
+        app_config.jwt_secret,
         app_config.aud,
         app_config.iss,
         oidc_url=app_config.oidc_url or "",
     )
 else:
-    authenticator = StubAuthenticator()
-    logging.warning("authentication is disabled")
+    raise ValueError("either jwt_public_key or jwt_secret is required")
 
 
 user_dep = authenticator.fastapi_dep()

@@ -1,4 +1,4 @@
-import { TaskDefinition } from '../components/tasks/create-task';
+import { TaskDefinition } from '../components/tasks/task-form';
 import { createDeferredContext } from './deferred-context';
 
 export interface TaskRegistry {
