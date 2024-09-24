@@ -39,7 +39,9 @@ docker run \
   --network host -it --rm \
   -e ROS_DOMAIN_ID=<ROS_DOMAIN_ID> \
   -e RMW_IMPLEMENTATION=<RMW_IMPLEMENTATION> \
-  ghcr.io/open-rmf/rmf-web/api-server:latest
+  ghcr.io/open-rmf/rmf-web/api-server:jazzy
+
+# For ROS 2 Rolling, use ghcr.io/open-rmf/rmf-web/api-server:rolling
 ```
 
 > **Note**
