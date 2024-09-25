@@ -6,6 +6,8 @@ from api_server import ros_time
 
 from .models import Pagination
 
+default_pagination = Pagination(limit=100, offset=0, order_by=[])
+
 
 def pagination_query(
     limit: int | None = Query(None, gt=0, le=1000, description="defaults to 100"),
@@ -15,7 +17,7 @@ def pagination_query(
         description="common separated list of fields to order by, prefix with '-' to sort descendingly.",
     ),
 ) -> Pagination:
-    limit = limit or 100
+    limit = limit or default_pagination.limit
     offset = offset or 0
     return Pagination(
         limit=limit,

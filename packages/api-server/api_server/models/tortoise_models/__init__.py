@@ -9,6 +9,7 @@ from .fleets import FleetLog, FleetLogLog, FleetLogRobots, FleetLogRobotsLog, Fl
 from .ingestor_state import IngestorState
 from .lift_state import LiftState
 from .log import LogMixin
+from .missions import *
 from .rio import *
 from .scheduled_task import *
 from .tasks import (

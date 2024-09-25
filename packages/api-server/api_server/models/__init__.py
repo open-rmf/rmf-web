@@ -8,6 +8,7 @@ from .doors import *
 from .ingestors import *
 from .labels import *
 from .lifts import *
+from .missions import *
 from .pagination import *
 from .rio import *
 from .rmf_api.activity_discovery_request import ActivityDiscoveryRequest

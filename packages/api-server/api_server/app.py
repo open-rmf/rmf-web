@@ -203,6 +203,9 @@ app.include_router(
     routes.tasks_router, prefix="/tasks", dependencies=[Depends(user_dep)]
 )
 app.include_router(
+    routes.missions_router, prefix="/missions", dependencies=[Depends(user_dep)]
+)
+app.include_router(
     routes.scheduled_tasks.router,
     prefix="/scheduled_tasks",
     dependencies=[Depends(user_dep)],
