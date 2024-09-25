@@ -4,7 +4,7 @@ import fastapi
 import pydantic
 import tortoise
 import tortoise.exceptions
-from fastapi import Depends, HTTPException, Query
+from fastapi import Depends, HTTPException
 
 import api_server.models as mdl
 import api_server.models.tortoise_models as ttm
@@ -31,8 +31,8 @@ async def create_mission(mission: CreateMission):
             task_template=mission.task_template,
         )
         return mdl.Mission.model_validate(db_mission)
-    except tortoise.exceptions.IntegrityError:
-        raise fastapi.HTTPException(409)
+    except tortoise.exceptions.IntegrityError as e:
+        raise fastapi.HTTPException(409) from e
 
 
 @router.get("", response_model=list[mdl.Mission])
@@ -57,8 +57,8 @@ async def get_mission(id: int):
     try:
         db_mission = await ttm.Mission.get(id=id)
         return mdl.Mission.model_validate(db_mission)
-    except tortoise.exceptions.DoesNotExist:
-        raise HTTPException(404)
+    except tortoise.exceptions.DoesNotExist as e:
+        raise HTTPException(404) from e
 
 
 def to_db_mission(id: int, mission: CreateMission):
@@ -75,8 +75,8 @@ async def update_mission(id: int, mission: CreateMission):
     db_mission = to_db_mission(id, mission)
     try:
         await db_mission.save(force_update=True)
-    except tortoise.exceptions.IntegrityError:
-        raise HTTPException(404)
+    except tortoise.exceptions.IntegrityError as e:
+        raise HTTPException(404) from e
 
 
 @router.delete("/{id}", response_model=None)
@@ -84,8 +84,8 @@ async def delete_mission(id: int):
     try:
         db_mission = await ttm.Mission.get(id=id)
         await db_mission.delete()
-    except tortoise.exceptions.DoesNotExist:
-        raise HTTPException(404)
+    except tortoise.exceptions.DoesNotExist as e:
+        raise HTTPException(404) from e
 
 
 # @router.post("/{id}/render_mission", response_model=dict)

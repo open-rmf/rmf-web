@@ -10,7 +10,7 @@ class TestMissions(AppFixture):
     def test_crud(self):
         create_mission = CreateMission(name="test", ui_schema="{}", task_template="")
         resp = self.client.post(
-            f"/missions/create_mission",
+            "/missions/create_mission",
             content=create_mission.model_dump_json(),
         )
         mission = Mission.model_validate_json(resp.content)
@@ -18,7 +18,7 @@ class TestMissions(AppFixture):
 
         # test cannot missions with the same name
         resp = self.client.post(
-            f"/missions/create_mission", content=create_mission.model_dump_json()
+            "/missions/create_mission", content=create_mission.model_dump_json()
         )
         self.assertEqual(409, resp.status_code)
 
