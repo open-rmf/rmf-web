@@ -125,6 +125,10 @@ export function PatrolTaskForm({
     onChange(desc);
   };
 
+  React.useEffect(() => {
+    onValidate(isPatrolTaskDescriptionValid(taskDesc));
+  }, [taskDesc]);
+
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
       <Grid item xs={isScreenHeightLessThan800 ? 8 : 10}>
