@@ -127,7 +127,7 @@ export function PatrolTaskForm({
 
   React.useEffect(() => {
     onValidate(isPatrolTaskDescriptionValid(taskDesc));
-  }, [taskDesc]);
+  }, [onValidate, taskDesc]);
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
