@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import './app.css';
 
-import { appConfig } from './app-config';
+import { appConfig, authenticator } from './app-config';
 import { InitialWindow, LocallyPersistentWorkspace, RmfDashboard, Workspace } from './components';
 import { MicroAppManifest } from './components/micro-app';
 import doorsApp from './micro-apps/doors-app';
@@ -59,7 +59,7 @@ export default function App() {
     <RmfDashboard
       apiServerUrl={appConfig.rmfServerUrl}
       trajectoryServerUrl={appConfig.trajectoryServerUrl}
-      authenticator={new StubAuthenticator()}
+      authenticator={authenticator}
       helpLink={appConfig.helpLink}
       reportIssueLink={appConfig.reportIssue}
       resources={appConfig.resources.default}
