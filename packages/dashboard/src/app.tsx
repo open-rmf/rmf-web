@@ -57,8 +57,8 @@ const tasksWorkspace: InitialWindow[] = [
 export default function App() {
   return (
     <RmfDashboard
-      apiServerUrl="http://localhost:8000"
-      trajectoryServerUrl="http://localhost:8006"
+      apiServerUrl={appConfig.rmfServerUrl}
+      trajectoryServerUrl={appConfig.trajectoryServerUrl}
       authenticator={new StubAuthenticator()}
       helpLink={appConfig.helpLink}
       reportIssueLink={appConfig.reportIssue}
