@@ -13,7 +13,6 @@ import createMapApp from './micro-apps/map-app';
 import robotMutexGroupsApp from './micro-apps/robot-mutex-groups-app';
 import robotsApp from './micro-apps/robots-app';
 import tasksApp from './micro-apps/tasks-app';
-import StubAuthenticator from './services/stub-authenticator';
 
 const mapApp = createMapApp({
   attributionPrefix: appConfig.attributionPrefix,
