@@ -107,12 +107,15 @@ export class DefaultRmfApi implements RmfApi {
     const axiosInst = axios.create();
     axiosInst.interceptors.request.use(
       async (req) => {
+        console.log('requesting');
         await authenticator.refreshToken();
+        console.log('after refresh');
         const token = authenticator.token;
         if (!token) {
           console.log('no token');
           return req;
         }
+        console.log(`token: ${token}`);
         req.headers['Authorization'] = `Bearer ${token}`;
         console.log(`req ${req}`);
         return req;
