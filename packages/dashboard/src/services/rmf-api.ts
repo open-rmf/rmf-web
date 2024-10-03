@@ -117,6 +117,10 @@ export class DefaultRmfApi implements RmfApi {
       },
       (error) => {
         console.error(`Axios request error: ${error}`);
+        if (error && error.response && error.response.status && error.response.status === 401) {
+          window.location.href = '/';
+        }
+        return Promise.reject(error);
       },
     );
     axiosInst.interceptors.response.use(
@@ -126,6 +130,7 @@ export class DefaultRmfApi implements RmfApi {
         if (error && error.response && error.response.status && error.response.status === 401) {
           window.location.href = '/';
         }
+        return Promise.reject(error);
       },
     );
     const apiConfig = new Configuration({
