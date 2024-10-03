@@ -166,7 +166,7 @@ export function RmfDashboard(props: RmfDashboardProps) {
         const perm = (await rmfApi.defaultApi.getEffectivePermissionsPermissionsGet()).data;
         setUserProfile({ user: user.data, permissions: perm });
       } catch (e) {
-        console.error((e as Error).message);
+        console.error(e);
         setUserProfile(null);
       }
     })();
