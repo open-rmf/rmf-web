@@ -110,9 +110,11 @@ export class DefaultRmfApi implements RmfApi {
         await authenticator.refreshToken();
         const token = authenticator.token;
         if (!token) {
+          console.log('no token');
           return req;
         }
         req.headers['Authorization'] = `Bearer ${token}`;
+        console.log(`req ${req}`);
         return req;
       },
       (error) => {
