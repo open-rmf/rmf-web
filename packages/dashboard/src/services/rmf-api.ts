@@ -193,17 +193,17 @@ export class DefaultRmfApi implements RmfApi {
       sioClient.subscribeDeliveryAlerts(handler),
     );
 
-    try {
-      const ws = new WebSocket(trajectoryServerUrl);
-      this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
-      this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
-    } catch (e) {
-      const errorMessage = `Failed to connect to trajectory server at [${trajectoryServerUrl}], ${
-        (e as Error).message
-      }`;
-      console.error(errorMessage);
-      return;
-    }
+    // try {
+    //   const ws = new WebSocket(trajectoryServerUrl);
+    //   this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
+    //   this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
+    // } catch (e) {
+    //   const errorMessage = `Failed to connect to trajectory server at [${trajectoryServerUrl}], ${
+    //     (e as Error).message
+    //   }`;
+    //   console.error(errorMessage);
+    //   return;
+    // }
   }
 
   private _makeSioClient(): Observable<SioClient | null> {
