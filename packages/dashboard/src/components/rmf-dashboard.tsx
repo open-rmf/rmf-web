@@ -156,9 +156,14 @@ export function RmfDashboard(props: RmfDashboardProps) {
   React.useEffect(() => {
     (async () => {
       await authenticator.init();
-      const user = (await rmfApi.defaultApi.getUserUserGet()).data;
+      const user = await rmfApi.defaultApi.getUserUserGet();
+      if (!user) {
+        setUserProfile(null);
+        return;
+      }
+
       const perm = (await rmfApi.defaultApi.getEffectivePermissionsPermissionsGet()).data;
-      setUserProfile({ user, permissions: perm });
+      setUserProfile({ user: user.data, permissions: perm });
     })();
   }, [authenticator, rmfApi]);
 
