@@ -307,7 +307,7 @@ function DashboardContents({
         />
         <Route
           element={
-            <>
+            <RequireAuth redirectTo={`${baseUrl}login`}>
               <AppBar
                 tabs={allTabs.map((t) => (
                   <Tab
@@ -329,7 +329,7 @@ function DashboardContents({
                 extraToolbarItems={extraAppbarItems}
               />
               {!pendingTransition && <Outlet />}
-            </>
+            </RequireAuth>
           }
         >
           {allTabs.map((t) => (
