@@ -156,14 +156,19 @@ export function RmfDashboard(props: RmfDashboardProps) {
   React.useEffect(() => {
     (async () => {
       await authenticator.init();
-      const user = await rmfApi.defaultApi.getUserUserGet();
-      if (!user) {
-        setUserProfile(null);
-        return;
-      }
 
-      const perm = (await rmfApi.defaultApi.getEffectivePermissionsPermissionsGet()).data;
-      setUserProfile({ user: user.data, permissions: perm });
+      try {
+        const user = await rmfApi.defaultApi.getUserUserGet();
+        if (!user) {
+          setUserProfile(null);
+          return;
+        }
+        const perm = (await rmfApi.defaultApi.getEffectivePermissionsPermissionsGet()).data;
+        setUserProfile({ user: user.data, permissions: perm });
+      } catch (e) {
+        console.error((e as Error).message);
+        setUserProfile(null);
+      }
     })();
   }, [authenticator, rmfApi]);
 
@@ -307,7 +312,7 @@ function DashboardContents({
         />
         <Route
           element={
-            <RequireAuth redirectTo={`${baseUrl}login`}>
+            <>
               <AppBar
                 tabs={allTabs.map((t) => (
                   <Tab
@@ -329,7 +334,7 @@ function DashboardContents({
                 extraToolbarItems={extraAppbarItems}
               />
               {!pendingTransition && <Outlet />}
-            </RequireAuth>
+            </>
           }
         >
           {allTabs.map((t) => (
