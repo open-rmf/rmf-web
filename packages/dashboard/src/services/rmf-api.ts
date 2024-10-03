@@ -123,7 +123,7 @@ export class DefaultRmfApi implements RmfApi {
       (response) => response,
       (error) => {
         console.error(`Axios response error: ${error}`);
-        if (error.response.status === 401) {
+        if (error && error.response && error.response.status && error.response.status === 401) {
           window.location.href = '/';
         }
       },
