@@ -159,13 +159,20 @@ export function RmfDashboard(props: RmfDashboardProps) {
     (async () => {
       await authenticator.init();
       if (!authenticator.user) {
+        setUserProfile(null);
         setAuthReady(true);
         return;
       }
-      const user = (await rmfApi.defaultApi.getUserUserGet()).data;
-      const perm = (await rmfApi.defaultApi.getEffectivePermissionsPermissionsGet()).data;
-      setUserProfile({ user, permissions: perm });
-      setAuthReady(true);
+      try {
+        const user = (await rmfApi.defaultApi.getUserUserGet()).data;
+        const perm = (await rmfApi.defaultApi.getEffectivePermissionsPermissionsGet()).data;
+        setUserProfile({ user, permissions: perm });
+      } catch (e) {
+        console.error(e);
+        setUserProfile(null);
+      } finally {
+        setAuthReady(true);
+      }
     })();
   }, [authenticator, rmfApi]);
 

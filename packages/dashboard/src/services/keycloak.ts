@@ -85,7 +85,6 @@ export class KeycloakAuthenticator
 
     this._user = this._inst.tokenParsed && this._getUser();
     this._isAdmin = this._isUserAdmin();
-    console.log(this._inst.tokenParsed);
     this._initialized = true;
   }
 
