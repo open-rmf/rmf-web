@@ -50,9 +50,6 @@ export default defineConfig({
     APP_CONFIG_ENABLE_ADMIN_TAB: `${booleanToString(buildConfig.adminTab)}`,
   },
   plugins: [injectGlobals, react()],
-  build: {
-    minify: false,
-  },
   test: {
     environment: 'jsdom',
     globals: true,
