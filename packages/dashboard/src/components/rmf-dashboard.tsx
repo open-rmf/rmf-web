@@ -204,7 +204,7 @@ export function RmfDashboard(props: RmfDashboardProps) {
     return themes[settings.themeMode] || themes.default;
   }, [themes, settings.themeMode]);
 
-  const providers = (
+  const providers = userProfile && (
     <LocalizationProvider>
       <CssBaseline />
       <AuthenticatorProvider value={authenticator}>
@@ -214,51 +214,27 @@ export function RmfDashboard(props: RmfDashboardProps) {
               <SettingsProvider value={settings}>
                 <AppControllerProvider value={appController}>
                   <DeliveryAlertStore />
-                  {userProfile ? (
-                    <UserProfileProvider value={userProfile}>
-                      <AlertManager alertAudioPath={alertAudioPath} />
-                      <BrowserRouter>
-                        <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
-                        {/* TODO: Support stacking of alerts */}
-                        <Snackbar
-                          open={showAlert}
-                          message={alertMessage}
+                  <UserProfileProvider value={userProfile}>
+                    <AlertManager alertAudioPath={alertAudioPath} />
+                    <BrowserRouter>
+                      <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
+                      {/* TODO: Support stacking of alerts */}
+                      <Snackbar
+                        open={showAlert}
+                        message={alertMessage}
+                        onClose={() => setShowAlert(false)}
+                        autoHideDuration={alertDuration}
+                      >
+                        <Alert
                           onClose={() => setShowAlert(false)}
-                          autoHideDuration={alertDuration}
+                          severity={alertSeverity}
+                          sx={{ width: '100%' }}
                         >
-                          <Alert
-                            onClose={() => setShowAlert(false)}
-                            severity={alertSeverity}
-                            sx={{ width: '100%' }}
-                          >
-                            {alertMessage}
-                          </Alert>
-                        </Snackbar>
-                      </BrowserRouter>
-                    </UserProfileProvider>
-                  ) : (
-                    <>
-                      <AlertManager alertAudioPath={alertAudioPath} />
-                      <BrowserRouter>
-                        <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
-                        {/* TODO: Support stacking of alerts */}
-                        <Snackbar
-                          open={showAlert}
-                          message={alertMessage}
-                          onClose={() => setShowAlert(false)}
-                          autoHideDuration={alertDuration}
-                        >
-                          <Alert
-                            onClose={() => setShowAlert(false)}
-                            severity={alertSeverity}
-                            sx={{ width: '100%' }}
-                          >
-                            {alertMessage}
-                          </Alert>
-                        </Snackbar>
-                      </BrowserRouter>
-                    </>
-                  )}
+                          {alertMessage}
+                        </Alert>
+                      </Snackbar>
+                    </BrowserRouter>
+                  </UserProfileProvider>
                 </AppControllerProvider>
               </SettingsProvider>
             </RmfApiProvider>

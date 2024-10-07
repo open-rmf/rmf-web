@@ -21,7 +21,6 @@ const StyledDiv = styled('div')(({ theme }) => ({
 }));
 
 export const LoginPage = (props: LoginCardProps): JSX.Element => {
-  console.log('getting into LoginPage');
   return (
     <StyledDiv className={classes.container}>
       <LoginCard {...props} />

@@ -94,13 +94,11 @@ export class KeycloakAuthenticator
     if (this._initialized) {
       const refreshed = await this._inst.updateToken(30);
       if (refreshed) {
-        console.log('token refreshed');
         this._user = this._getUser();
         this._isAdmin = this._isUserAdmin();
         this.emit('tokenRefresh', null);
       } else {
         debug(`${new Date().toLocaleTimeString()}: refreshToken token not refreshed`);
-        console.log('not refreshed');
       }
     }
     return;
