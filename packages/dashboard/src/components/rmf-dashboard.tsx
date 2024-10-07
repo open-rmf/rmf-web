@@ -204,7 +204,7 @@ export function RmfDashboard(props: RmfDashboardProps) {
     return themes[settings.themeMode] || themes.default;
   }, [themes, settings.themeMode]);
 
-  const providers = userProfile && (
+  const providers = (
     <LocalizationProvider>
       <CssBaseline />
       <AuthenticatorProvider value={authenticator}>
@@ -214,27 +214,29 @@ export function RmfDashboard(props: RmfDashboardProps) {
               <SettingsProvider value={settings}>
                 <AppControllerProvider value={appController}>
                   <DeliveryAlertStore />
-                  <UserProfileProvider value={userProfile}>
-                    <AlertManager alertAudioPath={alertAudioPath} />
-                    <BrowserRouter>
-                      <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
-                      {/* TODO: Support stacking of alerts */}
-                      <Snackbar
-                        open={showAlert}
-                        message={alertMessage}
-                        onClose={() => setShowAlert(false)}
-                        autoHideDuration={alertDuration}
-                      >
-                        <Alert
+                  {userProfile ? (
+                    <UserProfileProvider value={userProfile}>
+                      <AlertManager alertAudioPath={alertAudioPath} />
+                      <BrowserRouter>
+                        <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
+                        {/* TODO: Support stacking of alerts */}
+                        <Snackbar
+                          open={showAlert}
+                          message={alertMessage}
                           onClose={() => setShowAlert(false)}
-                          severity={alertSeverity}
-                          sx={{ width: '100%' }}
+                          autoHideDuration={alertDuration}
                         >
-                          {alertMessage}
-                        </Alert>
-                      </Snackbar>
-                    </BrowserRouter>
-                  </UserProfileProvider>
+                          <Alert
+                            onClose={() => setShowAlert(false)}
+                            severity={alertSeverity}
+                            sx={{ width: '100%' }}
+                          >
+                            {alertMessage}
+                          </Alert>
+                        </Snackbar>
+                      </BrowserRouter>
+                    </UserProfileProvider>
+                  ) : null}
                 </AppControllerProvider>
               </SettingsProvider>
             </RmfApiProvider>
