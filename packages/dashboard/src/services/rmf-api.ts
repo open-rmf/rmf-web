@@ -107,37 +107,24 @@ export class DefaultRmfApi implements RmfApi {
     const axiosInst = axios.create();
     axiosInst.interceptors.request.use(
       async (req) => {
-        console.log('requesting');
         await authenticator.refreshToken();
-        console.log('after refresh');
         const token = authenticator.token;
         if (!token) {
-          console.log('no token');
           return req;
         }
-        console.log(`token: ${token}`);
         req.headers['Authorization'] = `Bearer ${token}`;
-        console.log(`req ${req}`);
         return req;
       },
       (error) => {
         console.error(`Axios request error: ${error}`);
-        // if (error && error.response && error.response.status && error.response.status === 401) {
-        //   window.location.href = '/';
-        // }
-        window.location.href = '/';
-        // return Promise.reject(error);
       },
     );
     axiosInst.interceptors.response.use(
       (response) => response,
       (error) => {
-        console.error(`Axios response error: ${error}`);
-        // if (error && error.response && error.response.status && error.response.status === 401) {
-        //   window.location.href = '/';
-        // }
-        window.location.href = '/';
-        // return Promise.reject(error);
+        if (error.response.status === 401) {
+          window.location.href = '/';
+        }
       },
     );
     const apiConfig = new Configuration({

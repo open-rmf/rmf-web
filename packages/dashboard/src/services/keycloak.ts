@@ -53,8 +53,6 @@ export class KeycloakAuthenticator
   }
 
   async init(): Promise<void> {
-    console.log('kc init');
-
     if (this._initialized) {
       debug(`${new Date().toLocaleTimeString()}: already initialized`);
       return;
@@ -92,21 +90,16 @@ export class KeycloakAuthenticator
   }
 
   async refreshToken(): Promise<void> {
-    console.log('refresh token called');
     // check and update the token 30 seconds prior to expiry
     if (this._initialized) {
       const refreshed = await this._inst.updateToken(30);
       if (refreshed) {
-        console.log('token refreshed');
         this._user = this._getUser();
         this._isAdmin = this._isUserAdmin();
         this.emit('tokenRefresh', null);
       } else {
         debug(`${new Date().toLocaleTimeString()}: refreshToken token not refreshed`);
-        console.log('not refreshed');
       }
-    } else {
-      console.log('not intialized');
     }
     return;
   }
