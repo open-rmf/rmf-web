@@ -236,7 +236,29 @@ export function RmfDashboard(props: RmfDashboardProps) {
                         </Snackbar>
                       </BrowserRouter>
                     </UserProfileProvider>
-                  ) : null}
+                  ) : (
+                    <>
+                      <AlertManager alertAudioPath={alertAudioPath} />
+                      <BrowserRouter>
+                        <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
+                        {/* TODO: Support stacking of alerts */}
+                        <Snackbar
+                          open={showAlert}
+                          message={alertMessage}
+                          onClose={() => setShowAlert(false)}
+                          autoHideDuration={alertDuration}
+                        >
+                          <Alert
+                            onClose={() => setShowAlert(false)}
+                            severity={alertSeverity}
+                            sx={{ width: '100%' }}
+                          >
+                            {alertMessage}
+                          </Alert>
+                        </Snackbar>
+                      </BrowserRouter>
+                    </>
+                  )}
                 </AppControllerProvider>
               </SettingsProvider>
             </RmfApiProvider>
