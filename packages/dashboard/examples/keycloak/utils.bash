@@ -34,15 +34,10 @@ kc_api() {
     local exit_code
     local resp
     __msg_debug kc_api ${*@Q}
-    resp=$(curl -ks --fail-with-body \
+    curl -ks --fail-with-body \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer $KC_TOKEN" \
-        "$@") && exit_code=0 || exit_code=$?
-    if [[ $exit_code != 0 ]]; then
-        __msg_error "$resp"
-        return $exit_code
-    fi
-    echo "$resp"
+        "$@"
 }
 
 # usage: kc_login <base_url> <user> <passwd>

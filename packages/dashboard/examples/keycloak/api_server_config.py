@@ -7,7 +7,7 @@ run_dir = f"{here}/run"
 
 config.update(
     {
-        "jwt_public_key": f"{here}/rmf-web.pub",
+        "jwt_public_key": f"{here}/../../keycloak-example.pub",
         "jwt_secret": None,
         "iss": "http://localhost:8080/realms/rmf-web",
     }

@@ -1,6 +1,6 @@
 This is an example using a local keycloak authentication provider.
 
-Follow the instrunctions below to run the example
+Follow the instructions below to run the example
 
 1. Start a keycloak instance
 
@@ -11,7 +11,7 @@ docker run --rm -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=
 2. Setup keycloak for rmf-web
 
 ```bash
-examples/keycloak/keycloak-setup.bash -u admin -o rmf-web.pub
+examples/keycloak/keycloak-setup.bash -u admin -o keycloak-example.pub
 ```
 
 when prompted for the admin password, use "admin"
@@ -29,6 +29,6 @@ the script will
 3. Start rmf api server with the keycloak config
 
 ```bash
-# be sure to run from packages/dashboard directory
+# be sure to run from packages/dashboard directory and source a supported rmf installation
 RMF_API_SERVER_CONFIG="$(pwd)/examples/keycloak/api_server_config.py" pnpm -C ../api-server start
 ```

@@ -64,11 +64,17 @@ export default function App() {
       apiServerUrl="http://localhost:8000"
       trajectoryServerUrl="http://localhost:8006"
       authenticator={
-        new KeycloakAuthenticator({
-          clientId: 'dashboard',
-          realm: 'rmf-web',
-          url: 'http://localhost:8080',
-        })
+        new KeycloakAuthenticator(
+          {
+            clientId: 'dashboard',
+            realm: 'rmf-web',
+            url: 'http://localhost:8080',
+          },
+          // This must be a full url, if the dashboard is served under a subpath, this
+          // must be set approriately.
+          // Note that we can't use the base url directly as it could be an absolute path.
+          `${location.origin}/silent-check-sso.html`,
+        )
       }
       helpLink="https://osrf.github.io/ros2multirobotbook/rmf-core.html"
       reportIssueLink="https://github.com/open-rmf/rmf-web/issues"
