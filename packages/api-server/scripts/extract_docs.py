@@ -28,7 +28,6 @@ server_proc = subprocess.Popen(
     ("python", "-m", "api_server"),
     cwd=f"{os.path.dirname(__file__)}/..",
     start_new_session=True,
-    env=os.environ.copy(),
 )
 
 time.sleep(5)  # wait for server to be ready
