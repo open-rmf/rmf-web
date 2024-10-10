@@ -6,6 +6,6 @@ here = os.path.dirname(__file__)
 
 config.update(
     {
-        "public_url": "http://localhost:8000/rmf-web",
+        "public_url": "/rmf-web",
     }
 )

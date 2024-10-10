@@ -13,7 +13,7 @@
     "test:report": "../../.venv/bin/pipenv run python -m coverage html && xdg-open htmlcov/index.html",
     "lint": "../../.venv/bin/pipenv run pyright && ../../.venv/bin/pipenv run pylint --rcfile=../../.pylintrc api_server --ignore=ros_pydantic,rmf_api,rmf_ros2",
     "generate-models": "./generate-models.sh",
-    "generate-docs": "../../.venv/bin/pipenv run python scripts/extract_docs.py -o docs"
+    "generate-docs": "RMF_API_SERVER_CONFIG=scripts/docs_config.py ../../.venv/bin/pipenv run python scripts/extract_docs.py -o docs"
   },
   "devDependencies": {
     "pipenv-install": "workspace:*"
