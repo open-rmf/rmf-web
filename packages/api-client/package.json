@@ -6,7 +6,7 @@
   "browser": "lib/index.ts",
   "scripts": {
     "build": "tsc --build",
-    "prepack": "pnpm run clean && pnpm run --filter {.}... build && pnpm run lint",
+    "prepack": "pnpm run --filter {.}... build && pnpm run lint",
     "lint": "eslint --max-warnings 0 lib",
     "test": "vitest"
   },
