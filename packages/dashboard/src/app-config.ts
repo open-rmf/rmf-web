@@ -130,7 +130,7 @@ export const authenticator: Authenticator = (() => {
   if (APP_CONFIG_AUTH_PROVIDER === 'keycloak') {
     return new KeycloakAuthenticator(
       APP_CONFIG.authConfig as KeycloakAuthConfig,
-      `${import.meta.env.BASE_URL}silent-check-sso.html`,
+      `${location.origin}${import.meta.env.BASE_URL}silent-check-sso.html`,
     );
   } else if (APP_CONFIG_AUTH_PROVIDER === 'stub') {
     return new StubAuthenticator();
