@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import './app.css';
 
-import { appConfig } from './app-config';
+import { appConfig, authenticator } from './app-config';
 import { InitialWindow, LocallyPersistentWorkspace, RmfDashboard, Workspace } from './components';
 import { MicroAppManifest } from './components/micro-app';
 import doorsApp from './micro-apps/doors-app';
@@ -13,7 +13,6 @@ import createMapApp from './micro-apps/map-app';
 import robotMutexGroupsApp from './micro-apps/robot-mutex-groups-app';
 import robotsApp from './micro-apps/robots-app';
 import tasksApp from './micro-apps/tasks-app';
-import StubAuthenticator from './services/stub-authenticator';
 
 const mapApp = createMapApp({
   attributionPrefix: appConfig.attributionPrefix,
@@ -59,7 +58,7 @@ export default function App() {
     <RmfDashboard
       apiServerUrl={appConfig.rmfServerUrl}
       trajectoryServerUrl={appConfig.trajectoryServerUrl}
-      authenticator={new StubAuthenticator()}
+      authenticator={authenticator}
       helpLink={appConfig.helpLink}
       reportIssueLink={appConfig.reportIssue}
       resources={appConfig.resources.default}
