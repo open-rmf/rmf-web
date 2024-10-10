@@ -1,6 +1,6 @@
 {
   "name": "pipenv-install",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A dummy package so that we can run pipenv install only when needed",
   "private": true,
   "scripts": {
