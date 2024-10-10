@@ -49,7 +49,7 @@ jobs:
           package: api-server
       - name: Extract docs
         run: |
-          . /opt/rmf/install/setup.bash
+          . /opt/rmf/setup.bash
           pnpm run generate-docs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

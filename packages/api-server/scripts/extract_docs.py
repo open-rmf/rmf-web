@@ -34,7 +34,7 @@ time.sleep(5)  # wait for server to be ready
 outdir = f"{args.output}"
 os.makedirs(outdir, exist_ok=True)
 
-base_url = "http://localhost:8000/rmf-web"
+base_url = "http://localhost:8000"
 with urlopen(f"{base_url}/docs") as resp:
     html: bytes = resp.read()
     with open(f"{outdir}/index.html", "bw") as f:
