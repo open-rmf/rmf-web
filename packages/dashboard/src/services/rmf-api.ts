@@ -119,15 +119,6 @@ export class DefaultRmfApi implements RmfApi {
         console.error(`Axios request error: ${error}`);
       },
     );
-    axiosInst.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        console.error(`Axios response error: ${error}`);
-        if (error.response.status === 401) {
-          window.location.href = '/';
-        }
-      },
-    );
     const apiConfig = new Configuration({
       accessToken: authenticator.token,
       basePath: apiServerUrl,

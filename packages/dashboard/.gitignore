@@ -29,3 +29,4 @@ web_server.log
 /.rmf
 
 *storybook.log
+/keycloak-example.pub
