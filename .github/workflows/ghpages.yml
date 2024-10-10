@@ -1,14 +1,15 @@
 name: Deploy docs to Pages
 
-on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
-    paths:
-      - "packages/api-server/**"
+# on:
+#   # Runs on pushes targeting the default branch
+#   push:
+#     branches: ["main"]
+#     paths:
+#       - "packages/api-server/**"
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+#   # Allows you to run this workflow manually from the Actions tab
+#   workflow_dispatch:
+on: push
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -49,7 +50,7 @@ jobs:
           package: api-server
       - name: Extract docs
         run: |
-          . /opt/rmf/install/setup.bash
+          . /opt/rmf/setup.bash
           pnpm run generate-docs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
