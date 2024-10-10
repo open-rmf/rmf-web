@@ -4,20 +4,20 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import ReactDOM from 'react-dom/client';
+import { RmfDashboard } from 'rmf-dashboard-framework/components';
 import {
   InitialWindow,
   LocallyPersistentWorkspace,
-  RmfDashboard,
   Workspace,
-} from 'rmf-dashboard/components';
-import { MicroAppManifest } from 'rmf-dashboard/components/micro-app';
-import doorsApp from 'rmf-dashboard/micro-apps/doors-app';
-import liftsApp from 'rmf-dashboard/micro-apps/lifts-app';
-import createMapApp from 'rmf-dashboard/micro-apps/map-app';
-import robotMutexGroupsApp from 'rmf-dashboard/micro-apps/robot-mutex-groups-app';
-import robotsApp from 'rmf-dashboard/micro-apps/robots-app';
-import tasksApp from 'rmf-dashboard/micro-apps/tasks-app';
-import KeycloakAuthenticator from 'rmf-dashboard/services/keycloak';
+} from 'rmf-dashboard-framework/components/workspace';
+import { MicroAppManifest } from 'rmf-dashboard-framework/micro-apps';
+import doorsApp from 'rmf-dashboard-framework/micro-apps/doors-app';
+import liftsApp from 'rmf-dashboard-framework/micro-apps/lifts-app';
+import createMapApp from 'rmf-dashboard-framework/micro-apps/map-app';
+import robotMutexGroupsApp from 'rmf-dashboard-framework/micro-apps/robot-mutex-groups-app';
+import robotsApp from 'rmf-dashboard-framework/micro-apps/robots-app';
+import tasksApp from 'rmf-dashboard-framework/micro-apps/tasks-app';
+import KeycloakAuthenticator from 'rmf-dashboard-framework/services/keycloak';
 
 const mapApp = createMapApp({
   attributionPrefix: 'Open-RMF',
