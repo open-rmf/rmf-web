@@ -2,23 +2,22 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import './app.css';
 
 import ReactDOM from 'react-dom/client';
-import { RmfDashboard } from 'rmf-dashboard-framework/components';
 import {
   InitialWindow,
   LocallyPersistentWorkspace,
+  RmfDashboard,
   Workspace,
-} from 'rmf-dashboard-framework/components/workspace';
-import { MicroAppManifest } from 'rmf-dashboard-framework/micro-apps';
-import doorsApp from 'rmf-dashboard-framework/micro-apps/doors-app';
-import liftsApp from 'rmf-dashboard-framework/micro-apps/lifts-app';
-import createMapApp from 'rmf-dashboard-framework/micro-apps/map-app';
-import robotMutexGroupsApp from 'rmf-dashboard-framework/micro-apps/robot-mutex-groups-app';
-import robotsApp from 'rmf-dashboard-framework/micro-apps/robots-app';
-import tasksApp from 'rmf-dashboard-framework/micro-apps/tasks-app';
-import StubAuthenticator from 'rmf-dashboard-framework/services/stub-authenticator';
+} from 'rmf-dashboard/components';
+import { MicroAppManifest } from 'rmf-dashboard/components/micro-app';
+import doorsApp from 'rmf-dashboard/micro-apps/doors-app';
+import liftsApp from 'rmf-dashboard/micro-apps/lifts-app';
+import createMapApp from 'rmf-dashboard/micro-apps/map-app';
+import robotMutexGroupsApp from 'rmf-dashboard/micro-apps/robot-mutex-groups-app';
+import robotsApp from 'rmf-dashboard/micro-apps/robots-app';
+import tasksApp from 'rmf-dashboard/micro-apps/tasks-app';
+import KeycloakAuthenticator from 'rmf-dashboard/services/keycloak';
 
 const mapApp = createMapApp({
   attributionPrefix: 'Open-RMF',
@@ -62,9 +61,21 @@ const tasksWorkspace: InitialWindow[] = [
 export default function App() {
   return (
     <RmfDashboard
-      apiServerUrl={appConfig.rmfServerUrl}
-      trajectoryServerUrl={appConfig.trajectoryServerUrl}
-      authenticator={new StubAuthenticator()}
+      apiServerUrl="http://localhost:8000"
+      trajectoryServerUrl="http://localhost:8006"
+      authenticator={
+        new KeycloakAuthenticator(
+          {
+            clientId: 'dashboard',
+            realm: 'rmf-web',
+            url: 'http://localhost:8080',
+          },
+          // This must be a full url, if the dashboard is served under a subpath, this
+          // must be set approriately.
+          // Note that we can't use the base url directly as it could be an absolute path.
+          `${location.origin}/silent-check-sso.html`,
+        )
+      }
       helpLink="https://osrf.github.io/ros2multirobotbook/rmf-core.html"
       reportIssueLink="https://github.com/open-rmf/rmf-web/issues"
       resources={{ fleets: {}, logos: { header: '/resources/defaultLogo.png' } }}

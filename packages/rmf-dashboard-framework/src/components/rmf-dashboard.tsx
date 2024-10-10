@@ -18,7 +18,7 @@ import { Resources, ResourcesProvider } from '../hooks/use-resources';
 import { RmfApiProvider } from '../hooks/use-rmf-api';
 import { SettingsProvider } from '../hooks/use-settings';
 import { TaskRegistry, TaskRegistryProvider } from '../hooks/use-task-registry';
-import { UserProfileProvider, useUserProfile } from '../hooks/use-user-profile';
+import { UserProfileProvider } from '../hooks/use-user-profile';
 import { LoginPage } from '../pages';
 import { Authenticator, UserProfile } from '../services/authenticator';
 import { DefaultRmfApi } from '../services/rmf-api';
@@ -119,6 +119,7 @@ export function RmfDashboard(props: RmfDashboardProps) {
     themes,
     resources,
     tasks,
+    baseUrl = import.meta.env.BASE_URL,
     alertAudioPath,
   } = props;
 
@@ -152,12 +153,25 @@ export function RmfDashboard(props: RmfDashboardProps) {
   );
 
   const [userProfile, setUserProfile] = React.useState<UserProfile | null>(null);
+  const [authReady, setAuthReady] = React.useState(false);
   React.useEffect(() => {
     (async () => {
       await authenticator.init();
-      const user = (await rmfApi.defaultApi.getUserUserGet()).data;
-      const perm = (await rmfApi.defaultApi.getEffectivePermissionsPermissionsGet()).data;
-      setUserProfile({ user, permissions: perm });
+      if (!authenticator.user) {
+        setUserProfile(null);
+        setAuthReady(true);
+        return;
+      }
+      try {
+        const user = (await rmfApi.defaultApi.getUserUserGet()).data;
+        const perm = (await rmfApi.defaultApi.getEffectivePermissionsPermissionsGet()).data;
+        setUserProfile({ user, permissions: perm });
+      } catch (e) {
+        console.error(e);
+        setUserProfile(null);
+      } finally {
+        setAuthReady(true);
+      }
     })();
   }, [authenticator, rmfApi]);
 
@@ -193,57 +207,69 @@ export function RmfDashboard(props: RmfDashboardProps) {
     return themes[settings.themeMode] || themes.default;
   }, [themes, settings.themeMode]);
 
-  const providers = userProfile && (
-    <LocalizationProvider>
-      <CssBaseline />
-      <AuthenticatorProvider value={authenticator}>
-        <ResourcesProvider value={resources}>
-          <TaskRegistryProvider value={taskRegistry}>
-            <RmfApiProvider value={rmfApi}>
-              <SettingsProvider value={settings}>
-                <AppControllerProvider value={appController}>
-                  <DeliveryAlertStore />
-                  <UserProfileProvider value={userProfile}>
-                    <AlertManager alertAudioPath={alertAudioPath} />
-                    <BrowserRouter>
-                      <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
-                      {/* TODO: Support stacking of alerts */}
-                      <Snackbar
-                        open={showAlert}
-                        message={alertMessage}
-                        onClose={() => setShowAlert(false)}
-                        autoHideDuration={alertDuration}
-                      >
-                        <Alert
+  const providers = authReady && (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path={`${baseUrl}login`}
+          element={
+            userProfile ? (
+              <Navigate to={baseUrl} />
+            ) : (
+              <LoginPage
+                title="Dashboard"
+                logo={resources.logos.header}
+                onLoginClick={() => authenticator.login(`${window.location.origin}${baseUrl}`)}
+              />
+            )
+          }
+        />
+        <Route
+          path="*"
+          element={userProfile ? <Outlet /> : <Navigate to={`${baseUrl}login`} />}
+        ></Route>
+      </Routes>
+      {userProfile && (
+        <LocalizationProvider>
+          <CssBaseline />
+          <AuthenticatorProvider value={authenticator}>
+            <UserProfileProvider value={userProfile}>
+              <ResourcesProvider value={resources}>
+                <TaskRegistryProvider value={taskRegistry}>
+                  <RmfApiProvider value={rmfApi}>
+                    <SettingsProvider value={settings}>
+                      <AppControllerProvider value={appController}>
+                        <DeliveryAlertStore />
+                        <AlertManager alertAudioPath={alertAudioPath} />
+                        <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
+                        {/* TODO: Support stacking of alerts */}
+                        <Snackbar
+                          open={showAlert}
+                          message={alertMessage}
                           onClose={() => setShowAlert(false)}
-                          severity={alertSeverity}
-                          sx={{ width: '100%' }}
+                          autoHideDuration={alertDuration}
                         >
-                          {alertMessage}
-                        </Alert>
-                      </Snackbar>
-                    </BrowserRouter>
-                  </UserProfileProvider>
-                </AppControllerProvider>
-              </SettingsProvider>
-            </RmfApiProvider>
-          </TaskRegistryProvider>
-        </ResourcesProvider>
-      </AuthenticatorProvider>
-    </LocalizationProvider>
+                          <Alert
+                            onClose={() => setShowAlert(false)}
+                            severity={alertSeverity}
+                            sx={{ width: '100%' }}
+                          >
+                            {alertMessage}
+                          </Alert>
+                        </Snackbar>
+                      </AppControllerProvider>
+                    </SettingsProvider>
+                  </RmfApiProvider>
+                </TaskRegistryProvider>
+              </ResourcesProvider>
+            </UserProfileProvider>
+          </AuthenticatorProvider>
+        </LocalizationProvider>
+      )}
+    </BrowserRouter>
   );
 
   return theme ? <ThemeProvider theme={theme}>{providers}</ThemeProvider> : providers;
-}
-
-interface RequireAuthProps {
-  redirectTo: string;
-  children: React.ReactNode;
-}
-
-function RequireAuth({ redirectTo, children }: RequireAuthProps) {
-  const userProfile = useUserProfile();
-  return userProfile ? children : <Navigate to={redirectTo} />;
 }
 
 function NotFound() {
@@ -264,11 +290,9 @@ interface DashboardContentsProps extends RmfDashboardProps {
 }
 
 function DashboardContents({
-  authenticator,
   helpLink,
   reportIssueLink,
   themes,
-  resources,
   tabs,
   baseUrl = import.meta.env.BASE_URL,
   extraAppbarItems,
@@ -289,16 +313,6 @@ function DashboardContents({
   return (
     <Routes>
       <Route path={baseUrl}>
-        <Route
-          path="login"
-          element={
-            <LoginPage
-              title="Dashboard"
-              logo={resources.logos.header}
-              onLoginClick={() => authenticator.login(`${window.location.origin}${baseUrl}`)}
-            />
-          }
-        />
         <Route
           element={
             <>
@@ -327,11 +341,7 @@ function DashboardContents({
           }
         >
           {allTabs.map((t) => (
-            <Route
-              key={t.name}
-              path={t.route}
-              element={<RequireAuth redirectTo={`${baseUrl}login`}>{t.element}</RequireAuth>}
-            />
+            <Route key={t.name} path={t.route} element={t.element} />
           ))}
         </Route>
         <Route path="*" element={<NotFound />} />
