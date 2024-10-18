@@ -1,6 +1,6 @@
 {
   "name": "api-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "API client library to interface with the API server",
   "main": "dist/lib/index.js",
   "browser": "lib/index.ts",
