@@ -29,6 +29,8 @@ git clone --depth 1 https://github.com/open-rmf/rmf-web
 
 Modify the following to resolve `rmf-dashboard-framework` as if it is installed from npmjs.
 
+Add local dependency to `rmf-web`:
+
 package.json
 
 ```
@@ -38,45 +40,53 @@ package.json
 }
 ```
 
+Configure typescript to resolve `rmf-dashboard-framework`:
+
 tsconfig.app.json
 
 ```
-"paths": {
-  "rmf-dashboard-framework/*": ["./node_modules/rmf-dashboard-framework/src/*"]
-}
+compilerOptions: [
+  ...,
+  "paths": {
+    "rmf-dashboard-framework/*": ["./node_modules/rmf-dashboard-framework/src/*"]
+  },
+  ...
+]
 ```
 
-Finally install and build the deps
+Build `rmf-dashboard-framework`
 
 ```bash
-# install and build rmf-dashboard-framework
+# cd <basic-dashboard-root>
 cd rmf-web
 pnpm install --filter=rmf-dashboard-framework...
 pnpm --filter=rmf-dashboard-framework^... build
-# install basic-dashboard deps
-cd ..
+```
+
+Install `basic-dashboard` deps
+
+```bash
+# cd <basic-dashboard-root>
 pnpm install
 ```
 
 ### Creating a Basic Dashboard
 
-At this point, you should be able to follow the [demo dashboard example](../examples/demo/main.tsx). You may need to install additional deps if you want to use the same fonts as the demo.
+At this point, you should be able to follow the [demo dashboard example](../examples/demo/main.tsx). You may also want to 
+* move or copy any resources required, for example `defaultLogo.png`  
+* install additional dependencies if you want to use the same fonts as the demo  
 
 ```bash
-pnpm add -w @fontsource/roboto
+pnpm add @fontsource/roboto
 ```
 
 ### Starting a Dev Server
 
-Before starting the dev server, we need a rmf api server backend for the frontend to connect to. If you are targeting an existing deployment, change the `apiServerUrl` prop to connect to the correct url. If you do not have an existing server, you can start a local server with docker.
-
-<!-- FIXME(koonpeng): ROS_DOMAIN_ID and RMW_IMPLEMENTATION will be confusing to people not familiar with ROS. Also we can't really set the RMW_IMPLEMENTATION if the image does not have it installed. -->
+Before starting the dev server, we need an RMF API server backend for the frontend to connect to. If you are targeting an existing deployment, change the `apiServerUrl` prop to connect to the correct url. If you do not have an existing server, you can start a local server with docker.
 
 ```bash
 docker run \
   --network host -it --rm \
-  -e ROS_DOMAIN_ID=<ROS_DOMAIN_ID> \
-  -e RMW_IMPLEMENTATION=<RMW_IMPLEMENTATION> \
   ghcr.io/open-rmf/rmf-web/api-server:latest
 ```
 
@@ -92,7 +102,7 @@ Navigate to http://localhost:5173 on a browser and you should see the dashboard.
 
 ### Starting RMF Simulation
 
-If you are testing locally, you may see that the map, doors, robots etc are all empty, this is because the api server is not receiving any data from RMF. Check out [`rmf_demos`](https://github.com/open-rmf/rmf_demos) if you want to test with a RMF simulation.
+If you are testing locally, you may see that the map, doors, robots etc are all empty, this is because the API server is not receiving any data from RMF. Check out [`rmf_demos`](https://github.com/open-rmf/rmf_demos) if you want to test with a RMF simulation.
 
 ### Adding a New Tab
 
@@ -113,3 +123,19 @@ The `tabs` props in `RmfDashboard` lets you configure the tabs available in the 
 ```
 
 The `layout` property defines the position and size of a MicroApp, the screen is divided into 12 columns and an unlimited number of rows, so this MicroApp will be positioned at the top left and have a width spanning the view port. For more information on the `layout` property, see [react-grid-layout](https://github.com/react-grid-layout/react-grid-layout).
+
+### Creating an optimized production build (optional)
+
+You shouldn't need to do this for local testing, but for reference, the example uses vite, an optimized production build can be created with
+
+```bash
+# cd <basic-dashbaord-root>
+pnpm vite build
+```
+
+There is no dev server for a production build, you will need a web server to access it.
+
+```bash
+# not recommended in production!
+pnpx serve -s build
+```

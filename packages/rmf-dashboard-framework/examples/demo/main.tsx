@@ -4,19 +4,21 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import ReactDOM from 'react-dom/client';
-import { RmfDashboard } from 'rmf-dashboard-framework/components';
 import {
   InitialWindow,
   LocallyPersistentWorkspace,
+  MicroAppManifest,
+  RmfDashboard,
   Workspace,
-} from 'rmf-dashboard-framework/components/workspace';
-import { MicroAppManifest } from 'rmf-dashboard-framework/micro-apps';
-import doorsApp from 'rmf-dashboard-framework/micro-apps/doors-app';
-import liftsApp from 'rmf-dashboard-framework/micro-apps/lifts-app';
-import createMapApp from 'rmf-dashboard-framework/micro-apps/map-app';
-import robotMutexGroupsApp from 'rmf-dashboard-framework/micro-apps/robot-mutex-groups-app';
-import robotsApp from 'rmf-dashboard-framework/micro-apps/robots-app';
-import tasksApp from 'rmf-dashboard-framework/micro-apps/tasks-app';
+} from 'rmf-dashboard-framework/components';
+import {
+  createMapApp,
+  doorsApp,
+  liftsApp,
+  robotMutexGroupsApp,
+  robotsApp,
+  tasksApp,
+} from 'rmf-dashboard-framework/micro-apps';
 import StubAuthenticator from 'rmf-dashboard-framework/services/stub-authenticator';
 
 const mapApp = createMapApp({
