@@ -19,8 +19,7 @@ import {
 import React from 'react';
 import { Subscription } from 'rxjs';
 
-import { useAppController } from '../hooks/use-app-controller';
-import { useRmfApi } from '../hooks/use-rmf-api';
+import { useAppController, useRmfApi } from '../hooks';
 import { AppEvents } from './app-events';
 import { TaskCancelButton } from './tasks/task-cancellation';
 

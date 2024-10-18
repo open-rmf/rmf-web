@@ -19,8 +19,7 @@ import {
 import { Permission } from 'api-client';
 import React from 'react';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useAsync } from '../../hooks/use-async';
+import { useAppController, useAsync } from '../../hooks';
 import { ConfirmationDialog } from '../confirmation-dialog';
 import { Loading } from '../loading';
 import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';

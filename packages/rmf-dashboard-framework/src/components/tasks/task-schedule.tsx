@@ -12,11 +12,13 @@ import { Button, Theme, Typography, useTheme } from '@mui/material';
 import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
 import React from 'react';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useTaskFormData } from '../../hooks/use-create-task-form';
-import { useRmfApi } from '../../hooks/use-rmf-api';
-import { useTaskRegistry } from '../../hooks/use-task-registry';
-import { useUserProfile } from '../../hooks/use-user-profile';
+import {
+  useAppController,
+  useRmfApi,
+  useTaskFormData,
+  useTaskRegistry,
+  useUserProfile,
+} from '../../hooks';
 import { AppEvents } from '../app-events';
 import { ConfirmationDialog } from '../confirmation-dialog';
 import { Schedule, TaskForm, TaskFormProps } from './task-form';

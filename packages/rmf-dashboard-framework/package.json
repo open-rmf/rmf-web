@@ -93,7 +93,9 @@
     "vitest": "^2.0.4"
   },
   "exports": {
-    "./components": "./src/components",
-    "./micro-apps": "./src/micro-apps"
+    "./components": "./src/components/index",
+    "./hooks": "./src/hooks/index",
+    "./micro-apps": "./src/micro-apps/index",
+    "./services": "./src/services/index"
   }
 }

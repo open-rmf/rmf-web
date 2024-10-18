@@ -12,17 +12,27 @@ import React, { useTransition } from 'react';
 import { matchPath, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { BrowserRouter } from 'react-router-dom';
 
-import { AppController, AppControllerProvider } from '../hooks/use-app-controller';
-import { AuthenticatorProvider } from '../hooks/use-authenticator';
-import { Resources, ResourcesProvider } from '../hooks/use-resources';
-import { RmfApiProvider } from '../hooks/use-rmf-api';
-import { SettingsProvider } from '../hooks/use-settings';
-import { TaskRegistry, TaskRegistryProvider } from '../hooks/use-task-registry';
-import { UserProfileProvider } from '../hooks/use-user-profile';
+import {
+  AppController,
+  AppControllerProvider,
+  AuthenticatorProvider,
+  Resources,
+  ResourcesProvider,
+  RmfApiProvider,
+  SettingsProvider,
+  TaskRegistry,
+  TaskRegistryProvider,
+  UserProfileProvider,
+} from '../hooks';
 import { LoginPage } from '../pages';
-import { Authenticator, UserProfile } from '../services/authenticator';
-import { DefaultRmfApi } from '../services/rmf-api';
-import { loadSettings, saveSettings, Settings } from '../services/settings';
+import {
+  Authenticator,
+  DefaultRmfApi,
+  loadSettings,
+  saveSettings,
+  Settings,
+  UserProfile,
+} from '../services';
 import { AlertManager } from './alert-manager';
 import AppBar, { APP_BAR_HEIGHT } from './appbar';
 import { DeliveryAlertStore } from './delivery-alert-store';

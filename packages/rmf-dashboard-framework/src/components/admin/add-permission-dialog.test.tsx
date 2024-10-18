@@ -2,8 +2,8 @@ import { render as render_ } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { AppControllerProvider } from '../../hooks/use-app-controller';
-import { RmfAction } from '../../services/permissions';
+import { AppControllerProvider } from '../../hooks';
+import { RmfAction } from '../../services';
 import { makeMockAppController } from '../../utils/test-utils.test';
 import { AddPermissionDialog } from './add-permission-dialog';
 

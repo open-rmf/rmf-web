@@ -2,7 +2,7 @@ import { render as render_ } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { AppControllerProvider } from '../../hooks/use-app-controller';
+import { AppControllerProvider } from '../../hooks';
 import { makeMockAppController } from '../../utils/test-utils.test';
 import { CreateUserDialog } from './create-user-dialog';
 

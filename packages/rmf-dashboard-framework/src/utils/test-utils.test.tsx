@@ -34,17 +34,19 @@ import axios from 'axios';
 import React from 'react';
 import { Subject } from 'rxjs';
 
-import { AppController, AppControllerProvider } from '../hooks/use-app-controller';
-import { AuthenticatorProvider } from '../hooks/use-authenticator';
-import { Resources, ResourcesProvider } from '../hooks/use-resources';
-import { RmfApiProvider } from '../hooks/use-rmf-api';
-import { SettingsProvider } from '../hooks/use-settings';
-import { TaskRegistry, TaskRegistryProvider } from '../hooks/use-task-registry';
-import { UserProfileProvider } from '../hooks/use-user-profile';
-import { UserProfile } from '../services/authenticator';
-import { RmfApi } from '../services/rmf-api';
-import { Settings } from '../services/settings';
-import StubAuthenticator from '../services/stub-authenticator';
+import {
+  AppController,
+  AppControllerProvider,
+  AuthenticatorProvider,
+  Resources,
+  ResourcesProvider,
+  RmfApiProvider,
+  SettingsProvider,
+  TaskRegistry,
+  TaskRegistryProvider,
+  UserProfileProvider,
+} from '../hooks';
+import { RmfApi, Settings, StubAuthenticator, UserProfile } from '../services';
 
 export const superUser: UserProfile = {
   user: {

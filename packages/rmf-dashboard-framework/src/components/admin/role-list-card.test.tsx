@@ -2,7 +2,7 @@ import { render as render_, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
-import { AppControllerProvider } from '../../hooks/use-app-controller';
+import { AppControllerProvider } from '../../hooks';
 import { makeMockAppController } from '../../utils/test-utils.test';
 import { RoleListCard } from './role-list-card';
 

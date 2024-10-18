@@ -2,8 +2,8 @@ import { fireEvent, render as render_, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { AppControllerProvider } from '../../hooks/use-app-controller';
-import { getActionText, RmfAction } from '../../services/permissions';
+import { AppControllerProvider } from '../../hooks';
+import { getActionText, RmfAction } from '../../services';
 import { makeMockAppController } from '../../utils/test-utils.test';
 import { PermissionsCard } from './permissions-card';
 

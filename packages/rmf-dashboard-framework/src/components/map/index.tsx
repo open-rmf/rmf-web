@@ -9,12 +9,14 @@ import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { EMPTY, merge, scan, Subscription, switchMap, throttleTime } from 'rxjs';
 import { Box3, TextureLoader, Vector3 } from 'three';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useAuthenticator } from '../../hooks/use-authenticator';
-import { FleetResource, useResources } from '../../hooks/use-resources';
-import { useRmfApi } from '../../hooks/use-rmf-api';
-import ColorManager from '../../services/color-manager';
-import { TrajectoryData } from '../../services/robot-trajectory-manager';
+import {
+  FleetResource,
+  useAppController,
+  useAuthenticator,
+  useResources,
+  useRmfApi,
+} from '../../hooks';
+import { ColorManager, TrajectoryData } from '../../services';
 import { AppEvents } from '../app-events';
 import { DoorSummary } from '../doors/door-summary';
 import { LiftSummary } from '../lifts/lift-summary';

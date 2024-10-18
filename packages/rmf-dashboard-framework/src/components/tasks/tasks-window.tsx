@@ -16,9 +16,8 @@ import {
 import { TaskStateInput as TaskState } from 'api-client';
 import React from 'react';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useRmfApi } from '../../hooks/use-rmf-api';
-import { MicroAppProps } from '../../micro-apps';
+import { MicroAppProps } from '../../components';
+import { useAppController, useRmfApi } from '../../hooks';
 import { AppEvents } from '../app-events';
 import { Window, WindowCloseButton, WindowToolbar } from '../window';
 import { TaskSchedule } from './task-schedule';

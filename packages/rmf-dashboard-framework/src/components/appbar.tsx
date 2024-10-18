@@ -45,14 +45,16 @@ import { formatDistance } from 'date-fns';
 import React from 'react';
 import { Subscription } from 'rxjs';
 
-import { useAppController } from '../hooks/use-app-controller';
-import { useAuthenticator } from '../hooks/use-authenticator';
-import { useTaskFormData } from '../hooks/use-create-task-form';
-import { useResources } from '../hooks/use-resources';
-import { useRmfApi } from '../hooks/use-rmf-api';
-import { useSettings } from '../hooks/use-settings';
-import { useTaskRegistry } from '../hooks/use-task-registry';
-import { useUserProfile } from '../hooks/use-user-profile';
+import {
+  useAppController,
+  useAuthenticator,
+  useResources,
+  useRmfApi,
+  useSettings,
+  useTaskFormData,
+  useTaskRegistry,
+  useUserProfile,
+} from '../hooks';
 import { AppEvents } from './app-events';
 import { ConfirmationDialog } from './confirmation-dialog';
 import { dispatchTask, scheduleTask, TaskForm, TaskFormProps } from './tasks';

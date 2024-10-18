@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 
-import { RmfAction } from '../../services/permissions';
+import { RmfAction } from '../../services';
 import { RoleListCard } from './role-list-card';
 
 export default {

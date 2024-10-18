@@ -2,9 +2,8 @@ import { MenuItem, TextField } from '@mui/material';
 import { Permission } from 'api-client';
 import React from 'react';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useAsync } from '../../hooks/use-async';
-import { getActionText, RmfAction } from '../../services/permissions';
+import { useAppController, useAsync } from '../../hooks';
+import { getActionText, RmfAction } from '../../services';
 import { ConfirmationDialog } from '../confirmation-dialog';
 
 export interface AddPermissionDialogProps {

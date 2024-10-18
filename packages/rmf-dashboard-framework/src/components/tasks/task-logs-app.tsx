@@ -2,7 +2,7 @@ import { CardContent } from '@mui/material';
 import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { AppEvents } from '../app-events';
 import { TaskLogs } from './task-logs';
 

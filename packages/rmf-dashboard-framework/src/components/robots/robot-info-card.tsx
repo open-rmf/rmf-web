@@ -3,7 +3,7 @@ import { RobotState, TaskStateOutput } from 'api-client';
 import React from 'react';
 import { combineLatest, EMPTY, mergeMap, of, switchMap, throttleTime } from 'rxjs';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { AppEvents } from '../app-events';
 import { RobotInfo } from './robot-info';
 

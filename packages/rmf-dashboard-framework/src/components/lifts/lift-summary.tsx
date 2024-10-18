@@ -10,7 +10,7 @@ import {
 import { Lift } from 'api-client';
 import React from 'react';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { getApiErrorMessage } from '../../utils/api';
 import { LiftTableData } from './lift-table-datagrid';
 import { doorStateToString, liftModeToString } from './lift-utils';

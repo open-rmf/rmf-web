@@ -19,7 +19,7 @@ import {
 } from 'api-client';
 import React from 'react';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { TaskBookingLabels } from './booking-label';
 import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
 import { TaskCancelButton } from './task-cancellation';

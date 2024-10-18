@@ -4,10 +4,8 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { AuthenticatorProvider } from '../hooks/use-authenticator';
-import { RmfApiProvider } from '../hooks/use-rmf-api';
-import { RmfApi } from '../services/rmf-api';
-import { StubAuthenticator } from '../services/stub-authenticator';
+import { AuthenticatorProvider, RmfApiProvider } from '../hooks';
+import { RmfApi, StubAuthenticator } from '../services';
 import { MockRmfApi, render, TestProviders } from '../utils/test-utils.test';
 import AppBar from './appbar';
 

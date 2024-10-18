@@ -3,7 +3,7 @@ import { CardContent, useTheme } from '@mui/material';
 import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { TaskCancelButton } from './task-cancellation';
 import { TaskInfo } from './task-info';
 import { TaskLogs } from './task-logs';

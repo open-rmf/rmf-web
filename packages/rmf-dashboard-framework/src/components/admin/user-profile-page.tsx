@@ -4,8 +4,7 @@ import { AxiosError } from 'axios';
 import React from 'react';
 import { useParams } from 'react-router';
 
-import { useAsync } from '../../hooks/use-async';
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useAsync, useRmfApi } from '../../hooks';
 import { getApiErrorMessage } from '../../utils/api';
 import { ManageRolesCard } from './manage-roles-dialog';
 import { adminPageClasses, AdminPageContainer } from './page-css';

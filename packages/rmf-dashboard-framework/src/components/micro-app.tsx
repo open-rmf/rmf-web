@@ -1,9 +1,8 @@
 import React, { Suspense } from 'react';
 
 import { Window, WindowProps } from '../components/window';
-import { useAppController } from '../hooks/use-app-controller';
-import { useSettings } from '../hooks/use-settings';
-import { Settings } from '../services/settings';
+import { useAppController, useSettings } from '../hooks';
+import { Settings } from '../services';
 
 export type MicroAppProps = Omit<WindowProps, 'title' | 'children'>;
 

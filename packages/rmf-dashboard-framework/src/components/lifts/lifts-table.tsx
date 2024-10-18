@@ -4,7 +4,7 @@ import React from 'react';
 import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { throttleTime } from 'rxjs';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { getApiErrorMessage } from '../../utils/api';
 import { AppEvents } from '../app-events';
 import { LiftSummary } from './lift-summary';

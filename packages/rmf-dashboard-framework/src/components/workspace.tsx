@@ -3,8 +3,8 @@ import DesignModeIcon from '@mui/icons-material/AutoFixNormal';
 import { Box, Fab, IconButton, Menu, MenuItem, Typography, useTheme } from '@mui/material';
 import React from 'react';
 
-import { useAppController } from '../hooks/use-app-controller';
-import { MicroAppManifest } from '../micro-apps';
+import { MicroAppManifest } from '../components';
+import { useAppController } from '../hooks';
 import { WindowContainer, WindowLayout } from './window';
 
 export interface InitialWindow {

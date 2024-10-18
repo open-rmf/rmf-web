@@ -12,8 +12,7 @@ import {
 } from 'api-client';
 import React from 'react';
 
-import { useAppController } from '../hooks/use-app-controller';
-import { useRmfApi } from '../hooks/use-rmf-api';
+import { useAppController, useRmfApi } from '../hooks';
 import { TaskCancelButton } from './tasks/task-cancellation';
 import { TaskInspector } from './tasks/task-inspector';
 

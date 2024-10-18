@@ -4,7 +4,7 @@ import React from 'react';
 import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg/DoorMode';
 import { throttleTime } from 'rxjs';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { getApiErrorMessage } from '../../utils/api';
 import { AppEvents } from '../app-events';
 import { DoorDataGridTable, DoorTableData } from './door-table-datagrid';

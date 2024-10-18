@@ -2,7 +2,7 @@ import React from 'react';
 import { Subscription } from 'rxjs';
 
 import { getPlaces } from '../components/place';
-import { RmfApi } from '../services/rmf-api';
+import { RmfApi } from '../services';
 
 export const useTaskFormData = (rmfApi: RmfApi | undefined) => {
   const [waypointNames, setWaypointNames] = React.useState<string[]>([]);

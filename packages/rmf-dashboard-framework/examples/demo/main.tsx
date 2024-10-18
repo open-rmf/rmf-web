@@ -19,7 +19,7 @@ import {
   robotsApp,
   tasksApp,
 } from 'rmf-dashboard-framework/micro-apps';
-import StubAuthenticator from 'rmf-dashboard-framework/services/stub-authenticator';
+import { StubAuthenticator } from 'rmf-dashboard-framework/services';
 
 const mapApp = createMapApp({
   attributionPrefix: 'Open-RMF',

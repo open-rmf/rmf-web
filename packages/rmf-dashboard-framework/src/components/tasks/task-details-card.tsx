@@ -4,8 +4,7 @@ import React from 'react';
 // import { UserProfileContext } from 'rmf-auth';
 import { of, switchMap } from 'rxjs';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useAppController, useRmfApi } from '../../hooks';
 import { AppEvents } from '../app-events';
 import { TaskInfo } from './task-info';
 // import { Enforcer } from '../permissions';

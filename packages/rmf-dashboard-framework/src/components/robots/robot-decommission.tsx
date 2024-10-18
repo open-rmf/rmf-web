@@ -10,8 +10,7 @@ import {
 import { RobotState } from 'api-client';
 import React from 'react';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useAppController, useRmfApi } from '../../hooks';
 import { AppEvents } from '../app-events';
 import { ConfirmationDialog } from '../confirmation-dialog';
 

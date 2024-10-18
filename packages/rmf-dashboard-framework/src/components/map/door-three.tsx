@@ -6,7 +6,7 @@ import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
 import { throttleTime } from 'rxjs';
 import { Mesh } from 'three';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { DoorThreeMaker } from './door-three-maker';
 
 interface DoorProps {

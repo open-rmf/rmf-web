@@ -2,7 +2,7 @@ import { render as render_, waitFor, waitForElementToBeRemoved } from '@testing-
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { AppControllerProvider } from '../../hooks/use-app-controller';
+import { AppControllerProvider } from '../../hooks';
 import { makeMockAppController } from '../../utils/test-utils.test';
 import { ManageRolesCard, ManageRolesDialog } from './manage-roles-dialog';
 

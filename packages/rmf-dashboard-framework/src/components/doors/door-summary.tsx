@@ -3,7 +3,7 @@ import { Level } from 'api-client';
 import React from 'react';
 import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { getApiErrorMessage } from '../../utils/api';
 import { doorModeToOpModeString, DoorTableData } from './door-table-datagrid';
 import { doorModeToString, doorTypeToString } from './door-utils';

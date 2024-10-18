@@ -1,6 +1,6 @@
 import { AlertProps } from '@mui/material';
 
-import { Settings } from '../services/settings';
+import { Settings } from '../services';
 import { createDeferredContext } from './deferred-context';
 
 export interface AppController {

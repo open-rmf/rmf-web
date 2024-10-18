@@ -7,7 +7,7 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 
-import { RmfApi } from '../../services/rmf-api';
+import { RmfApi } from '../../services';
 import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
 import { RobotDispatchTarget } from './task-form';
 import { Schedule } from './task-form';

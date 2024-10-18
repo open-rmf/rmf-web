@@ -1,8 +1,7 @@
 import { TableContainer, Typography } from '@mui/material';
 import React from 'react';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useAppController, useRmfApi } from '../../hooks';
 import { ConfirmationDialog } from '../confirmation-dialog';
 import { MutexGroupData, MutexGroupTable } from './mutex-group-table';
 

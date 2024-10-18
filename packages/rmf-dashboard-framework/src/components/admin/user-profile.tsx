@@ -14,8 +14,7 @@ import {
 import { User } from 'api-client';
 import React from 'react';
 
-import { useAppController } from '../../hooks/use-app-controller';
-import { useAsync } from '../../hooks/use-async';
+import { useAppController, useAsync } from '../../hooks';
 
 const classes = {
   avatar: 'user-profile-action',

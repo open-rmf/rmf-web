@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
-import { AppControllerProvider } from '../../hooks/use-app-controller';
+import { AppControllerProvider } from '../../hooks';
 import { makeMockAppController } from '../../utils/test-utils.test';
 import { UserListCard } from './user-list-card';
 

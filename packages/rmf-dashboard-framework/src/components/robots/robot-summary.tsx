@@ -34,7 +34,7 @@ import {
 import React from 'react';
 import { combineLatest, EMPTY, mergeMap, of } from 'rxjs';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { TaskCancelButton } from '../tasks/task-cancellation';
 import { TaskInspector } from '../tasks/task-inspector';
 import { RobotDecommissionButton } from './robot-decommission';

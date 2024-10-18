@@ -2,7 +2,7 @@ import { TableContainer } from '@mui/material';
 import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { AppEvents } from '../app-events';
 import { RobotSummary } from './robot-summary';
 import { RobotDataGridTable, RobotTableData } from './robot-table-datagrid';

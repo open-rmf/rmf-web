@@ -1,4 +1,4 @@
-import { useRmfApi } from '../../hooks/use-rmf-api';
+import { useRmfApi } from '../../hooks';
 import { getApiErrorMessage } from '../../utils/api';
 import { adminPageClasses, AdminPageContainer } from './page-css';
 import { RoleListCard } from './role-list-card';
