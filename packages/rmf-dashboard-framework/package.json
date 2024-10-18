@@ -67,7 +67,6 @@
     "three": "^0.166.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.6",
     "@storybook/addon-essentials": "^8.3.3",
     "@storybook/addon-interactions": "^8.3.3",
     "@storybook/addon-links": "^8.3.3",
@@ -93,9 +92,9 @@
     "vitest": "^2.0.4"
   },
   "exports": {
-    "./components": "./src/components/index",
-    "./hooks": "./src/hooks/index",
-    "./micro-apps": "./src/micro-apps/index",
-    "./services": "./src/services/index"
+    "./components": "./src/components/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./micro-apps": "./src/micro-apps/index.ts",
+    "./services": "./src/services/index.ts"
   }
 }

@@ -1,8 +1,8 @@
 import { CssBaseline } from '@mui/material';
 import { Decorator, Preview } from '@storybook/react';
-import { TestProviders } from 'rmf-dashboard-framework/utils/test-utils.test';
 
 import { LocalizationProvider } from '../src/components/locale';
+import { TestProviders } from '../src/utils/test-utils.test';
 
 const preview: Preview = {
   parameters: {

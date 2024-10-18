@@ -25,33 +25,10 @@ cd basic-dashboard
 git clone --depth 1 https://github.com/open-rmf/rmf-web
 ```
 
-<!-- TODO(koonpeng): not needed after package is published -->
-
-Modify the following to resolve `rmf-dashboard-framework` as if it is installed from npmjs.
-
 Add local dependency to `rmf-web`:
 
-package.json
-
-```
-"dependencies": {
-  ...
-  "rmf-dashboard-framework": "rmf-web/packages/rmf-dashboard-framework"
-}
-```
-
-Configure typescript to resolve `rmf-dashboard-framework`:
-
-tsconfig.app.json
-
-```
-compilerOptions: [
-  ...,
-  "paths": {
-    "rmf-dashboard-framework/*": ["./node_modules/rmf-dashboard-framework/src/*"]
-  },
-  ...
-]
+```bash
+pnpm add rmf-web/packages/rmf-dashboard-framework
 ```
 
 Build `rmf-dashboard-framework`

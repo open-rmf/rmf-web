@@ -1,4 +1,4 @@
-import { createMicroApp } from '.';
+import { createMicroApp } from '../components';
 
 export default createMicroApp(
   'robots-table',

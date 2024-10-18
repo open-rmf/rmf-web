@@ -6,9 +6,4 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [react()],
   publicDir: path.resolve(__dirname, 'public'),
-  resolve: {
-    alias: {
-      'rmf-dashboard-framework': path.resolve(__dirname, '../../src'),
-    },
-  },
 });

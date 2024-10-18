@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import { Suspense } from 'react';
 
-import { MicroAppManifest } from '.';
+import { MicroAppManifest } from '../components';
 
 const TasksWindow = lazy(() => import('../components/tasks/tasks-window'));
 
