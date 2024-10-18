@@ -105,8 +105,9 @@ The `layout` property defines the position and size of a MicroApp, the screen is
 
 You shouldn't need to do this for local testing, but for reference, the example uses vite, an optimized production build can be created with
 
+<!-- FIXME(koonpeng) `pnpm tsc -b` fails possibly because of react-three-fiber-hack.d.ts (but pnpm tsc succeed). This may or may not be due to the hacky symlink, need to test if it works as an external package. If it doesn't work, then we have to publish transpiled js, the downside is that the examples will no longer work with HMR (unless we run tsc in watch mode in the background) -->
 ```bash
-# cd <basic-dashbaord-root>
+# cd <basic-dashboard-root>
 pnpm vite build
 ```
 
@@ -114,5 +115,5 @@ There is no dev server for a production build, you will need a web server to acc
 
 ```bash
 # not recommended in production!
-pnpx serve -s build
+pnpx serve -s dist
 ```
