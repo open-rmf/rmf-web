@@ -144,6 +144,7 @@ pnpm start
 # Configuration
 
 - See the [api-server](packages/api-server/README.md#configuration) docs for API server run-time configurations.
+- [rmf-dashboard-framework](packages/api-server/README.md) allows you to easily build a dashboard.
 
 # Troubleshooting
 
