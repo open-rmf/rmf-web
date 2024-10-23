@@ -32,15 +32,16 @@ docker run \
 > **Note**
 > The values provided for `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` are default values when running the API server and `rmf_demos`, and can be modified to suit different setups.
 
-Start the API server with host network access, and set up the correct `ROS_DOMAIN_ID` and ROS 2 RMW implementation that will be used in the rest of the Open-RMF system. The API server will use the default port at `localhost:8000`.
+Start the API server with host network access, and set up the correct `ROS_DOMAIN_ID` and ROS 2 RMW implementation (The images currently have `rmw_fastrtps_cpp` and `rmw_cyclonedds_cpp` installed and supported) that will be used in the rest of the Open-RMF system. The API server will use the default port at `localhost:8000`.
 
 ```bash
 docker run \
   --network host -it --rm \
   -e ROS_DOMAIN_ID=<ROS_DOMAIN_ID> \
   -e RMW_IMPLEMENTATION=<RMW_IMPLEMENTATION> \
-  ghcr.io/open-rmf/rmf-web/api-server:jazzy
+  ghcr.io/open-rmf/rmf-web/api-server:latest
 
+# The latest tag would be the same as jazzy
 # For ROS 2 Rolling, use ghcr.io/open-rmf/rmf-web/api-server:rolling
 ```
 
