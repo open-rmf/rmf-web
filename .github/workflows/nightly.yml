@@ -80,7 +80,7 @@ jobs:
             BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}
           tags: |
             ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}
-            ${{ matrix.ros_distribution == 'jazzy' && ghcr.io/${{ github.repository }}/api-server:latest || null}}
+            ${{ matrix.ros_distribution == 'jazzy' && 'ghcr.io/${{ github.repository }}/api-server:latest' || null}}
           context: .github/api-server
   # dashboard-e2e:
   #   strategy:
