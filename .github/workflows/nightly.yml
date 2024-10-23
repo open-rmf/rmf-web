@@ -1,8 +1,9 @@
 name: Nightly
-on:
-  schedule:
-    # 2am SGT
-    - cron: '0 18 * * *'
+# on:
+#   schedule:
+#     # 2am SGT
+#     - cron: '0 18 * * *'
+on: push
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -77,7 +78,9 @@ jobs:
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
             BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}
+          tags: |
+            ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}
+            ${{ matrix.ros_distribution == 'jazzy' && ghcr.io/${{ github.repository }}/api-server:latest || null}}
           context: .github/api-server
   # dashboard-e2e:
   #   strategy:
