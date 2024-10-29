@@ -1,9 +1,8 @@
 name: Nightly
-# on:
-#   schedule:
-#     # 2am SGT
-#     - cron: '0 18 * * *'
-on: push
+on:
+  schedule:
+    # 2am SGT
+    - cron: '0 18 * * *'
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
