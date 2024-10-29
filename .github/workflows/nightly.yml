@@ -1,8 +1,9 @@
 name: Nightly
-on:
-  schedule:
-    # 2am SGT
-    - cron: '0 18 * * *'
+# on:
+#   schedule:
+#     # 2am SGT
+#     - cron: '0 18 * * *'
+on: push
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -29,7 +30,7 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}
+          tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
           context: .github/minimal-rmf
   build-dashboard-image:
     needs: build-minimal-rmf-docker-images
@@ -76,9 +77,9 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
           tags: |
-            ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}
+            ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
             ${{ matrix.ros_distribution == 'jazzy' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
           context: .github/api-server
   # dashboard-e2e:

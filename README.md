@@ -42,7 +42,7 @@ docker run \
   ghcr.io/open-rmf/rmf-web/api-server:latest
 
 # The latest tag would be the same as jazzy
-# For ROS 2 Rolling, use ghcr.io/open-rmf/rmf-web/api-server:rolling
+# For ROS 2 Rolling, use ghcr.io/open-rmf/rmf-web/api-server:rolling-nightly
 ```
 
 > **Note**
