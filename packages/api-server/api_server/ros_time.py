@@ -10,7 +10,8 @@ def now() -> int:
     Return current unix time in millis
     """
     ros_time = get_ros_node().get_clock().now()  # pylint: disable=no-member
-    return ros_time.nanoseconds // 1000000
+    seconds, nanoseconds = ros_time.seconds_nanoseconds()
+    return seconds * 1000 + nanoseconds // 1000000
 
 
 def ros_to_py_datetime(ros_time: RosTime) -> datetime:
