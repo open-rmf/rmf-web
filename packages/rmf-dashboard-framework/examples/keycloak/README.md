@@ -29,6 +29,6 @@ the script will
 3. Start rmf api server with the keycloak config
 
 ```bash
-# be sure to run from packages/dashboard directory and source a supported rmf installation
+# be sure to run from packages/rmf-dashboard-framework directory and source a supported rmf installation
 RMF_API_SERVER_CONFIG="$(pwd)/examples/keycloak/api_server_config.py" pnpm -C ../api-server start
 ```

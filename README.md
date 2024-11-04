@@ -120,7 +120,7 @@ When developing individual components, it may be useful to start the dashboard a
 
 ```bash
 # Start the dashboard in dev, this monitors for changes in the dashboard package and performs rebuilds. A browser refresh is required after all automated builds.
-cd packages/dashboard
+cd packages/rmf-dashboard-framework
 pnpm start:example examples/demo
 
 # Start the API server, this will need to be restarted for any changes to be reflected
