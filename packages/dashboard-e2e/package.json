@@ -20,7 +20,6 @@
     "@wdio/mocha-framework": "7.11.1",
     "@wdio/spec-reporter": "7.10.1",
     "concurrently": "^8.2.2",
-    "rmf-dashboard": "workspace:*",
     "serve": "^11.3.2",
     "ts-node": "^9.1.1",
     "typescript": "~5.5.4"
