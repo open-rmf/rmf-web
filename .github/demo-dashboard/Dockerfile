@@ -10,8 +10,7 @@ RUN curl -fsSL https://get.pnpm.io/install.sh | bash -
   # shell runs in non-interactive mode, which does not source .bashrc so we need to set the PATH manually
 ENV PNPM_HOME /root/.local/share/pnpm
 ENV PATH "$PNPM_HOME:$PATH"
-# node-canvas does not have prebuilt binaries for latest lts (node 22)
-RUN pnpm env use --global 20
+RUN pnpm env use --global lts
 
 # fetch sources
 RUN mkdir -p /ws \
@@ -37,7 +36,7 @@ RUN curl -fsSL https://get.pnpm.io/install.sh | bash -
 # shell runs in non-interactive mode, which does not source .bashrc so we need to set the PATH manually
 ENV PNPM_HOME /root/.local/share/pnpm
 ENV PATH "$PNPM_HOME:$PATH"
-RUN pnpm env use --global 20
+RUN pnpm env use --global lts
 
 RUN pnpm add --global serve
 

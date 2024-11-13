@@ -197,9 +197,6 @@ importers:
       axios:
         specifier: 1.7.4
         version: 1.7.4(debug@4.3.6)
-      canvas:
-        specifier: ^2.11.2
-        version: 2.11.2
       clsx:
         specifier: ^1.1.1
         version: 1.2.1
@@ -6596,6 +6593,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    optional: true
 
   '@mdx-js/react@3.0.1(@types/react@18.3.3)(react@18.3.1)':
     dependencies:
@@ -8029,7 +8027,8 @@ snapshots:
 
   '@zeit/schemas@2.6.0': {}
 
-  abbrev@1.1.1: {}
+  abbrev@1.1.1:
+    optional: true
 
   accepts@1.3.8:
     dependencies:
@@ -8121,7 +8120,8 @@ snapshots:
       normalize-path: 3.0.0
       picomatch: 2.3.1
 
-  aproba@2.0.0: {}
+  aproba@2.0.0:
+    optional: true
 
   arch@2.2.0: {}
 
@@ -8165,6 +8165,7 @@ snapshots:
     dependencies:
       delegates: 1.0.0
       readable-stream: 3.6.2
+    optional: true
 
   arg@2.0.0: {}
 
@@ -8464,6 +8465,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    optional: true
 
   centra@2.7.0(debug@4.3.6):
     dependencies:
@@ -8541,7 +8543,8 @@ snapshots:
 
   chownr@1.1.4: {}
 
-  chownr@2.0.0: {}
+  chownr@2.0.0:
+    optional: true
 
   chrome-launcher@0.14.2:
     dependencies:
@@ -8612,7 +8615,8 @@ snapshots:
 
   color-name@1.1.4: {}
 
-  color-support@1.1.3: {}
+  color-support@1.1.3:
+    optional: true
 
   colorette@2.0.20: {}
 
@@ -8681,7 +8685,8 @@ snapshots:
 
   consola@2.15.3: {}
 
-  console-control-strings@1.1.0: {}
+  console-control-strings@1.1.0:
+    optional: true
 
   console.table@0.10.0:
     dependencies:
@@ -8819,6 +8824,7 @@ snapshots:
   decompress-response@4.2.1:
     dependencies:
       mimic-response: 2.1.0
+    optional: true
 
   decompress-response@6.0.0:
     dependencies:
@@ -8875,7 +8881,8 @@ snapshots:
 
   delayed-stream@1.0.0: {}
 
-  delegates@1.0.0: {}
+  delegates@1.0.0:
+    optional: true
 
   depd@2.0.0: {}
 
@@ -8887,7 +8894,8 @@ snapshots:
     dependencies:
       webgl-constants: 1.1.1
 
-  detect-libc@2.0.3: {}
+  detect-libc@2.0.3:
+    optional: true
 
   devtools-protocol@0.0.901419: {}
 
@@ -9551,6 +9559,7 @@ snapshots:
   fs-minipass@2.1.0:
     dependencies:
       minipass: 3.3.6
+    optional: true
 
   fs.realpath@1.0.0: {}
 
@@ -9579,6 +9588,7 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wide-align: 1.1.5
+    optional: true
 
   gaze@1.1.3:
     dependencies:
@@ -9753,7 +9763,8 @@ snapshots:
     dependencies:
       has-symbols: 1.0.3
 
-  has-unicode@2.0.1: {}
+  has-unicode@2.0.1:
+    optional: true
 
   hasown@2.0.2:
     dependencies:
@@ -10469,7 +10480,8 @@ snapshots:
 
   mimic-response@1.0.1: {}
 
-  mimic-response@2.1.0: {}
+  mimic-response@2.1.0:
+    optional: true
 
   mimic-response@3.1.0: {}
 
@@ -10508,8 +10520,10 @@ snapshots:
   minipass@3.3.6:
     dependencies:
       yallist: 4.0.0
+    optional: true
 
-  minipass@5.0.0: {}
+  minipass@5.0.0:
+    optional: true
 
   minipass@7.1.2: {}
 
@@ -10517,6 +10531,7 @@ snapshots:
     dependencies:
       minipass: 3.3.6
       yallist: 4.0.0
+    optional: true
 
   mkdirp@0.5.6:
     dependencies:
@@ -10559,7 +10574,8 @@ snapshots:
 
   mute-stream@0.0.8: {}
 
-  nan@2.20.0: {}
+  nan@2.20.0:
+    optional: true
 
   nanoid@3.3.1: {}
 
@@ -10594,6 +10610,7 @@ snapshots:
   nopt@5.0.0:
     dependencies:
       abbrev: 1.1.1
+    optional: true
 
   normalize-package-data@2.5.0:
     dependencies:
@@ -10620,6 +10637,7 @@ snapshots:
       console-control-strings: 1.1.0
       gauge: 3.0.2
       set-blocking: 2.0.0
+    optional: true
 
   nwsapi@2.2.12: {}
 
@@ -11437,7 +11455,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  set-blocking@2.0.0: {}
+  set-blocking@2.0.0:
+    optional: true
 
   set-function-length@1.2.2:
     dependencies:
@@ -11486,13 +11505,15 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-concat@1.0.1: {}
+  simple-concat@1.0.1:
+    optional: true
 
   simple-get@3.1.1:
     dependencies:
       decompress-response: 4.2.1
       once: 1.4.0
       simple-concat: 1.0.1
+    optional: true
 
   slash@3.0.0: {}
 
@@ -11759,6 +11780,7 @@ snapshots:
       minizlib: 2.1.2
       mkdirp: 1.0.4
       yallist: 4.0.0
+    optional: true
 
   telejson@7.2.0:
     dependencies:
@@ -12319,6 +12341,7 @@ snapshots:
   wide-align@1.1.5:
     dependencies:
       string-width: 4.2.3
+    optional: true
 
   widest-line@2.0.1:
     dependencies:
@@ -12390,7 +12413,8 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yallist@4.0.0: {}
+  yallist@4.0.0:
+    optional: true
 
   yaml@1.10.2: {}
 
