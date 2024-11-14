@@ -1,8 +1,9 @@
 name: Nightly
-on:
-  schedule:
-    # 2am SGT
-    - cron: '0 18 * * *'
+# on:
+#   schedule:
+#     # 2am SGT
+#     - cron: '0 18 * * *'
+on: push
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -52,7 +53,7 @@ jobs:
           build-args: |
             BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:rolling
           tags: ghcr.io/${{ github.repository }}/demo-dashboard:latest
-          context: .github/dashboard
+          context: .github/demo-dashboard
   build-api-server-image:
     needs: build-minimal-rmf-docker-images
     name: Push API server docker image to GitHub Packages
