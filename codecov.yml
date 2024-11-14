@@ -5,11 +5,7 @@ coverage:
 flags:
   dashboard:
     paths:
-      - packages/dashboard
-    carryforward: true
-  react-components:
-    paths:
-      - packages/react-components
+      - packages/rmf-dashboard-framework
     carryforward: true
   api-server:
     paths:
