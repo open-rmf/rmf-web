@@ -21,7 +21,7 @@ describe('LiftSummary', () => {
     );
   };
 
-  it('renders door summary correctly', async () => {
+  it('renders lift summary correctly', async () => {
     const onCloseMock = vi.fn();
     const root = render(
       <Base>
