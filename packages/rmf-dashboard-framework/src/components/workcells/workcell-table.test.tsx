@@ -28,6 +28,6 @@ describe('Workcell table', () => {
     expect(root.getByLabelText('test3')).toBeTruthy();
 
     // check if state unknown dispenser state is handled
-    expect(root.getAllByText('N/A').length).toEqual(1);
+    expect(root.getAllByText('n/a').length).toEqual(1);
   });
 });

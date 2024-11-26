@@ -9,6 +9,6 @@ export function dispenserModeToString(mode: number): string {
     case RmfDispenserState.OFFLINE:
       return 'OFFLINE';
     default:
-      return 'N/A';
+      return 'n/a';
   }
 }

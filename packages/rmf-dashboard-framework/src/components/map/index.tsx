@@ -695,7 +695,7 @@ export const Map = styled((props: MapProps) => {
         <DoorSummary
           onClose={() => setOpenDoorSummary(false)}
           door={selectedDoor}
-          level={currentLevel}
+          doorLevelName={currentLevel.name}
         />
       )}
 

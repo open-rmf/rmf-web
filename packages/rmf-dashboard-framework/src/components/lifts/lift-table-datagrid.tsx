@@ -200,7 +200,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
-        params.row.currentFloor ? params.row.currentFloor : 'N/A',
+        params.row.currentFloor ? params.row.currentFloor : 'n/a',
       flex: 1,
       filterable: true,
     },
@@ -210,7 +210,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
-        params.row.destinationFloor ? params.row.destinationFloor : 'N/A',
+        params.row.destinationFloor ? params.row.destinationFloor : 'n/a',
       flex: 1,
       filterable: true,
     },

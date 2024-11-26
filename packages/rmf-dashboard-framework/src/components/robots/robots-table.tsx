@@ -59,7 +59,7 @@ export const RobotsTable = () => {
                     status: robot.status || undefined,
                     estFinishTime: estFinishTime || undefined,
                     lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
-                    level: robot.location?.map || 'N/A',
+                    level: robot.location?.map || 'n/a',
                     commission: robot.commission || undefined,
                   };
                 })
