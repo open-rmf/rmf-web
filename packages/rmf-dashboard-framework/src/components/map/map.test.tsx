@@ -1,13 +1,17 @@
-import React from 'react';
+import { render } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
+import React, { act } from 'react';
 import { describe, expect, it } from 'vitest';
 
 import { RmfApiProvider } from '../../hooks';
-import { MockRmfApi, render, TestProviders } from '../../utils/test-utils.test';
+import { MockRmfApi, TestProviders } from '../../utils/test-utils.test';
 import Map from './map';
+import { officeMap } from './test-utils.test';
 
 describe('Map', () => {
+  const rmfApi = new MockRmfApi();
+  rmfApi.buildingApi.getBuildingMapBuildingMapGet = () => new Promise(() => {});
   const Base = (props: React.PropsWithChildren<{}>) => {
-    const rmfApi = new MockRmfApi();
     return (
       <TestProviders>
         <RmfApiProvider value={rmfApi}>{props.children}</RmfApiProvider>
@@ -15,18 +19,22 @@ describe('Map', () => {
     );
   };
 
-  it('renders map without BuildingMap', () => {
-    expect(() =>
-      render(
-        <Base>
-          <Map
-            defaultMapLevel="L1"
-            defaultZoom={20}
-            defaultRobotZoom={50}
-            attributionPrefix="test_attribution_prefix"
-          />
-        </Base>,
-      ),
-    ).not.toThrow();
+  it('renders map with office BuildingMap', async () => {
+    const root = render(
+      <Base>
+        <Map
+          defaultMapLevel="L1"
+          defaultZoom={20}
+          defaultRobotZoom={50}
+          attributionPrefix="test_attribution_prefix"
+        />
+      </Base>,
+    );
+
+    act(() => {
+      rmfApi.buildingMapObs.next(officeMap);
+    });
+
+    await expect(waitFor(() => root.getByText('test_attribution_prefix'))).resolves.toBeTruthy();
   });
 });
