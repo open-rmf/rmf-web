@@ -122,11 +122,11 @@ export const RobotThreeMaker = ({
         </mesh>
       )}
       {robotLabel && fontPath && fontPath.length > 0 ? (
-        <Text color="black" font={fontPath} fontSize={0.5} position={[0, 0, 1]}>
+        <Text color="black" font={fontPath} fontSize={0.5} position={position}>
           {robot.name}
         </Text>
       ) : robotLabel ? (
-        <TextThreeRendering position={[0, 0, 1]} text={robot.name} />
+        <TextThreeRendering position={[position.x, position.y, 1]} text={robot.name} />
       ) : null}
       {imageUrl ? (
         <RobotImageMaker
