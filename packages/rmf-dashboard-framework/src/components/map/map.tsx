@@ -1,4 +1,3 @@
-import { ResizeObserver } from '@juggle/resize-observer';
 import { Box, styled, Typography, useMediaQuery } from '@mui/material';
 import { Line } from '@react-three/drei';
 import { Canvas, useLoader } from '@react-three/fiber';
@@ -533,7 +532,6 @@ export const Map = styled((props: MapProps) => {
           camera.updateProjectionMatrix();
         }}
         orthographic={true}
-        resize={{ polyfill: ResizeObserver }}
       >
         <CameraControl zoom={zoom} />
         {!disabledLayers['Pickup & Dropoff waypoints'] &&

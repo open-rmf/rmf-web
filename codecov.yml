@@ -6,7 +6,6 @@ ignore:
   - packages/rmf-dashboard-framework/examples
   - "**/*.js"
   - "**/*.stories.tsx"
-  - "**/index.ts"
 flags:
   dashboard:
     paths:

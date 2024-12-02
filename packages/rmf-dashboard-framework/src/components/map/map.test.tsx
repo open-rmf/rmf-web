@@ -7,7 +7,16 @@ import { MockRmfApi, TestProviders } from '../../utils/test-utils.test';
 import Map from './map';
 import { officeMap } from './test-utils.test';
 
+// Obtained from https://github.com/ZeeCoder/use-resize-observer/issues/40
+// to resolve ResizeObserver related errors during testing.
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 describe('Map', () => {
+  window.ResizeObserver = ResizeObserver;
   const rmfApi = new MockRmfApi();
   rmfApi.buildingApi.getBuildingMapBuildingMapGet = () => new Promise(() => {});
   const Base = (props: React.PropsWithChildren<{}>) => {
