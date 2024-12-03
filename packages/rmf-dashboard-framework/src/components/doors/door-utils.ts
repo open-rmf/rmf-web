@@ -28,7 +28,7 @@ export interface DoorData {
 
 export function doorModeToString(doorMode?: number): string {
   if (doorMode === undefined) {
-    return 'N/A';
+    return 'n/a';
   }
   switch (doorMode) {
     case RmfDoorMode.MODE_OPEN:

@@ -13,7 +13,7 @@ import React from 'react';
 import { useRmfApi } from '../../hooks';
 import { getApiErrorMessage } from '../../utils/api';
 import { LiftTableData } from './lift-table-datagrid';
-import { doorStateToString, liftModeToString } from './lift-utils';
+import { doorStateToString } from './lift-utils';
 
 interface LiftSummaryProps {
   onClose: () => void;
@@ -89,17 +89,13 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
       <DialogContent>
         {Object.entries(liftData).map(([key, value]) => {
           if (key === 'index' || key === 'motionState' || key === 'lift') {
-            return <></>;
+            return <div key={liftData.name + key} />;
           }
           let displayValue = value;
           let displayLabel = key;
           switch (key) {
             case 'name':
               displayLabel = 'Name';
-              break;
-            case 'mode':
-              displayValue = liftModeToString(value);
-              displayLabel = 'Mode';
               break;
             case 'currentFloor':
               displayLabel = 'Current Floor';

@@ -483,7 +483,7 @@ export const Map = styled((props: MapProps) => {
     setDistance(Math.max(size.x, size.y, size.z) * 0.7);
   }, [sceneBoundingBox]);
 
-  return buildingMap && currentLevel && robotLocations ? (
+  return buildingMap && currentLevel ? (
     <Suspense fallback={null}>
       <LayersController
         disabledLayers={disabledLayers}
@@ -695,7 +695,7 @@ export const Map = styled((props: MapProps) => {
         <DoorSummary
           onClose={() => setOpenDoorSummary(false)}
           door={selectedDoor}
-          level={currentLevel}
+          doorLevelName={currentLevel.name}
         />
       )}
 

@@ -2,6 +2,10 @@ coverage:
   status:
     project: false
     patch: false
+ignore:
+  - packages/rmf-dashboard-framework/examples
+  - "**/*.js"
+  - "**/*.stories.tsx"
 flags:
   dashboard:
     paths:

@@ -35,7 +35,6 @@ import {
 } from '../services';
 import { AlertManager } from './alert-manager';
 import AppBar, { APP_BAR_HEIGHT } from './appbar';
-import { DeliveryAlertStore } from './delivery-alert-store';
 import LocalizationProvider from './locale';
 import { getDefaultTaskDefinition } from './tasks/types';
 import { DashboardThemes } from './theme';
@@ -249,7 +248,6 @@ export function RmfDashboard(props: RmfDashboardProps) {
                   <RmfApiProvider value={rmfApi}>
                     <SettingsProvider value={settings}>
                       <AppControllerProvider value={appController}>
-                        <DeliveryAlertStore />
                         <AlertManager alertAudioPath={alertAudioPath} />
                         <DashboardContents {...props} extraAppbarItems={extraAppbarItems} />
                         {/* TODO: Support stacking of alerts */}

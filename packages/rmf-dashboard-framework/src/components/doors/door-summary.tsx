@@ -1,26 +1,25 @@
 import { Dialog, DialogContent, DialogTitle, Divider, TextField, useTheme } from '@mui/material';
-import { Level } from 'api-client';
 import React from 'react';
 import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 
 import { useRmfApi } from '../../hooks';
 import { getApiErrorMessage } from '../../utils/api';
-import { doorModeToOpModeString, DoorTableData } from './door-table-datagrid';
+import { DoorTableData } from './door-table-datagrid';
 import { doorModeToString, doorTypeToString } from './door-utils';
 
 interface DoorSummaryProps {
   onClose: () => void;
   door: DoorModel;
-  level: Level;
+  doorLevelName: string;
 }
 
-export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Element => {
+export const DoorSummary = ({ onClose, door, doorLevelName }: DoorSummaryProps): JSX.Element => {
   const rmfApi = useRmfApi();
   const [doorData, setDoorData] = React.useState<DoorTableData>({
     index: 0,
-    doorName: '',
-    levelName: '',
-    doorType: 0,
+    doorName: door.name,
+    levelName: doorLevelName,
+    doorType: door.door_type,
     doorState: undefined,
   });
 
@@ -31,7 +30,7 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
           setDoorData({
             index: 0,
             doorName: door.name,
-            levelName: level.name,
+            levelName: doorLevelName,
             doorType: door.door_type,
             doorState: doorState,
           });
@@ -43,7 +42,7 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
     };
 
     fetchDataForDoor();
-  }, [rmfApi, level, door]);
+  }, [rmfApi, doorLevelName, door]);
 
   const [isOpen, setIsOpen] = React.useState(true);
 
@@ -70,17 +69,13 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
       <DialogContent>
         {Object.entries(doorData).map(([key, value]) => {
           if (key === 'index') {
-            return <></>;
+            return <div key={doorData.doorName + key} />;
           }
           let displayValue = value;
           let displayLabel = key;
           switch (key) {
             case 'doorName':
               displayLabel = 'Name';
-              break;
-            case 'opMode':
-              displayValue = doorModeToOpModeString(value.current_mode);
-              displayLabel = 'Op. Mode';
               break;
             case 'levelName':
               displayLabel = 'Current Floor';
@@ -90,7 +85,9 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
               displayLabel = 'Type';
               break;
             case 'doorState':
-              displayValue = value ? doorModeToString(value.current_mode.value) : -1;
+              displayValue = value
+                ? doorModeToString(value.current_mode.value)
+                : doorModeToString(undefined);
               displayLabel = 'State';
               break;
             default:

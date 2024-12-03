@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { DoorDataGridTable, DoorTableData } from './door-table-datagrid';
 import { makeDoorState } from './test-utils.test';
@@ -45,5 +47,15 @@ describe('DoorDataGridTable', () => {
     expect(root.queryByText('Current Floor')).toBeTruthy();
     expect(root.queryByText('Type')).toBeTruthy();
     expect(root.queryByText('Door State')).toBeTruthy();
+  });
+
+  it('door clicks triggered', async () => {
+    const onDoorClicked = vi.fn();
+    const root = render(<DoorDataGridTable doors={mockDoors} onDoorClick={onDoorClicked} />);
+
+    userEvent.click(root.getByText('Open'));
+    await waitFor(() => expect(onDoorClicked).toHaveBeenCalledTimes(1));
+    userEvent.click(root.getByText('Close'));
+    await waitFor(() => expect(onDoorClicked).toHaveBeenCalledTimes(2));
   });
 });
