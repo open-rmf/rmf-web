@@ -76,8 +76,6 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-const StyledDiv = styled('div');
-
 export const TasksWindow = React.memo(
   React.forwardRef(
     (

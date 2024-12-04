@@ -4,7 +4,7 @@ import { RobotDecommissionButton } from './robot-decommission';
 import { makeRobot } from './test-utils.test';
 
 export default {
-  title: 'RobotDecommissionButton',
+  title: 'Robots/RobotDecommissionButton',
   component: RobotDecommissionButton,
 } satisfies Meta;
 

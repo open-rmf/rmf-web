@@ -1,5 +1,5 @@
 import { fireEvent } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { RmfApiProvider } from '../../hooks';
 import { MockRmfApi, render, TestProviders } from '../../utils/test-utils.test';
