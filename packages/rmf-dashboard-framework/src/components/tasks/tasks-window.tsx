@@ -11,7 +11,6 @@ import {
   TableContainer,
   Tabs,
   Tooltip,
-  useMediaQuery,
 } from '@mui/material';
 import { TaskStateInput as TaskState } from 'api-client';
 import React from 'react';
@@ -77,6 +76,8 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+const StyledDiv = styled('div');
+
 export const TasksWindow = React.memo(
   React.forwardRef(
     (
@@ -102,18 +103,13 @@ export const TasksWindow = React.memo(
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
-      const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
       const classes = {
         typography: 'MuiTypography-root',
         button: 'MuiButton-text',
       };
       const StyledDiv = styled('div')(() => ({
-        [`& .${classes.typography}`]: {
-          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-        },
-        [`& .${classes.button}`]: {
-          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-        },
+        [`& .${classes.typography}`]: { fontSize: 'inherit' },
+        [`& .${classes.button}`]: { fontSize: 'inherit' },
       }));
 
       React.useEffect(() => {
@@ -303,12 +299,6 @@ export const TasksWindow = React.memo(
               <Box display="flex" gap={1} marginRight={1}>
                 <Tooltip title="Export task history of the past 31 days" placement="top">
                   <Button
-                    sx={{
-                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
-                    }}
                     id="export-button"
                     aria-controls={openExportMenu ? 'export-menu' : undefined}
                     aria-haspopup="true"
@@ -316,9 +306,7 @@ export const TasksWindow = React.memo(
                     variant="outlined"
                     onClick={handleClickExportMenu}
                     color="inherit"
-                    startIcon={
-                      <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                    }
+                    startIcon={<DownloadIcon />}
                   >
                     Export past 31 days
                   </Button>
@@ -353,12 +341,6 @@ export const TasksWindow = React.memo(
                 </Menu>
                 <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
                   <Button
-                    sx={{
-                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
-                    }}
                     id="refresh-button"
                     variant="outlined"
                     onClick={() => {
@@ -366,9 +348,7 @@ export const TasksWindow = React.memo(
                     }}
                     aria-label="Refresh"
                     color="inherit"
-                    startIcon={
-                      <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                    }
+                    startIcon={<RefreshIcon />}
                   >
                     Refresh Task Queue
                   </Button>
@@ -389,17 +369,11 @@ export const TasksWindow = React.memo(
                 label="Queue"
                 id={tabId(TaskTablePanel.QueueTable)}
                 aria-controls={tabPanelId(TaskTablePanel.QueueTable)}
-                sx={{
-                  fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                }}
               />
               <Tab
                 label="Schedule"
                 id={tabId(TaskTablePanel.Schedule)}
                 aria-controls={tabPanelId(TaskTablePanel.Schedule)}
-                sx={{
-                  fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                }}
               />
             </Tabs>
             <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>

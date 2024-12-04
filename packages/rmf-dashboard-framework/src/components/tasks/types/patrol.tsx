@@ -9,7 +9,6 @@ import {
   ListItemIcon,
   ListItemText,
   TextField,
-  useMediaQuery,
   useTheme,
 } from '@mui/material';
 import React from 'react';
@@ -119,7 +118,6 @@ export function PatrolTaskForm({
   onValidate,
 }: PatrolTaskFormProps): React.JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: PatrolTaskDescription) => {
     onValidate(isPatrolTaskDescriptionValid(desc));
     onChange(desc);
@@ -131,7 +129,7 @@ export function PatrolTaskForm({
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={isScreenHeightLessThan800 ? 8 : 10}>
+      <Grid item xs={10}>
         <Autocomplete
           id="place-input"
           freeSolo
@@ -146,8 +144,8 @@ export function PatrolTaskForm({
           }
           sx={{
             '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+              height: '3.5rem',
+              fontSize: 20,
             },
           }}
           renderInput={(params) => (
@@ -155,19 +153,19 @@ export function PatrolTaskForm({
               {...params}
               label="Place Name"
               required={true}
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              InputLabelProps={{ style: { fontSize: 20 } }}
             />
           )}
         />
       </Grid>
-      <Grid item xs={isScreenHeightLessThan800 ? 4 : 2}>
+      <Grid item xs={2}>
         <PositiveIntField
           id="loops"
           label="Loops"
           sx={{
             '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+              height: '3.5rem',
+              fontSize: 20,
             },
           }}
           value={taskDesc.rounds}

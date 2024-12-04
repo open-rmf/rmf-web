@@ -6,7 +6,6 @@ import {
   TextField,
   Theme,
   Typography,
-  useMediaQuery,
   useTheme,
 } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
@@ -66,7 +65,6 @@ export interface TaskSummaryProps {
 }
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const rmfApi = useRmfApi();
 
   const { onClose, task } = props;
@@ -153,7 +151,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
               value={message.value}
               sx={{
                 '& .MuiFilledInput-root': {
-                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                  fontSize: '1.15',
                 },
                 background: theme.palette.background.default,
                 '&:hover': {
@@ -181,12 +179,9 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         onClose();
       }}
       fullWidth
-      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
+      maxWidth={'sm'}
     >
-      <DialogTitle
-        align="center"
-        sx={{ fontSize: isScreenHeightLessThan800 ? '1.2rem' : '1.5rem' }}
-      >
+      <DialogTitle align="center" sx={{ fontSize: '1.5rem' }}>
         Task Summary
       </DialogTitle>
       <Divider />
@@ -203,8 +198,8 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
           variant="contained"
           color="secondary"
           sx={{
-            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            fontSize: '1rem',
+            padding: '6px 12px',
           }}
         />
       </DialogActions>

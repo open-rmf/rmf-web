@@ -36,7 +36,6 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery,
   useTheme,
 } from '@mui/material';
 import { DatePicker, DateTimePicker } from '@mui/x-date-pickers';
@@ -144,7 +143,6 @@ function FavoriteTask({
   setCallToUpdate,
 }: FavoriteTaskProps) {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   return (
     <>
       <ListItem
@@ -161,7 +159,7 @@ function FavoriteTask({
           primary={listItemText}
           primaryTypographyProps={{
             style: {
-              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+              fontSize: '1rem',
             },
           }}
         />
@@ -174,7 +172,7 @@ function FavoriteTask({
               listItemClick();
             }}
           >
-            <UpdateIcon transform={`scale(${isScreenHeightLessThan800 ? 0.7 : 1})`} />
+            <UpdateIcon />
           </IconButton>
           <IconButton
             edge="end"
@@ -185,7 +183,7 @@ function FavoriteTask({
               setCallToDelete(true);
             }}
           >
-            <DeleteIcon transform={`scale(${isScreenHeightLessThan800 ? 0.7 : 1})`} />
+            <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
@@ -242,7 +240,6 @@ interface DaySelectorSwitchProps {
 
 const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChange, value }) => {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const renderChip = (idx: number, text: string) => (
     <Chip
       key={idx}
@@ -251,7 +248,7 @@ const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChan
       sx={{
         '&:hover': {},
         margin: theme.spacing(0.25),
-        fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+        fontSize: '1rem',
       }}
       variant={value[idx] && !disabled ? 'filled' : 'outlined'}
       disabled={disabled}
@@ -359,8 +356,6 @@ export function TaskForm({
   const [callToDeleteFavoriteTask, setCallToDeleteFavoriteTask] = React.useState(false);
   const [callToUpdateFavoriteTask, setCallToUpdateFavoriteTask] = React.useState(false);
   const [deletingFavoriteTask, setDeletingFavoriteTask] = React.useState(false);
-
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   // Note that we are not checking if the number of supported tasks is larger
   // than 0, this will cause the dashboard to fail when the create task form is
@@ -902,7 +897,7 @@ export function TaskForm({
     <>
       <StyledDialog
         title={taskRequest ? 'Edit Schedule' : 'Create Task'}
-        maxWidth={isScreenHeightLessThan800 ? 'md' : 'lg'}
+        maxWidth="lg"
         disableEnforceFocus
         {...otherProps}
       >
@@ -914,14 +909,10 @@ export function TaskForm({
               </Grid>
             </Grid>
           </DialogTitle>
-          <DialogContent
-            sx={{ padding: isScreenHeightLessThan800 ? '0px 1.5rem' : '1.25rem 1.5rem' }}
-          >
+          <DialogContent sx={{ padding: '1.25rem 1.5rem' }}>
             <Grid container direction="row" wrap="nowrap">
               <List dense className={classes.taskList} aria-label="Favorites Tasks">
-                <Typography fontSize={isScreenHeightLessThan800 ? 16 : 20}>
-                  Favorite tasks
-                </Typography>
+                <Typography fontSize={20}>Favorite tasks</Typography>
                 {favoritesTasks.map((favoriteTask, index) => {
                   return (
                     <FavoriteTask
@@ -967,11 +958,11 @@ export function TaskForm({
                       onChange={handleTaskTypeChange}
                       sx={{
                         '& .MuiInputBase-input': {
-                          fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                          height: isScreenHeightLessThan800 ? '1.5rem' : '3.5rem',
+                          fontSize: '1.15',
+                          height: '3.5rem',
                         },
                       }}
-                      InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
+                      InputLabelProps={{ style: { fontSize: 20 } }}
                     >
                       {validTasks.map((taskDefinition) => {
                         return (
@@ -1120,7 +1111,7 @@ export function TaskForm({
               aria-label="Save as a favorite task"
               variant={callToUpdateFavoriteTask ? 'contained' : 'outlined'}
               color="primary"
-              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              size="medium"
               startIcon={callToUpdateFavoriteTask ? <SaveIcon /> : <FavoriteBorder />}
               onClick={() => {
                 !callToUpdateFavoriteTask &&
@@ -1141,7 +1132,7 @@ export function TaskForm({
               disabled={submitting}
               className={classes.actionBtn}
               onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
-              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              size="medium"
             >
               Cancel
             </Button>
@@ -1152,7 +1143,7 @@ export function TaskForm({
                 disabled={submitting || !formFullyFilled || robotDispatchTarget !== null}
                 className={classes.actionBtn}
                 onClick={() => setOpenSchedulingDialog(true)}
-                size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+                size="medium"
                 startIcon={<ScheduleSendIcon />}
               >
                 Add to Schedule
@@ -1165,7 +1156,7 @@ export function TaskForm({
                 disabled={submitting || !formFullyFilled || robotDispatchTarget !== null}
                 className={classes.actionBtn}
                 onClick={() => setOpenSchedulingDialog(true)}
-                size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+                size="medium"
                 startIcon={<ScheduleSendIcon />}
               >
                 Edit schedule
@@ -1179,15 +1170,10 @@ export function TaskForm({
               className={classes.actionBtn}
               aria-label="Submit Now"
               onClick={handleSubmitNow}
-              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              size="medium"
               startIcon={<SendIcon />}
             >
-              <Loading
-                hideChildren
-                loading={submitting}
-                size={isScreenHeightLessThan800 ? '0.8em' : '1.5em'}
-                color="inherit"
-              >
+              <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
                 Submit Now
               </Loading>
             </Button>
@@ -1308,18 +1294,16 @@ export function TaskForm({
                 <Grid item xs={6} paddingLeft={theme.spacing(1)}>
                   <FormControlLabel
                     value={ScheduleUntilValue.NEVER}
-                    control={<Radio size={isScreenHeightLessThan800 ? 'small' : 'medium'} />}
-                    label={
-                      <Box fontSize={isScreenHeightLessThan800 ? '0.8rem' : '1rem'}>Never</Box>
-                    }
-                    sx={{ fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem' }}
+                    control={<Radio size="medium" />}
+                    label={<Box fontSize="1rem">Never</Box>}
+                    sx={{ fontSize: '1rem' }}
                   />
                 </Grid>
                 <Grid item xs={2} paddingLeft={theme.spacing(1)}>
                   <FormControlLabel
                     value={ScheduleUntilValue.ON}
-                    control={<Radio size={isScreenHeightLessThan800 ? 'small' : 'medium'} />}
-                    label={<Box fontSize={isScreenHeightLessThan800 ? '0.8rem' : '1rem'}>On</Box>}
+                    control={<Radio size="medium" />}
+                    label={<Box fontSize="1rem">On</Box>}
                   />
                 </Grid>
                 <Grid item xs={4}>

@@ -23,7 +23,6 @@ import {
   TextField,
   Theme,
   Typography,
-  useMediaQuery,
   useTheme,
 } from '@mui/material';
 import {
@@ -104,7 +103,6 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
 };
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const rmfApi = useRmfApi();
 
   const [isOpen, setIsOpen] = React.useState(true);
@@ -240,7 +238,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
               value={message.value}
               sx={{
                 '& .MuiFilledInput-root': {
-                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                  fontSize: '1.15',
                 },
                 background: theme.palette.background.default,
                 '&:hover': {
@@ -268,15 +266,12 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
         onClose();
       }}
       fullWidth
-      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
+      maxWidth={'sm'}
     >
       <Grid container mb={1} alignItems="center" spacing={1}>
         <Grid item xs={2}></Grid>
         <Grid item xs={8}>
-          <DialogTitle
-            align="center"
-            sx={{ fontSize: isScreenHeightLessThan800 ? '1.2rem' : '1.5rem' }}
-          >
+          <DialogTitle align="center" sx={{ fontSize: '1.5rem' }}>
             Robot summary: {robotState?.name}
           </DialogTitle>
         </Grid>
@@ -311,8 +306,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           variant="contained"
           color="secondary"
           sx={{
-            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            fontSize: '1rem',
+            padding: '6px 12px',
           }}
         />
         <TaskCancelButton
@@ -321,8 +316,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           variant="contained"
           color="secondary"
           sx={{
-            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            fontSize: '1rem',
+            padding: '6px 12px',
           }}
         />
       </DialogActions>
