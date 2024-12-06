@@ -1,7 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CustomComposeTaskForm } from './custom-compose';
+import {
+  CustomComposeTaskDefinition,
+  CustomComposeTaskForm,
+  isCustomTaskDescriptionValid,
+  makeCustomComposeTaskBookingLabel,
+  makeCustomComposeTaskShortDescription,
+} from './custom-compose';
 
 describe('Custom compose task form', () => {
   it('Renders custom compose task form', async () => {
@@ -27,5 +33,19 @@ describe('Custom compose task form', () => {
     const validTaskDesc = '{"valid": "json"}';
     fireEvent.change(textArea, { target: { value: validTaskDesc } });
     expect(onValidate).toHaveBeenCalledWith(true);
+  });
+
+  it('Validate description', () => {
+    expect(isCustomTaskDescriptionValid('invalid json')).not.toBeTruthy();
+    expect(isCustomTaskDescriptionValid('{"valid": "json"}')).toBeTruthy();
+  });
+
+  it('Booking label', () => {
+    const bookingLabel = makeCustomComposeTaskBookingLabel();
+    expect(bookingLabel.task_definition_id).toBe(CustomComposeTaskDefinition.taskDefinitionId);
+  });
+
+  it('Short description', () => {
+    expect(makeCustomComposeTaskShortDescription('{"valid": "json"}')).toBe('{"valid": "json"}');
   });
 });

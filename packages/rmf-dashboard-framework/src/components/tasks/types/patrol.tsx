@@ -76,6 +76,7 @@ interface PlaceListProps {
 
 function PlaceList({ places, onClick }: PlaceListProps) {
   const theme = useTheme();
+  console.log(places);
   return (
     <List
       dense
@@ -88,6 +89,7 @@ function PlaceList({ places, onClick }: PlaceListProps) {
       {places.map((value, index) => (
         <ListItem
           key={`${value}-${index}`}
+          data-testid={`${value}-${index}`}
           secondaryAction={
             <IconButton edge="end" aria-label="delete" onClick={() => onClick(index)}>
               <DeleteIcon />
@@ -102,6 +104,17 @@ function PlaceList({ places, onClick }: PlaceListProps) {
       ))}
     </List>
   );
+}
+
+export function addPlaceToPatrolTaskDescription(
+  taskDesc: PatrolTaskDescription,
+  place: string,
+): PatrolTaskDescription {
+  const updatedTaskDesc = {
+    ...taskDesc,
+    places: taskDesc.places.concat(place).filter((el: string) => el),
+  };
+  return updatedTaskDesc;
 }
 
 interface PatrolTaskFormProps {
@@ -132,15 +145,12 @@ export function PatrolTaskForm({
       <Grid item xs={10}>
         <Autocomplete
           id="place-input"
+          data-testid="place-name"
           freeSolo
           fullWidth
           options={patrolWaypoints.sort()}
           onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onInputChange({
-              ...taskDesc,
-              places: taskDesc.places.concat(newValue).filter((el: string) => el),
-            })
+            newValue !== null && onInputChange(addPlaceToPatrolTaskDescription(taskDesc, newValue))
           }
           sx={{
             '& .MuiOutlinedInput-root': {

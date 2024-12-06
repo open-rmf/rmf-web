@@ -23,7 +23,7 @@ export function makeCustomComposeTaskShortDescription(desc: CustomComposeTaskDes
   return desc;
 }
 
-const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {
+export const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {
   if (taskDescription.length === 0) {
     return false;
   }
