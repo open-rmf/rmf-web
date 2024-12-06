@@ -76,7 +76,6 @@ interface PlaceListProps {
 
 function PlaceList({ places, onClick }: PlaceListProps) {
   const theme = useTheme();
-  console.log(places);
   return (
     <List
       dense

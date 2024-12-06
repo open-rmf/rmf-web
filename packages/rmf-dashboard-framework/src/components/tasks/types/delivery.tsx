@@ -34,7 +34,7 @@ export function makeDeliveryTaskBookingLabel(
     task_definition_id: DeliveryTaskDefinition.taskDefinitionId,
     pickup: task_description.pickup.place,
     destination: task_description.dropoff.place,
-    cart_id: task_description.pickup.payload.sku,
+    payload: task_description.pickup.payload.sku,
   };
 }
 
@@ -47,7 +47,7 @@ function isTaskPlaceValid(place: TaskPlace): boolean {
   );
 }
 
-function isDeliveryTaskDescriptionValid(taskDescription: DeliveryTaskDescription): boolean {
+export function isDeliveryTaskDescriptionValid(taskDescription: DeliveryTaskDescription): boolean {
   return isTaskPlaceValid(taskDescription.pickup) && isTaskPlaceValid(taskDescription.dropoff);
 }
 
@@ -107,6 +107,7 @@ export function DeliveryTaskForm({
       <Grid item xs={6}>
         <Autocomplete
           id="pickup-location"
+          data-testid="pickup-location"
           freeSolo
           fullWidth
           options={Object.keys(pickupPoints)}
@@ -143,6 +144,7 @@ export function DeliveryTaskForm({
       <Grid item xs={4}>
         <TextField
           id="pickup_sku"
+          data-testid="pickup-sku"
           fullWidth
           label="Pickup SKU"
           value={taskDesc.pickup.payload.sku}
@@ -164,6 +166,7 @@ export function DeliveryTaskForm({
       <Grid item xs={2}>
         <PositiveIntField
           id="pickup_quantity"
+          data-testid="pickup-quantity"
           label="Quantity"
           value={taskDesc.pickup.payload.quantity}
           onChange={(_ev, val) => {
@@ -183,6 +186,7 @@ export function DeliveryTaskForm({
       <Grid item xs={6}>
         <Autocomplete
           id="dropoff-location"
+          data-testid="dropoff-location"
           freeSolo
           fullWidth
           options={Object.keys(dropoffPoints)}
@@ -219,6 +223,7 @@ export function DeliveryTaskForm({
       <Grid item xs={4}>
         <TextField
           id="dropoff_sku"
+          data-testid="dropoff-sku"
           fullWidth
           label="Dropoff SKU"
           value={taskDesc.dropoff.payload.sku}
@@ -240,6 +245,7 @@ export function DeliveryTaskForm({
       <Grid item xs={2}>
         <PositiveIntField
           id="dropoff_quantity"
+          data-testid="dropoff-quantity"
           label="Quantity"
           value={taskDesc.dropoff.payload.quantity}
           onChange={(_ev, val) => {
