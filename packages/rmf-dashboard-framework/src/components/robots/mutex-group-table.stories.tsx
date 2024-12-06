@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { MutexGroupTable } from './mutex-group-table';
 
 const meta: Meta<typeof MutexGroupTable> = {
-  title: 'MutexGroupTable',
+  title: 'Robots/MutexGroupTable',
   component: MutexGroupTable,
   decorators: [
     (Story) => (

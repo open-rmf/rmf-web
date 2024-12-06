@@ -372,7 +372,7 @@ export const AppBar = React.memo(
                 color="inherit"
                 onClick={() => window.open(helpLink, '_blank')}
               >
-                <Help fontSize="inherit" />
+                <Help />
               </ToolbarIconButton>
             </Tooltip>
             <Tooltip title="Report issues">
@@ -382,7 +382,7 @@ export const AppBar = React.memo(
                 color="inherit"
                 onClick={() => window.open(reportIssueLink, '_blank')}
               >
-                <Issue fontSize="inherit" />
+                <Issue />
               </ToolbarIconButton>
             </Tooltip>
             <Tooltip title="Profile">
@@ -392,7 +392,7 @@ export const AppBar = React.memo(
                 color="inherit"
                 onClick={(event) => setAnchorEl(event.currentTarget)}
               >
-                <AccountCircle fontSize="inherit" />
+                <AccountCircle />
               </ToolbarIconButton>
             </Tooltip>
             <Menu

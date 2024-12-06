@@ -1,4 +1,4 @@
-import { Autocomplete, Grid, TextField, useMediaQuery, useTheme } from '@mui/material';
+import { Autocomplete, Grid, TextField, useTheme } from '@mui/material';
 import React from 'react';
 
 import { TaskBookingLabels } from '../booking-label';
@@ -355,7 +355,6 @@ export function DeliveryPickupTaskForm({
   onValidate,
 }: DeliveryPickupTaskFormProps): React.JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: DeliveryPickupTaskDescription) => {
     onValidate(isDeliveryPickupTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
     onChange(desc);
@@ -385,8 +384,8 @@ export function DeliveryPickupTaskForm({
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+              height: '3.5rem',
+              fontSize: 20,
             },
           }}
           renderInput={(params) => (
@@ -394,7 +393,7 @@ export function DeliveryPickupTaskForm({
               {...params}
               label="Pickup Location"
               required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              InputLabelProps={{ style: { fontSize: 20 } }}
               error={
                 !Object.keys(pickupPoints).includes(
                   taskDesc.phases[0].activity.description.activities[0].description,
@@ -426,8 +425,8 @@ export function DeliveryPickupTaskForm({
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+              height: '3.5rem',
+              fontSize: 20,
             },
           }}
           renderInput={(params) => (
@@ -435,7 +434,7 @@ export function DeliveryPickupTaskForm({
               {...params}
               label="Cart ID"
               required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              InputLabelProps={{ style: { fontSize: 20 } }}
               error={
                 taskDesc.phases[0].activity.description.activities[1].description.description
                   .cart_id.length === 0
@@ -463,8 +462,8 @@ export function DeliveryPickupTaskForm({
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+              height: '3.5rem',
+              fontSize: 20,
             },
           }}
           renderInput={(params) => (
@@ -472,7 +471,7 @@ export function DeliveryPickupTaskForm({
               {...params}
               label="Dropoff Location"
               required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              InputLabelProps={{ style: { fontSize: 20 } }}
               error={
                 !Object.keys(dropoffPoints).includes(
                   taskDesc.phases[1].activity.description.activities[0].description,
@@ -568,7 +567,6 @@ export function DeliveryCustomTaskForm({
   onValidate,
 }: DeliveryCustomProps): React.JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: DeliveryCustomTaskDescription) => {
     onValidate(isDeliveryCustomTaskDescriptionValid(desc, pickupZones, dropoffPoints));
     onChange(desc);
@@ -596,8 +594,8 @@ export function DeliveryCustomTaskForm({
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+              height: '3.5rem',
+              fontSize: 20,
             },
           }}
           renderInput={(params) => (
@@ -605,7 +603,7 @@ export function DeliveryCustomTaskForm({
               {...params}
               label="Pickup Zone"
               required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              InputLabelProps={{ style: { fontSize: 20 } }}
               error={
                 !pickupZones.includes(
                   taskDesc.phases[0].activity.description.activities[0].description,
@@ -640,8 +638,8 @@ export function DeliveryCustomTaskForm({
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+              height: '3.5rem',
+              fontSize: 20,
             },
           }}
           renderInput={(params) => (
@@ -649,7 +647,7 @@ export function DeliveryCustomTaskForm({
               {...params}
               label="Cart ID"
               required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              InputLabelProps={{ style: { fontSize: 20 } }}
               error={
                 taskDesc.phases[0].activity.description.activities[1].description.description
                   .cart_id.length === 0
@@ -680,8 +678,8 @@ export function DeliveryCustomTaskForm({
           }}
           sx={{
             '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+              height: '3.5rem',
+              fontSize: 20,
             },
           }}
           renderInput={(params) => (
@@ -689,7 +687,7 @@ export function DeliveryCustomTaskForm({
               {...params}
               label="Dropoff Location"
               required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              InputLabelProps={{ style: { fontSize: 20 } }}
               error={
                 !dropoffPoints.includes(
                   taskDesc.phases[1].activity.description.activities[0].description,
