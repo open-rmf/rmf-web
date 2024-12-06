@@ -45,6 +45,8 @@ describe('Compose clean task form', () => {
 
   it('Validate task description', () => {
     const desc = makeDefaultComposeCleanTaskDescription();
+    const emptyZoneDesc = insertCleaningZone(desc, '');
+    expect(isComposeCleanTaskDescriptionValid(emptyZoneDesc)).not.toBeTruthy();
     const insertedDesc = insertCleaningZone(desc, 'clean_zone_3');
     expect(isComposeCleanTaskDescriptionValid(insertedDesc)).toBeTruthy();
   });
