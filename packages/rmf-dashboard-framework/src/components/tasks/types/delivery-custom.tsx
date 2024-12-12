@@ -237,7 +237,7 @@ export function makeDeliveryCustomTaskShortDescription(
   return '[Unknown] delivery pickup task';
 }
 
-const isDeliveryPickupTaskDescriptionValid = (
+export const isDeliveryPickupTaskDescriptionValid = (
   taskDescription: DeliveryPickupTaskDescription,
   pickupPoints: Record<string, string>,
   dropoffPoints: Record<string, string>,
@@ -255,7 +255,7 @@ const isDeliveryPickupTaskDescriptionValid = (
   );
 };
 
-const isDeliveryCustomTaskDescriptionValid = (
+export const isDeliveryCustomTaskDescriptionValid = (
   taskDescription: DeliveryCustomTaskDescription,
   pickupZones: string[],
   dropoffPoints: string[],
@@ -365,6 +365,7 @@ export function DeliveryPickupTaskForm({
       <Grid item xs={8}>
         <Autocomplete
           id="pickup-location"
+          data-testid="pickup-location"
           freeSolo
           fullWidth
           options={Object.keys(pickupPoints).sort()}
@@ -406,6 +407,7 @@ export function DeliveryPickupTaskForm({
       <Grid item xs={4}>
         <Autocomplete
           id="cart_id"
+          data-testid="cart-id"
           freeSolo
           fullWidth
           options={cartIds}
@@ -446,6 +448,7 @@ export function DeliveryPickupTaskForm({
       <Grid item xs={8}>
         <Autocomplete
           id="dropoff-location"
+          data-testid="dropoff-location"
           freeSolo
           fullWidth
           options={Object.keys(dropoffPoints).sort()}
@@ -577,6 +580,7 @@ export function DeliveryCustomTaskForm({
       <Grid item xs={8}>
         <Autocomplete
           id="pickup-zone"
+          data-testid="pickup-zone"
           freeSolo
           fullWidth
           options={pickupZones.sort()}
@@ -616,6 +620,7 @@ export function DeliveryCustomTaskForm({
       <Grid item xs={4}>
         <Autocomplete
           id="cart-id"
+          data-testid="cart-id"
           freeSolo
           fullWidth
           options={cartIds}
@@ -659,6 +664,7 @@ export function DeliveryCustomTaskForm({
       <Grid item xs={8}>
         <Autocomplete
           id="dropoff-location"
+          data-testid="dropoff-location"
           freeSolo
           fullWidth
           options={dropoffPoints.sort()}
