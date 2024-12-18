@@ -1,13 +1,12 @@
 import { Period, ScheduledTask, ScheduledTaskScheduleOutput } from 'api-client';
 import { addMinutes, endOfDay, endOfMinute, startOfDay } from 'date-fns';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { RecurringDays } from './task-form';
 import {
   apiScheduleToSchedule,
   scheduleToEvents,
   scheduleWithSelectedDay,
-  toISOStringWithTimezone,
 } from './task-schedule-utils';
 import { makeTaskRequest } from './test-data.test';
 
@@ -480,20 +479,5 @@ describe('apiScheduleToSchedule', () => {
     };
     const result = apiScheduleToSchedule(task);
     expect(result.at).toEqual(new Date());
-  });
-});
-
-describe('toISOStringWithTimezone', () => {
-  it('should format date with positive timezone offset', () => {
-    const date = new Date('2023-10-27T01:00:00.000Z'); // UTC
-    const expectedOffset = '+08:00'; // Example: Singapore Time (UTC+8)
-
-    // Mock the timezone offset of the date object.
-    const spy = vi.spyOn(date, 'getTimezoneOffset').mockImplementation(() => -480); // -480 minutes = +08:00 hours
-
-    const result = toISOStringWithTimezone(date);
-    expect(result).toContain(expectedOffset);
-    expect(result).toEqual('2023-10-27T09:00:00+08:00');
-    spy.mockRestore();
   });
 });

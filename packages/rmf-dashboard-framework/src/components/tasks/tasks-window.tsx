@@ -33,7 +33,7 @@ import { exportCsvFull, exportCsvMinimal } from './utils';
 const RefreshTaskQueueTableInterval = 15000;
 const QueryLimit = 100;
 
-enum TaskTablePanel {
+export enum TaskTablePanel {
   QueueTable = 0,
   Schedule = 1,
 }
@@ -182,35 +182,43 @@ export const TasksWindow = React.memo(
             labelFilter = `${filterColumn.substring(6)}=${filterValue}`;
           }
 
-          const resp = await rmfApi.tasksApi.queryTaskStatesTasksGet(
-            filterColumn && filterColumn === 'id_' ? filterValue : undefined,
-            filterColumn && filterColumn === 'category' ? filterValue : undefined,
-            filterColumn && filterColumn === 'requester' ? filterValue : undefined,
-            filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
-            filterColumn && filterColumn === 'status' ? filterValue : undefined,
-            labelFilter,
-            filterColumn && filterColumn === 'unix_millis_request_time' ? filterValue : undefined,
-            filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
-            filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
-            GET_LIMIT,
-            (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
-            orderBy,
-            undefined,
-          );
-          const results = resp.data as TaskState[];
-          const newTasks = results.slice(0, GET_LIMIT);
+          try {
+            const resp = await rmfApi.tasksApi.queryTaskStatesTasksGet(
+              filterColumn && filterColumn === 'id_' ? filterValue : undefined,
+              filterColumn && filterColumn === 'category' ? filterValue : undefined,
+              filterColumn && filterColumn === 'requester' ? filterValue : undefined,
+              filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
+              filterColumn && filterColumn === 'status' ? filterValue : undefined,
+              labelFilter,
+              filterColumn && filterColumn === 'unix_millis_request_time' ? filterValue : undefined,
+              filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
+              filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
+              GET_LIMIT,
+              (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
+              orderBy,
+              undefined,
+            );
+            const results = resp.data as TaskState[];
+            const newTasks = results.slice(0, GET_LIMIT);
 
-          setTasksState((old) => ({
-            ...old,
-            isLoading: false,
-            data: newTasks,
-            total:
-              results.length === GET_LIMIT
-                ? tasksState.page * GET_LIMIT + 1
-                : tasksState.page * GET_LIMIT - 9,
-          }));
+            setTasksState((old) => ({
+              ...old,
+              isLoading: false,
+              data: newTasks,
+              total:
+                results.length === GET_LIMIT
+                  ? tasksState.page * GET_LIMIT + 1
+                  : tasksState.page * GET_LIMIT - 9,
+            }));
+          } catch (e) {
+            appController.showAlert(
+              'error',
+              `Failed to query task states: ${(e as Error).message}`,
+            );
+          }
         })();
       }, [
+        appController,
         rmfApi,
         refreshTaskAppCount,
         tasksState.page,
@@ -340,6 +348,7 @@ export const TasksWindow = React.memo(
                 <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
                   <Button
                     id="refresh-button"
+                    data-testid="refresh-button"
                     variant="outlined"
                     onClick={() => {
                       AppEvents.refreshTaskApp.next();
