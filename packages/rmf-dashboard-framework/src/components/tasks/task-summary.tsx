@@ -70,7 +70,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const { onClose, task } = props;
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
-  const [taskState, setTaskState] = React.useState<TaskState | null>(null);
+  const [taskState, setTaskState] = React.useState<TaskState | null>(task ?? null);
   const [labels, setLabels] = React.useState<TaskBookingLabels | null>(null);
   const [isOpen, setIsOpen] = React.useState(true);
 
