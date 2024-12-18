@@ -22,12 +22,12 @@ import { useAppController, useRmfApi } from '../hooks';
 import { AppEvents } from './app-events';
 import { TaskCancelButton } from './tasks/task-cancellation';
 
-interface AlertDialogProps {
+export interface AlertDialogProps {
   alertRequest: AlertRequest;
   onDismiss: () => void;
 }
 
-const AlertDialog = React.memo((props: AlertDialogProps) => {
+export const AlertDialog = React.memo((props: AlertDialogProps) => {
   const { alertRequest, onDismiss } = props;
   const [isOpen, setIsOpen] = React.useState(true);
   const { showAlert } = useAppController();
@@ -196,6 +196,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
               variant="contained"
               autoFocus
               key={`${alertRequest.id}-${response}`}
+              data-testid={`${alertRequest.id}-${response}-button`}
               sx={{
                 fontSize: '1rem',
                 padding: '6px 12px',
@@ -211,6 +212,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
         })}
         {alertRequest.task_id ? (
           <TaskCancelButton
+            data-testid="task-cancel-button"
             taskId={alertRequest.task_id}
             size="small"
             variant="contained"
@@ -223,6 +225,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
           />
         ) : null}
         <Button
+          data-testid="dismiss-button"
           size="small"
           variant="contained"
           autoFocus
