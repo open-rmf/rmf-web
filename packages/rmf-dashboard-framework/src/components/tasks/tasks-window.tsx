@@ -11,7 +11,6 @@ import {
   TableContainer,
   Tabs,
   Tooltip,
-  useMediaQuery,
 } from '@mui/material';
 import { TaskStateInput as TaskState } from 'api-client';
 import React from 'react';
@@ -34,7 +33,7 @@ import { exportCsvFull, exportCsvMinimal } from './utils';
 const RefreshTaskQueueTableInterval = 15000;
 const QueryLimit = 100;
 
-enum TaskTablePanel {
+export enum TaskTablePanel {
   QueueTable = 0,
   Schedule = 1,
 }
@@ -102,18 +101,13 @@ export const TasksWindow = React.memo(
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
-      const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
       const classes = {
         typography: 'MuiTypography-root',
         button: 'MuiButton-text',
       };
       const StyledDiv = styled('div')(() => ({
-        [`& .${classes.typography}`]: {
-          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-        },
-        [`& .${classes.button}`]: {
-          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-        },
+        [`& .${classes.typography}`]: { fontSize: 'inherit' },
+        [`& .${classes.button}`]: { fontSize: 'inherit' },
       }));
 
       React.useEffect(() => {
@@ -188,35 +182,43 @@ export const TasksWindow = React.memo(
             labelFilter = `${filterColumn.substring(6)}=${filterValue}`;
           }
 
-          const resp = await rmfApi.tasksApi.queryTaskStatesTasksGet(
-            filterColumn && filterColumn === 'id_' ? filterValue : undefined,
-            filterColumn && filterColumn === 'category' ? filterValue : undefined,
-            filterColumn && filterColumn === 'requester' ? filterValue : undefined,
-            filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
-            filterColumn && filterColumn === 'status' ? filterValue : undefined,
-            labelFilter,
-            filterColumn && filterColumn === 'unix_millis_request_time' ? filterValue : undefined,
-            filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
-            filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
-            GET_LIMIT,
-            (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
-            orderBy,
-            undefined,
-          );
-          const results = resp.data as TaskState[];
-          const newTasks = results.slice(0, GET_LIMIT);
+          try {
+            const resp = await rmfApi.tasksApi.queryTaskStatesTasksGet(
+              filterColumn && filterColumn === 'id_' ? filterValue : undefined,
+              filterColumn && filterColumn === 'category' ? filterValue : undefined,
+              filterColumn && filterColumn === 'requester' ? filterValue : undefined,
+              filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
+              filterColumn && filterColumn === 'status' ? filterValue : undefined,
+              labelFilter,
+              filterColumn && filterColumn === 'unix_millis_request_time' ? filterValue : undefined,
+              filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
+              filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
+              GET_LIMIT,
+              (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
+              orderBy,
+              undefined,
+            );
+            const results = resp.data as TaskState[];
+            const newTasks = results.slice(0, GET_LIMIT);
 
-          setTasksState((old) => ({
-            ...old,
-            isLoading: false,
-            data: newTasks,
-            total:
-              results.length === GET_LIMIT
-                ? tasksState.page * GET_LIMIT + 1
-                : tasksState.page * GET_LIMIT - 9,
-          }));
+            setTasksState((old) => ({
+              ...old,
+              isLoading: false,
+              data: newTasks,
+              total:
+                results.length === GET_LIMIT
+                  ? tasksState.page * GET_LIMIT + 1
+                  : tasksState.page * GET_LIMIT - 9,
+            }));
+          } catch (e) {
+            appController.showAlert(
+              'error',
+              `Failed to query task states: ${(e as Error).message}`,
+            );
+          }
         })();
       }, [
+        appController,
         rmfApi,
         refreshTaskAppCount,
         tasksState.page,
@@ -303,12 +305,6 @@ export const TasksWindow = React.memo(
               <Box display="flex" gap={1} marginRight={1}>
                 <Tooltip title="Export task history of the past 31 days" placement="top">
                   <Button
-                    sx={{
-                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
-                    }}
                     id="export-button"
                     aria-controls={openExportMenu ? 'export-menu' : undefined}
                     aria-haspopup="true"
@@ -316,9 +312,7 @@ export const TasksWindow = React.memo(
                     variant="outlined"
                     onClick={handleClickExportMenu}
                     color="inherit"
-                    startIcon={
-                      <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                    }
+                    startIcon={<DownloadIcon />}
                   >
                     Export past 31 days
                   </Button>
@@ -353,22 +347,15 @@ export const TasksWindow = React.memo(
                 </Menu>
                 <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
                   <Button
-                    sx={{
-                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
-                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
-                    }}
                     id="refresh-button"
+                    data-testid="refresh-button"
                     variant="outlined"
                     onClick={() => {
                       AppEvents.refreshTaskApp.next();
                     }}
                     aria-label="Refresh"
                     color="inherit"
-                    startIcon={
-                      <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                    }
+                    startIcon={<RefreshIcon />}
                   >
                     Refresh Task Queue
                   </Button>
@@ -389,17 +376,11 @@ export const TasksWindow = React.memo(
                 label="Queue"
                 id={tabId(TaskTablePanel.QueueTable)}
                 aria-controls={tabPanelId(TaskTablePanel.QueueTable)}
-                sx={{
-                  fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                }}
               />
               <Tab
                 label="Schedule"
                 id={tabId(TaskTablePanel.Schedule)}
                 aria-controls={tabPanelId(TaskTablePanel.Schedule)}
-                sx={{
-                  fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-                }}
               />
             </Tabs>
             <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>

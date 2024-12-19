@@ -1,4 +1,4 @@
-import { Box, Button, SxProps, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, SxProps, Typography, useTheme } from '@mui/material';
 import {
   DataGrid,
   GridCellParams,
@@ -41,7 +41,6 @@ export interface DoorDataGridTableProps {
 
 export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps): JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
     const opModeStateLabelStyle: SxProps = (() => {
@@ -128,7 +127,7 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
+            fontSize: 16,
           }}
         >
           {params.row.doorState ? doorModeToString(params.row.doorState.current_mode.value) : -1}
@@ -146,8 +145,8 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           aria-label="open"
           sx={{
             minWidth: 'auto',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
-            marginRight: isScreenHeightLessThan800 ? 0 : 0,
+            fontSize: 16,
+            marginRight: 0,
           }}
           onClick={params.row.onClickOpen}
         >
@@ -159,8 +158,8 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           aria-label="close"
           sx={{
             minWidth: 'auto',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
-            marginRight: isScreenHeightLessThan800 ? 0 : 0,
+            fontSize: 16,
+            marginRight: 0,
           }}
           onClick={params.row.onClickClose}
         >
@@ -239,11 +238,7 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       rowHeight={38}
       columns={columns}
       rowsPerPageOptions={[5]}
-      sx={{
-        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-      }}
-      autoPageSize={isScreenHeightLessThan800}
-      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+      density={'standard'}
       localeText={{
         noRowsLabel: 'No doors available.',
       }}

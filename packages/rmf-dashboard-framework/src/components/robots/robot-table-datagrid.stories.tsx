@@ -4,7 +4,7 @@ import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client
 import { RobotDataGridTable } from './robot-table-datagrid';
 
 const meta: Meta<typeof RobotDataGridTable> = {
-  title: 'RobotDataGridTable',
+  title: 'Robots/RobotDataGridTable',
   component: RobotDataGridTable,
   decorators: [
     (Story) => (

@@ -82,7 +82,6 @@ export class MockRmfApi implements RmfApi {
   alertsApi = new AlertsApi(undefined, undefined, this.axiosInst);
   adminApi = new AdminApi(undefined, undefined, this.axiosInst);
   deliveryAlertsApi = new DeliveryAlertsApi(undefined, undefined, this.axiosInst);
-  negotiationStatusManager = undefined;
   trajectoryManager = undefined;
   buildingMapObs = new Subject<BuildingMap>();
   beaconsObsStore = new Subject<BeaconState>();

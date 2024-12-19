@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@mui/material';
 import {
   DataGrid,
   GridColDef,
@@ -27,8 +26,6 @@ export function MutexGroupTable({
   onMutexGroupClick,
   mutexGroups,
 }: MutexGroupTableProps): JSX.Element {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
     event: MuiEvent<React.MouseEvent<HTMLElement>>,
@@ -74,11 +71,7 @@ export function MutexGroupTable({
       rowHeight={38}
       columns={columns}
       rowsPerPageOptions={[5]}
-      sx={{
-        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-      }}
-      autoPageSize={isScreenHeightLessThan800}
-      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+      density={'standard'}
       onRowClick={handleEvent}
       initialState={{
         sorting: {

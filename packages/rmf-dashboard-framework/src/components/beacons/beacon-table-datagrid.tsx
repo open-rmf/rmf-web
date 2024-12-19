@@ -1,4 +1,4 @@
-import { Box, SxProps, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, SxProps, Typography, useTheme } from '@mui/material';
 import { DataGrid, GridCellParams, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { BeaconState } from 'api-client';
 import React from 'react';
@@ -9,7 +9,6 @@ export interface BeaconDataGridTableProps {
 
 export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
     const opModeStateLabelStyle: SxProps = (() => {
@@ -30,7 +29,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 12 : 16,
+            fontSize: 16,
           }}
         >
           {params.row.online ? 'ONLINE' : 'OFFLINE'}
@@ -123,11 +122,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
       rowHeight={38}
       columns={columns}
       rowsPerPageOptions={[5]}
-      sx={{
-        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-      }}
-      autoPageSize={isScreenHeightLessThan800}
-      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+      density="standard"
       localeText={{
         noRowsLabel: 'No beacons available.',
       }}

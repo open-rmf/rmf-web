@@ -34,7 +34,6 @@ import axios from 'axios';
 import { EMPTY, map, Observable, of, shareReplay, switchAll, switchMap } from 'rxjs';
 
 import { Authenticator } from './authenticator';
-import { NegotiationStatusManager } from './negotiation-status-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 
 export interface RmfApi {
@@ -50,7 +49,6 @@ export interface RmfApi {
   alertsApi: AlertsApi;
   adminApi: AdminApi;
   deliveryAlertsApi: DeliveryAlertsApi;
-  negotiationStatusManager?: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
   buildingMapObs: Observable<BuildingMap>;
@@ -86,7 +84,6 @@ export class DefaultRmfApi implements RmfApi {
   alertsApi: AlertsApi;
   adminApi: AdminApi;
   deliveryAlertsApi: DeliveryAlertsApi;
-  negotiationStatusManager?: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
   constructor(
@@ -187,7 +184,6 @@ export class DefaultRmfApi implements RmfApi {
     try {
       const ws = new WebSocket(trajectoryServerUrl);
       this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
-      this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
     } catch (e) {
       const errorMessage = `Failed to connect to trajectory server at [${trajectoryServerUrl}], ${
         (e as Error).message
