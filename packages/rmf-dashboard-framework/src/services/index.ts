@@ -1,7 +1,6 @@
 export * from './authenticator';
 export * from './color-manager';
 export * from './keycloak';
-export * from './negotiation-status-manager';
 export * from './permissions';
 export * from './rmf-api';
 export * from './robot-trajectory-manager';
