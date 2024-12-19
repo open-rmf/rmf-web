@@ -133,7 +133,7 @@ interface FavoriteTaskProps {
   setCallToUpdate: (open: boolean) => void;
 }
 
-function FavoriteTask({
+export function FavoriteTask({
   listItemText,
   listItemClick,
   favoriteTask,
@@ -152,6 +152,7 @@ function FavoriteTask({
           setCallToUpdate(false);
         }}
         role="listitem button"
+        data-testid="listitem-button"
         button
         divider={true}
       >
@@ -191,7 +192,7 @@ function FavoriteTask({
   );
 }
 
-function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
+export function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
   const category = getTaskRequestCategory(taskDefinitionId);
   const description = getDefaultTaskDescription(taskDefinitionId);
 
@@ -238,12 +239,17 @@ interface DaySelectorSwitchProps {
   value: RecurringDays;
 }
 
-const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChange, value }) => {
+export const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({
+  disabled,
+  onChange,
+  value,
+}) => {
   const theme = useTheme();
   const renderChip = (idx: number, text: string) => (
     <Chip
       key={idx}
       label={text}
+      data-testid={`${text}`}
       color="primary"
       sx={{
         '&:hover': {},
