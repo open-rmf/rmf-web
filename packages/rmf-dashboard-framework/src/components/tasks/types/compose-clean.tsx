@@ -108,6 +108,16 @@ export function makeComposeCleanTaskShortDescription(
   }]`;
 }
 
+export function insertCleaningZone(
+  taskDesc: ComposeCleanTaskDescription,
+  zone: string,
+): ComposeCleanTaskDescription {
+  taskDesc.phases[0].activity.description.activities[0].description = zone;
+  taskDesc.phases[0].activity.description.activities[1].description.expected_finish_location = zone;
+  taskDesc.phases[0].activity.description.activities[1].description.description.zone = zone;
+  return taskDesc;
+}
+
 interface ComposeCleanTaskFormProps {
   taskDesc: ComposeCleanTaskDescription;
   cleaningZones: string[];
@@ -135,19 +145,13 @@ export function ComposeCleanTaskForm({
       value={taskDesc.phases[0].activity.description.activities[0].description}
       onChange={(_ev, newValue) => {
         const zone = newValue ?? '';
-        taskDesc.phases[0].activity.description.activities[0].description = zone;
-        taskDesc.phases[0].activity.description.activities[1].description.expected_finish_location =
-          zone;
-        taskDesc.phases[0].activity.description.activities[1].description.description.zone = zone;
-        onInputChange(taskDesc);
+        const updatedTaskDesc = insertCleaningZone(taskDesc, zone);
+        onInputChange(updatedTaskDesc);
       }}
       onBlur={(ev) => {
         const zone = (ev.target as HTMLInputElement).value;
-        taskDesc.phases[0].activity.description.activities[0].description = zone;
-        taskDesc.phases[0].activity.description.activities[1].description.expected_finish_location =
-          zone;
-        taskDesc.phases[0].activity.description.activities[1].description.description.zone = zone;
-        onInputChange(taskDesc);
+        const updatedTaskDesc = insertCleaningZone(taskDesc, zone);
+        onInputChange(updatedTaskDesc);
       }}
       renderInput={(params) => <TextField {...params} label="Cleaning Zone" required={true} />}
     />

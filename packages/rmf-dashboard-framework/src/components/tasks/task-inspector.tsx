@@ -17,7 +17,7 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
   const theme = useTheme();
   const rmfApi = useRmfApi();
 
-  const [taskState, setTaskState] = React.useState<TaskState | null>(null);
+  const [taskState, setTaskState] = React.useState<TaskState | null>(task);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
   const [isOpen, setIsOpen] = React.useState(true);
 
@@ -79,6 +79,7 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
                       </CardContent>
                       <Grid item paddingLeft={2} paddingRight={2}>
                         <TaskCancelButton
+                          data-testid="task-cancel-button"
                           taskId={taskState ? taskState.booking.id : null}
                           style={{
                             marginTop: theme.spacing(1),

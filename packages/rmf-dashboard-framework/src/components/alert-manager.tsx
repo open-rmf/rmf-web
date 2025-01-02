@@ -6,7 +6,6 @@ import {
   DialogTitle,
   Divider,
   TextField,
-  useMediaQuery,
   useTheme,
 } from '@mui/material';
 import {
@@ -23,17 +22,16 @@ import { useAppController, useRmfApi } from '../hooks';
 import { AppEvents } from './app-events';
 import { TaskCancelButton } from './tasks/task-cancellation';
 
-interface AlertDialogProps {
+export interface AlertDialogProps {
   alertRequest: AlertRequest;
   onDismiss: () => void;
 }
 
-const AlertDialog = React.memo((props: AlertDialogProps) => {
+export const AlertDialog = React.memo((props: AlertDialogProps) => {
   const { alertRequest, onDismiss } = props;
   const [isOpen, setIsOpen] = React.useState(true);
   const { showAlert } = useAppController();
   const rmfApi = useRmfApi();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const [additionalAlertMessage, setAdditionalAlertMessage] = React.useState<string | null>(null);
 
   const respondToAlert = async (alert_id: string, response: string) => {
@@ -131,7 +129,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
           boxShadow: 'none',
         },
       }}
-      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
+      maxWidth="sm"
       fullWidth={true}
       open={isOpen}
       key={alertRequest.id}
@@ -148,14 +146,14 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
           variant="filled"
           sx={{
             '& .MuiFilledInput-root': {
-              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+              fontSize: '1.15',
             },
             background: theme.palette.background.default,
             '&:hover': {
               backgroundColor: theme.palette.background.default,
             },
           }}
-          InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
+          InputLabelProps={{ style: { fontSize: 20 } }}
           InputProps={{ readOnly: true }}
           fullWidth={true}
           margin="dense"
@@ -169,14 +167,14 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
             variant="filled"
             sx={{
               '& .MuiFilledInput-root': {
-                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                fontSize: '1.15',
               },
               background: theme.palette.background.default,
               '&:hover': {
                 backgroundColor: theme.palette.background.default,
               },
             }}
-            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
+            InputLabelProps={{ style: { fontSize: 20 } }}
             InputProps={{ readOnly: true }}
             fullWidth={true}
             multiline
@@ -198,9 +196,10 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
               variant="contained"
               autoFocus
               key={`${alertRequest.id}-${response}`}
+              data-testid={`${alertRequest.id}-${response}-button`}
               sx={{
-                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-                padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+                fontSize: '1rem',
+                padding: '6px 12px',
               }}
               onClick={async () => {
                 await respondToAlert(alertRequest.id, response);
@@ -213,24 +212,26 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
         })}
         {alertRequest.task_id ? (
           <TaskCancelButton
+            data-testid="task-cancel-button"
             taskId={alertRequest.task_id}
             size="small"
             variant="contained"
             color="secondary"
             buttonText={'Cancel task'}
             sx={{
-              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-              padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              fontSize: '1rem',
+              padding: '6px 12px',
             }}
           />
         ) : null}
         <Button
+          data-testid="dismiss-button"
           size="small"
           variant="contained"
           autoFocus
           sx={{
-            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            fontSize: '1rem',
+            padding: '6px 12px',
           }}
           onClick={() => {
             onDismiss();

@@ -1,6 +1,6 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { Box, SxProps, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, SxProps, Typography, useTheme } from '@mui/material';
 import {
   DataGrid,
   GridCellParams,
@@ -42,7 +42,6 @@ export interface LiftDataGridTableProps {
 
 export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps): JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -94,7 +93,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
+            fontSize: 16,
           }}
         >
           {liftModeToString(params.row.liftState?.current_mode).toUpperCase()}
@@ -108,12 +107,10 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
     const currMotion = motionStateToString(params.row?.motionState);
 
     const motionArrowActiveStyle: SxProps = {
-      transform: `scale(${isScreenHeightLessThan800 ? 0.8 : 1})`,
       color: theme.palette.primary.main,
     };
 
     const motionArrowIdleStyle: SxProps = {
-      transform: `scale(${isScreenHeightLessThan800 ? 0.8 : 1})`,
       color: theme.palette.action.disabled,
       opacity: theme.palette.action.disabledOpacity,
     };
@@ -144,16 +141,9 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
         <Typography
           component="p"
           sx={{
-            marginRight:
-              params.row?.doorState === RmfLiftState.DOOR_OPEN
-                ? isScreenHeightLessThan800
-                  ? 2
-                  : 4
-                : isScreenHeightLessThan800
-                  ? 0.4
-                  : 2,
+            marginRight: params.row?.doorState === RmfLiftState.DOOR_OPEN ? 4 : 2,
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
+            fontSize: 16,
             display: 'inline-block',
           }}
         >
@@ -243,11 +233,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       rowHeight={38}
       columns={columns}
       rowsPerPageOptions={[5]}
-      sx={{
-        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-      }}
-      autoPageSize={isScreenHeightLessThan800}
-      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+      density={'standard'}
       localeText={{
         noRowsLabel: 'No lifts available.',
       }}

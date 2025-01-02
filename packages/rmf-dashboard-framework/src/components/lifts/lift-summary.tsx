@@ -1,12 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  TextField,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, Divider, TextField, useTheme } from '@mui/material';
 import { Lift } from 'api-client';
 import React from 'react';
 
@@ -21,7 +13,6 @@ interface LiftSummaryProps {
 }
 
 export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element => {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const rmfApi = useRmfApi();
   const [liftData, setLiftData] = React.useState<LiftTableData>({
     index: 0,
@@ -77,12 +68,9 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
         onClose();
       }}
       fullWidth
-      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
+      maxWidth="sm"
     >
-      <DialogTitle
-        align="center"
-        sx={{ fontSize: isScreenHeightLessThan800 ? '1.2rem' : '1.5rem' }}
-      >
+      <DialogTitle align="center" sx={{ fontSize: '1.5rem' }}>
         Lift summary
       </DialogTitle>
       <Divider />
@@ -128,7 +116,7 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
                 value={displayValue}
                 sx={{
                   '& .MuiFilledInput-root': {
-                    fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                    fontSize: '1.15',
                   },
                   background: theme.palette.background.default,
                   '&:hover': {
