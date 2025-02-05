@@ -18,6 +18,7 @@ import {
   robotMutexGroupsApp,
   robotsApp,
   tasksApp,
+  demoApp,
 } from 'rmf-dashboard-framework/micro-apps';
 import { StubAuthenticator } from 'rmf-dashboard-framework/services';
 
@@ -35,12 +36,17 @@ const appRegistry: MicroAppManifest[] = [
   robotsApp,
   robotMutexGroupsApp,
   tasksApp,
+  demoApp,
 ];
 
 const homeWorkspace: InitialWindow[] = [
   {
-    layout: { x: 0, y: 0, w: 12, h: 6 },
+    layout: { x: 0, y: 0, w: 12, h: 4 },
     microApp: mapApp,
+  },
+  {
+    layout: { x: 0, y: 0, w: 12, h: 4 },
+    microApp: demoApp,
   },
 ];
 

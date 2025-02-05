@@ -4,3 +4,4 @@ export { default as createMapApp } from './map-app';
 export { default as robotMutexGroupsApp } from './robot-mutex-groups-app';
 export { default as robotsApp } from './robots-app';
 export { default as tasksApp } from './tasks-app';
+export { default as demoApp } from './demo-app';
