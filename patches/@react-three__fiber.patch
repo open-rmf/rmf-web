@@ -1,5 +1,5 @@
 diff --git a/dist/declarations/src/three-types.d.ts b/dist/declarations/src/three-types.d.ts
-index 7668a42e27ac2c51ebaaac88db8bfd8fe823ae75..beb86ce6dd562fffe0048c04ae570b1b9f499475 100644
+index 7668a42e27ac2c51ebaaac88db8bfd8fe823ae75..97cf2e2ae2fe991dd2b79c607ff12550d54192fa 100644
 --- a/dist/declarations/src/three-types.d.ts
 +++ b/dist/declarations/src/three-types.d.ts
 @@ -384,10 +384,11 @@ export interface ThreeElements {
