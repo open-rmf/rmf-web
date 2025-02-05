@@ -6,9 +6,11 @@ import '@fontsource/roboto/700.css';
 import { createTheme } from '@mui/material';
 import ReactDOM from 'react-dom/client';
 import {
+  InitialWindow,
   LocallyPersistentWorkspace,
   MicroAppManifest,
   RmfDashboard,
+  Workspace,
 } from 'rmf-dashboard-framework/components';
 import {
   createMapApp,
@@ -17,6 +19,7 @@ import {
   robotMutexGroupsApp,
   robotsApp,
   tasksApp,
+  demoApp,
 } from 'rmf-dashboard-framework/micro-apps';
 import { StubAuthenticator } from 'rmf-dashboard-framework/services';
 
@@ -81,6 +84,33 @@ const mapApp = createMapApp({
   defaultZoom: 6,
 });
 
+const homeWorkspace: InitialWindow[] = [
+  {
+    layout: { x: 0, y: 0, w: 12, h: 4 },
+    microApp: mapApp,
+  },
+  {
+    layout: { x: 0, y: 0, w: 12, h: 4 },
+    microApp: demoApp,
+  },
+];
+
+const robotsWorkspace: InitialWindow[] = [
+  {
+    layout: { x: 0, y: 0, w: 7, h: 4 },
+    microApp: robotsApp,
+  },
+  { layout: { x: 8, y: 0, w: 5, h: 8 }, microApp: mapApp },
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: doorsApp },
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: liftsApp },
+  { layout: { x: 8, y: 0, w: 5, h: 4 }, microApp: robotMutexGroupsApp },
+];
+
+const tasksWorkspace: InitialWindow[] = [
+  { layout: { x: 0, y: 0, w: 7, h: 8 }, microApp: tasksApp },
+  { layout: { x: 8, y: 0, w: 5, h: 8 }, microApp: mapApp },
+];
+
 const appRegistry: MicroAppManifest[] = [
   mapApp,
   doorsApp,
@@ -112,8 +142,23 @@ export default function App() {
       }}
       tabs={[
         {
-          name: 'Example',
+          name: 'Map',
           route: '',
+          element: <Workspace initialWindows={homeWorkspace} />,
+        },
+        {
+          name: 'Robots',
+          route: 'robots',
+          element: <Workspace initialWindows={robotsWorkspace} />,
+        },
+        {
+          name: 'Tasks',
+          route: 'tasks',
+          element: <Workspace initialWindows={tasksWorkspace} />,
+        },
+        {
+          name: 'Custom',
+          route: 'custom',
           element: (
             <LocallyPersistentWorkspace
               defaultWindows={[]}

@@ -1,86 +1,146 @@
+//==============================================================================
+// Basic hello world demo
+
+import { Box, Typography } from '@mui/material';
+
 export const Demo = () => {
-  return <div>Hello world</div>;
+  return (
+    <Box
+      sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography variant="h6">Hello world!</Typography>
+    </Box>
+  );
 };
 
 export default Demo;
 
-// import { TableContainer } from '@mui/material';
-// import { BuildingMap } from 'api-client';
+//==============================================================================
+// With events
+
 // import React from 'react';
-// import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg/DoorMode';
-// import { throttleTime } from 'rxjs';
-
-// import { useRmfApi } from '../../hooks';
-// import { getApiErrorMessage } from '../../utils/api';
+// import { Box, Typography } from '@mui/material';
 // import { AppEvents } from '../app-events';
-// import { DoorDataGridTable, DoorTableData } from './door-table-datagrid';
 
-//   const rmfApi = useRmfApi();
-//   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
-//   const [doorTableData, setDoorTableData] = React.useState<Record<string, DoorTableData>>({});
+// export const Demo = () => {
+//   const [lastClicked, setLastClicked] = React.useState('Nothing clicked so far');
 
-//   React.useEffect(() => {
-//     const sub = rmfApi.buildingMapObs.subscribe(setBuildingMap);
-//     return () => sub.unsubscribe();
-//   }, [rmfApi]);
+//   AppEvents.zoomIn.subscribe(() => setLastClicked('Zoom in clicked'));
+//   AppEvents.zoomOut.subscribe(() => setLastClicked('Zoom out clicked'));
 
-//   React.useEffect(() => {
-//     let doorIndex = 0;
-//     buildingMap?.levels.map((level) =>
-//       level.doors.map(async (door) => {
-//         try {
-//           const sub = rmfApi
-//             .getDoorStateObs(door.name)
-//             .pipe(throttleTime(3000, undefined, { leading: true, trailing: true }))
-//             .subscribe((doorState) => {
-//               setDoorTableData((prev) => {
-//                 return {
-//                   ...prev,
-//                   [door.name]: {
-//                     index: doorIndex++,
-//                     doorName: door.name,
-//                     levelName: level.name,
-//                     doorType: door.door_type,
-//                     doorState: doorState,
-//                     onClickOpen: () =>
-//                       rmfApi?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
-//                         mode: RmfDoorMode.MODE_OPEN,
-//                       }),
-//                     onClickClose: () =>
-//                       rmfApi?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
-//                         mode: RmfDoorMode.MODE_CLOSED,
-//                       }),
-//                   },
-//                 };
-//               });
-//             });
-//           return () => sub.unsubscribe();
-//         } catch (error) {
-//           console.error(`Failed to get lift health: ${getApiErrorMessage(error)}`);
+//   return (
+//     <Box
+//       sx={{
+//         position: 'absolute',
+//         top: '50%',
+//         left: '50%',
+//         transform: 'translate(-50%, -50%)',
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//       }}
+//     >
+//       <Typography variant="h6">
+//         {lastClicked}
+//       </Typography>
+//     </Box>
+//   );
+// };
+
+// export default Demo;
+
+//==============================================================================
+// With table
+
+// import { TableContainer } from '@mui/material';
+// import {
+//   DataGrid,
+//   GridColDef,
+//   GridValueGetterParams,
+// } from '@mui/x-data-grid';
+// import React from 'react';
+// import { AppEvents } from '../app-events';
+
+// interface MapAction {
+//   index: number;
+//   unixMillis: number;
+//   action: string;
+// }
+
+// export const Demo = () => {
+//   const [mapActions, setMapActions] = React.useState<Array<MapAction>>([]);
+
+//   AppEvents.zoomIn.subscribe(() => {
+//     setMapActions((prev) => {
+//       return [
+//         ...prev,
+//         {
+//           index: prev.length,
+//           unixMillis: new Date().valueOf(),
+//           action: 'Zoom In',
 //         }
-//       }),
-//     );
-//   }, [rmfApi, buildingMap]);
+//       ];
+//     })
+//   });
+//   AppEvents.zoomOut.subscribe(() => {
+//     setMapActions((prev) => {
+//       return [
+//         ...prev,
+//         {
+//           index: prev.length,
+//           unixMillis: new Date().valueOf(),
+//           action: 'Zoom Out',
+//         }
+//       ];
+//     })
+//   });
+
+//   const columns: GridColDef[] = [
+//     {
+//       field: 'unixMillis',
+//       headerName: 'Unix millisecond',
+//       editable: false,
+//       valueGetter: (params: GridValueGetterParams) => params.row.unixMillis,
+//       flex: 1,
+//       filterable: true,
+//       sortable: true,
+//     },
+//     {
+//       field: 'action',
+//       headerName: 'Action',
+//       editable: false,
+//       valueGetter: (params: GridValueGetterParams) => params.row.action,
+//       flex: 1,
+//       filterable: true,
+//       sortable: true,
+//     },
+//   ];
 
 //   return (
 //     <TableContainer sx={{ height: '100% ' }}>
-//       <DoorDataGridTable
-//         doors={Object.values(doorTableData)}
-//         onDoorClick={(_ev, doorData) => {
-//           if (!buildingMap) {
-//             AppEvents.doorSelect.next(null);
-//             return;
-//           }
-
-//           for (const level of buildingMap.levels) {
-//             for (const door of level.doors) {
-//               if (door.name === doorData.doorName) {
-//                 AppEvents.doorSelect.next([level.name, door]);
-//                 return;
-//               }
-//             }
-//           }
+//       <DataGrid
+//         getRowId={(l) => l.index}
+//         rows={mapActions}
+//         pageSize={5}
+//         rowHeight={38}
+//         columns={columns}
+//         rowsPerPageOptions={[5]}
+//         density={'standard'}
+//         localeText={{
+//           noRowsLabel: 'Nothing clicked',
 //         }}
+//         initialState={{
+//           sorting: {
+//             sortModel: [{ field: 'doorName', sort: 'asc' }],
+//           },
+//         }}
+//         disableVirtualization={true}
 //       />
 //     </TableContainer>
 //   );
