@@ -2,7 +2,7 @@ import { createMicroApp } from '../components';
 
 export default createMicroApp(
   'demo',
-  'Demo',
+  'Microapp',
   () => import('../components/demo/demo'),
   () => ({}),
 );

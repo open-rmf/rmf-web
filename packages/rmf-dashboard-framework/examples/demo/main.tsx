@@ -45,7 +45,19 @@ const homeWorkspace: InitialWindow[] = [
     microApp: mapApp,
   },
   {
-    layout: { x: 0, y: 0, w: 12, h: 4 },
+    layout: { x: 0, y: 0, w: 3, h: 1 },
+    microApp: demoApp,
+  },
+  {
+    layout: { x: 0, y: 0, w: 3, h: 1 },
+    microApp: demoApp,
+  },
+  {
+    layout: { x: 0, y: 0, w: 3, h: 1 },
+    microApp: demoApp,
+  },
+  {
+    layout: { x: 3, y: 4, w: 3, h: 3 },
     microApp: demoApp,
   },
 ];

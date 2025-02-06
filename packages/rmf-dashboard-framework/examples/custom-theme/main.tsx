@@ -80,17 +80,25 @@ const nordTheme = createTheme({
 const mapApp = createMapApp({
   attributionPrefix: 'Open-RMF',
   defaultMapLevel: 'L1',
-  defaultRobotZoom: 20,
-  defaultZoom: 6,
+  defaultRobotZoom: 80,
+  defaultZoom: 50,
 });
 
 const homeWorkspace: InitialWindow[] = [
+  // {
+  //   layout: { x: 0, y: 0, w: 12, h: 8 },
+  //   microApp: mapApp,
+  // },
   {
     layout: { x: 0, y: 0, w: 12, h: 4 },
     microApp: mapApp,
   },
   {
-    layout: { x: 0, y: 0, w: 12, h: 4 },
+    layout: { x: 0, y: 0, w: 6, h: 4 },
+    microApp: demoApp,
+  },
+  {
+    layout: { x: 6, y: 0, w: 6, h: 4 },
     microApp: demoApp,
   },
 ];
@@ -126,17 +134,12 @@ export default function App() {
       apiServerUrl="http://localhost:8000"
       trajectoryServerUrl="http://localhost:8006"
       authenticator={new StubAuthenticator()}
-      helpLink="https://osrf.github.io/ros2multirobotbook/rmf-core.html"
+      helpLink="https://osrf.github.io/ros2multirobotbook"
       reportIssueLink="https://github.com/open-rmf/rmf-web/issues"
       themes={{ default: createTheme(), dark: nordTheme }}
       resources={{ fleets: {}, logos: { header: '/resources/defaultLogo.png' } }}
       tasks={{
-        allowedTasks: [
-          { taskDefinitionId: 'patrol' },
-          { taskDefinitionId: 'delivery' },
-          { taskDefinitionId: 'compose-clean' },
-          { taskDefinitionId: 'custom_compose' },
-        ],
+        allowedTasks: [{ taskDefinitionId: 'patrol' }],
         pickupZones: [],
         cartIds: [],
       }}
