@@ -100,9 +100,9 @@ class DeliveryAlert(BaseModel):
                 case _:
                     raise ValueError()
 
-    id: str = Field(deprecated=True)
-    category: Category = Field(deprecated=True)
-    tier: Tier = Field(deprecated=True)
-    action: Action = Field(deprecated=True)
-    task_id: str = Field(deprecated=True)
-    message: str = Field(deprecated=True)
+    id: str = Field(default="", deprecated=True)
+    category: Category = Field(default=Category.Missing, deprecated=True)
+    tier: Tier = Field(default=Tier.Warning, deprecated=True)
+    action: Action = Field(default=Action.Waiting, deprecated=True)
+    task_id: str = Field(default="", deprecated=True)
+    message: str = Field(default="", deprecated=True)
