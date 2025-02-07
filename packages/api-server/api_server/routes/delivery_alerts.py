@@ -12,7 +12,7 @@ from api_server.rmf_io import RmfEvents, get_rmf_events
 router = FastIORouter(tags=["DeliveryAlerts"])
 
 
-@router.sub("", response_model=DeliveryAlert, deprecated=True)
+@router.sub("", response_model=DeliveryAlert)
 async def sub_delivery_alerts(_req: SubscriptionRequest):
     return get_rmf_events().delivery_alerts.pipe(rxops.filter(lambda x: x is not None))
 

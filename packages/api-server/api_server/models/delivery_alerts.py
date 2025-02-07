@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Annotated
 
 from pydantic import BaseModel, Field
 from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
@@ -100,9 +101,9 @@ class DeliveryAlert(BaseModel):
                 case _:
                     raise ValueError()
 
-    id: str = Field(default="", deprecated=True)
-    category: Category = Field(default=Category.Missing, deprecated=True)
-    tier: Tier = Field(default=Tier.Warning, deprecated=True)
-    action: Action = Field(default=Action.Waiting, deprecated=True)
-    task_id: str = Field(default="", deprecated=True)
-    message: str = Field(default="", deprecated=True)
+    id: Annotated[str, Field(deprecated=True)]
+    category: Annotated[Category, Field(deprecated=True)]
+    tier: Annotated[Tier, Field(deprecated=True)]
+    action: Annotated[Action, Field(deprecated=True)]
+    task_id: Annotated[str, Field(deprecated=True)]
+    message: Annotated[str, Field(deprecated=True)]
