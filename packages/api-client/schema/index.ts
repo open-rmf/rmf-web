@@ -6,7 +6,7 @@ export default {
       get: {
         summary: 'Socket.io endpoint',
         description:
-          '# NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.\n\n## About\nThis exposes a minimal pubsub system built on top of socket.io.\nIt works similar to a normal socket.io endpoint, except that are 2 special\nrooms which control subscriptions.\n\n## Rooms\n### subscribe\nClients must send a message to this room to start receiving messages on other rooms.\nThe message must be of the form:\n\n```\n{\n    "room": "<room_name>"\n}\n```\n\n### unsubscribe\nClients can send a message to this room to stop receiving messages on other rooms.\nThe message must be of the form:\n\n```\n{\n    "room": "<room_name>"\n}\n```\n### /alerts/requests\n\n\n```\n{\n  "$defs": {\n    "AlertParameter": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "value": {\n          "title": "Value",\n          "type": "string"\n        }\n      },\n      "required": [\n        "name",\n        "value"\n      ],\n      "title": "AlertParameter",\n      "type": "object"\n    },\n    "Tier": {\n      "enum": [\n        "info",\n        "warning",\n        "error"\n      ],\n      "title": "Tier",\n      "type": "string"\n    }\n  },\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "unix_millis_alert_time": {\n      "title": "Unix Millis Alert Time",\n      "type": "integer"\n    },\n    "title": {\n      "title": "Title",\n      "type": "string"\n    },\n    "subtitle": {\n      "title": "Subtitle",\n      "type": "string"\n    },\n    "message": {\n      "title": "Message",\n      "type": "string"\n    },\n    "display": {\n      "title": "Display",\n      "type": "boolean"\n    },\n    "tier": {\n      "$ref": "#/$defs/Tier"\n    },\n    "responses_available": {\n      "items": {\n        "type": "string"\n      },\n      "title": "Responses Available",\n      "type": "array"\n    },\n    "alert_parameters": {\n      "items": {\n        "$ref": "#/$defs/AlertParameter"\n      },\n      "title": "Alert Parameters",\n      "type": "array"\n    },\n    "task_id": {\n      "anyOf": [\n        {\n          "type": "string"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "title": "Task Id"\n    }\n  },\n  "required": [\n    "id",\n    "unix_millis_alert_time",\n    "title",\n    "subtitle",\n    "message",\n    "display",\n    "tier",\n    "responses_available",\n    "alert_parameters",\n    "task_id"\n  ],\n  "title": "AlertRequest",\n  "type": "object"\n}\n```\n\n\n### /alerts/responses\n\n\n```\n{\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "unix_millis_response_time": {\n      "title": "Unix Millis Response Time",\n      "type": "integer"\n    },\n    "response": {\n      "title": "Response",\n      "type": "string"\n    }\n  },\n  "required": [\n    "id",\n    "unix_millis_response_time",\n    "response"\n  ],\n  "title": "AlertResponse",\n  "type": "object"\n}\n```\n\n\n### /beacons\n\n\n```\n{\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "online": {\n      "title": "Online",\n      "type": "boolean"\n    },\n    "category": {\n      "title": "Category",\n      "type": "string"\n    },\n    "activated": {\n      "title": "Activated",\n      "type": "boolean"\n    },\n    "level": {\n      "title": "Level",\n      "type": "string"\n    }\n  },\n  "required": [\n    "id",\n    "online",\n    "category",\n    "activated",\n    "level"\n  ],\n  "title": "BeaconState",\n  "type": "object"\n}\n```\n\n\n### /building_map\n\n\n```\n{\n  "$defs": {\n    "AffineImage": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "x_offset": {\n          "title": "X Offset",\n          "type": "number"\n        },\n        "y_offset": {\n          "title": "Y Offset",\n          "type": "number"\n        },\n        "yaw": {\n          "title": "Yaw",\n          "type": "number"\n        },\n        "scale": {\n          "title": "Scale",\n          "type": "number"\n        },\n        "encoding": {\n          "title": "Encoding",\n          "type": "string"\n        },\n        "data": {\n          "title": "Data",\n          "type": "string"\n        }\n      },\n      "required": [\n        "name",\n        "x_offset",\n        "y_offset",\n        "yaw",\n        "scale",\n        "encoding",\n        "data"\n      ],\n      "title": "AffineImage",\n      "type": "object"\n    },\n    "Door": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "v1_x": {\n          "title": "V1 X",\n          "type": "number"\n        },\n        "v1_y": {\n          "title": "V1 Y",\n          "type": "number"\n        },\n        "v2_x": {\n          "title": "V2 X",\n          "type": "number"\n        },\n        "v2_y": {\n          "title": "V2 Y",\n          "type": "number"\n        },\n        "door_type": {\n          "maximum": 255,\n          "minimum": 0,\n          "title": "Door Type",\n          "type": "integer"\n        },\n        "motion_range": {\n          "title": "Motion Range",\n          "type": "number"\n        },\n        "motion_direction": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Motion Direction",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "name",\n        "v1_x",\n        "v1_y",\n        "v2_x",\n        "v2_y",\n        "door_type",\n        "motion_range",\n        "motion_direction"\n      ],\n      "title": "Door",\n      "type": "object"\n    },\n    "Graph": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "vertices": {\n          "items": {\n            "$ref": "#/$defs/GraphNode"\n          },\n          "title": "Vertices",\n          "type": "array"\n        },\n        "edges": {\n          "items": {\n            "$ref": "#/$defs/GraphEdge"\n          },\n          "title": "Edges",\n          "type": "array"\n        },\n        "params": {\n          "items": {\n            "$ref": "#/$defs/Param"\n          },\n          "title": "Params",\n          "type": "array"\n        }\n      },\n      "required": [\n        "name",\n        "vertices",\n        "edges",\n        "params"\n      ],\n      "title": "Graph",\n      "type": "object"\n    },\n    "GraphEdge": {\n      "properties": {\n        "v1_idx": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "V1 Idx",\n          "type": "integer"\n        },\n        "v2_idx": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "V2 Idx",\n          "type": "integer"\n        },\n        "params": {\n          "items": {\n            "$ref": "#/$defs/Param"\n          },\n          "title": "Params",\n          "type": "array"\n        },\n        "edge_type": {\n          "maximum": 255,\n          "minimum": 0,\n          "title": "Edge Type",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "v1_idx",\n        "v2_idx",\n        "params",\n        "edge_type"\n      ],\n      "title": "GraphEdge",\n      "type": "object"\n    },\n    "GraphNode": {\n      "properties": {\n        "x": {\n          "title": "X",\n          "type": "number"\n        },\n        "y": {\n          "title": "Y",\n          "type": "number"\n        },\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "params": {\n          "items": {\n            "$ref": "#/$defs/Param"\n          },\n          "title": "Params",\n          "type": "array"\n        }\n      },\n      "required": [\n        "x",\n        "y",\n        "name",\n        "params"\n      ],\n      "title": "GraphNode",\n      "type": "object"\n    },\n    "Level": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "elevation": {\n          "title": "Elevation",\n          "type": "number"\n        },\n        "images": {\n          "items": {\n            "$ref": "#/$defs/AffineImage"\n          },\n          "title": "Images",\n          "type": "array"\n        },\n        "places": {\n          "items": {\n            "$ref": "#/$defs/Place"\n          },\n          "title": "Places",\n          "type": "array"\n        },\n        "doors": {\n          "items": {\n            "$ref": "#/$defs/Door"\n          },\n          "title": "Doors",\n          "type": "array"\n        },\n        "nav_graphs": {\n          "items": {\n            "$ref": "#/$defs/Graph"\n          },\n          "title": "Nav Graphs",\n          "type": "array"\n        },\n        "wall_graph": {\n          "$ref": "#/$defs/Graph"\n        }\n      },\n      "required": [\n        "name",\n        "elevation",\n        "images",\n        "places",\n        "doors",\n        "nav_graphs",\n        "wall_graph"\n      ],\n      "title": "Level",\n      "type": "object"\n    },\n    "Lift": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "levels": {\n          "items": {\n            "type": "string"\n          },\n          "title": "Levels",\n          "type": "array"\n        },\n        "doors": {\n          "items": {\n            "$ref": "#/$defs/Door"\n          },\n          "title": "Doors",\n          "type": "array"\n        },\n        "wall_graph": {\n          "$ref": "#/$defs/Graph"\n        },\n        "ref_x": {\n          "title": "Ref X",\n          "type": "number"\n        },\n        "ref_y": {\n          "title": "Ref Y",\n          "type": "number"\n        },\n        "ref_yaw": {\n          "title": "Ref Yaw",\n          "type": "number"\n        },\n        "width": {\n          "title": "Width",\n          "type": "number"\n        },\n        "depth": {\n          "title": "Depth",\n          "type": "number"\n        }\n      },\n      "required": [\n        "name",\n        "levels",\n        "doors",\n        "wall_graph",\n        "ref_x",\n        "ref_y",\n        "ref_yaw",\n        "width",\n        "depth"\n      ],\n      "title": "Lift",\n      "type": "object"\n    },\n    "Param": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "type": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Type",\n          "type": "integer"\n        },\n        "value_int": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Value Int",\n          "type": "integer"\n        },\n        "value_float": {\n          "title": "Value Float",\n          "type": "number"\n        },\n        "value_string": {\n          "title": "Value String",\n          "type": "string"\n        },\n        "value_bool": {\n          "title": "Value Bool",\n          "type": "boolean"\n        }\n      },\n      "required": [\n        "name",\n        "type",\n        "value_int",\n        "value_float",\n        "value_string",\n        "value_bool"\n      ],\n      "title": "Param",\n      "type": "object"\n    },\n    "Place": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "x": {\n          "title": "X",\n          "type": "number"\n        },\n        "y": {\n          "title": "Y",\n          "type": "number"\n        },\n        "yaw": {\n          "title": "Yaw",\n          "type": "number"\n        },\n        "position_tolerance": {\n          "title": "Position Tolerance",\n          "type": "number"\n        },\n        "yaw_tolerance": {\n          "title": "Yaw Tolerance",\n          "type": "number"\n        }\n      },\n      "required": [\n        "name",\n        "x",\n        "y",\n        "yaw",\n        "position_tolerance",\n        "yaw_tolerance"\n      ],\n      "title": "Place",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "name": {\n      "title": "Name",\n      "type": "string"\n    },\n    "levels": {\n      "items": {\n        "$ref": "#/$defs/Level"\n      },\n      "title": "Levels",\n      "type": "array"\n    },\n    "lifts": {\n      "items": {\n        "$ref": "#/$defs/Lift"\n      },\n      "title": "Lifts",\n      "type": "array"\n    }\n  },\n  "required": [\n    "name",\n    "levels",\n    "lifts"\n  ],\n  "title": "BuildingMap",\n  "type": "object"\n}\n```\n\n\n### /building_map/fire_alarm_trigger\n\n\n```\n{\n  "properties": {\n    "unix_millis_time": {\n      "title": "Unix Millis Time",\n      "type": "integer"\n    },\n    "trigger": {\n      "title": "Trigger",\n      "type": "boolean"\n    }\n  },\n  "required": [\n    "unix_millis_time",\n    "trigger"\n  ],\n  "title": "FireAlarmTriggerState",\n  "type": "object"\n}\n```\n\n\n### /delivery_alerts\n\n\n```\n{\n  "$defs": {\n    "Action": {\n      "enum": [\n        "waiting",\n        "cancel",\n        "override",\n        "resume"\n      ],\n      "title": "Action",\n      "type": "string"\n    },\n    "Category": {\n      "enum": [\n        "missing",\n        "wrong",\n        "obstructed",\n        "cancelled"\n      ],\n      "title": "Category",\n      "type": "string"\n    },\n    "Tier": {\n      "enum": [\n        "warning",\n        "error"\n      ],\n      "title": "Tier",\n      "type": "string"\n    }\n  },\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "category": {\n      "$ref": "#/$defs/Category"\n    },\n    "tier": {\n      "$ref": "#/$defs/Tier"\n    },\n    "action": {\n      "$ref": "#/$defs/Action"\n    },\n    "task_id": {\n      "title": "Task Id",\n      "type": "string"\n    },\n    "message": {\n      "title": "Message",\n      "type": "string"\n    }\n  },\n  "required": [\n    "id",\n    "category",\n    "tier",\n    "action",\n    "task_id",\n    "message"\n  ],\n  "title": "DeliveryAlert",\n  "type": "object"\n}\n```\n\n\n### /doors/{door_name}/state\n\n\n```\n{\n  "$defs": {\n    "DoorMode": {\n      "properties": {\n        "value": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Value",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "value"\n      ],\n      "title": "DoorMode",\n      "type": "object"\n    },\n    "Time": {\n      "properties": {\n        "sec": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Sec",\n          "type": "integer"\n        },\n        "nanosec": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Nanosec",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "sec",\n        "nanosec"\n      ],\n      "title": "Time",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "door_time": {\n      "$ref": "#/$defs/Time"\n    },\n    "door_name": {\n      "title": "Door Name",\n      "type": "string"\n    },\n    "current_mode": {\n      "$ref": "#/$defs/DoorMode"\n    }\n  },\n  "required": [\n    "door_time",\n    "door_name",\n    "current_mode"\n  ],\n  "title": "DoorState",\n  "type": "object"\n}\n```\n\n\n### /lifts/{lift_name}/state\n\n\n```\n{\n  "$defs": {\n    "Time": {\n      "properties": {\n        "sec": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Sec",\n          "type": "integer"\n        },\n        "nanosec": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Nanosec",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "sec",\n        "nanosec"\n      ],\n      "title": "Time",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "lift_time": {\n      "$ref": "#/$defs/Time"\n    },\n    "lift_name": {\n      "title": "Lift Name",\n      "type": "string"\n    },\n    "available_floors": {\n      "items": {\n        "type": "string"\n      },\n      "title": "Available Floors",\n      "type": "array"\n    },\n    "current_floor": {\n      "title": "Current Floor",\n      "type": "string"\n    },\n    "destination_floor": {\n      "title": "Destination Floor",\n      "type": "string"\n    },\n    "door_state": {\n      "maximum": 255,\n      "minimum": 0,\n      "title": "Door State",\n      "type": "integer"\n    },\n    "motion_state": {\n      "maximum": 255,\n      "minimum": 0,\n      "title": "Motion State",\n      "type": "integer"\n    },\n    "available_modes": {\n      "items": {\n        "type": "integer"\n      },\n      "title": "Available Modes",\n      "type": "array"\n    },\n    "current_mode": {\n      "maximum": 255,\n      "minimum": 0,\n      "title": "Current Mode",\n      "type": "integer"\n    },\n    "session_id": {\n      "title": "Session Id",\n      "type": "string"\n    }\n  },\n  "required": [\n    "lift_time",\n    "lift_name",\n    "available_floors",\n    "current_floor",\n    "destination_floor",\n    "door_state",\n    "motion_state",\n    "available_modes",\n    "current_mode",\n    "session_id"\n  ],\n  "title": "LiftState",\n  "type": "object"\n}\n```\n\n\n### /tasks/{task_id}/state\n\n\n```\n{\n  "$defs": {\n    "AssignedTo": {\n      "properties": {\n        "group": {\n          "title": "Group",\n          "type": "string"\n        },\n        "name": {\n          "title": "Name",\n          "type": "string"\n        }\n      },\n      "required": [\n        "group",\n        "name"\n      ],\n      "title": "AssignedTo",\n      "type": "object"\n    },\n    "Assignment": {\n      "properties": {\n        "fleet_name": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Fleet Name"\n        },\n        "expected_robot_name": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Expected Robot Name"\n        }\n      },\n      "title": "Assignment",\n      "type": "object"\n    },\n    "Booking": {\n      "properties": {\n        "id": {\n          "description": "The unique identifier for this task",\n          "title": "Id",\n          "type": "string"\n        },\n        "unix_millis_earliest_start_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Earliest Start Time"\n        },\n        "unix_millis_request_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Request Time"\n        },\n        "priority": {\n          "anyOf": [\n            {\n              "type": "object"\n            },\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Priority information about this task",\n          "title": "Priority"\n        },\n        "labels": {\n          "anyOf": [\n            {\n              "items": {\n                "type": "string"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "title": "Labels"\n        },\n        "requester": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "(Optional) An identifier for the entity that requested this task",\n          "title": "Requester"\n        }\n      },\n      "required": [\n        "id"\n      ],\n      "title": "Booking",\n      "type": "object"\n    },\n    "Cancellation": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the cancellation request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "Cancellation",\n      "type": "object"\n    },\n    "Category": {\n      "description": "The category of this task or phase",\n      "title": "Category",\n      "type": "string"\n    },\n    "Detail": {\n      "anyOf": [\n        {\n          "type": "object"\n        },\n        {\n          "items": {},\n          "type": "array"\n        },\n        {\n          "type": "string"\n        }\n      ],\n      "description": "Detailed information about a task, phase, or event",\n      "title": "Detail"\n    },\n    "Dispatch": {\n      "properties": {\n        "status": {\n          "$ref": "#/$defs/Status2"\n        },\n        "assignment": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Assignment"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "errors": {\n          "anyOf": [\n            {\n              "items": {\n                "$ref": "#/$defs/Error"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Errors"\n        }\n      },\n      "required": [\n        "status"\n      ],\n      "title": "Dispatch",\n      "type": "object"\n    },\n    "Error": {\n      "properties": {\n        "code": {\n          "anyOf": [\n            {\n              "minimum": 0,\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A standard code for the kind of error that has occurred",\n          "title": "Code"\n        },\n        "category": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "The category of the error",\n          "title": "Category"\n        },\n        "detail": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Details about the error",\n          "title": "Detail"\n        }\n      },\n      "title": "Error",\n      "type": "object"\n    },\n    "EstimateMillis": {\n      "description": "An estimate, in milliseconds, of how long the subject will take to complete",\n      "minimum": 0,\n      "title": "EstimateMillis",\n      "type": "integer"\n    },\n    "EventState": {\n      "properties": {\n        "id": {\n          "$ref": "#/$defs/Id"\n        },\n        "status": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Status"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "name": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "The brief name of the event",\n          "title": "Name"\n        },\n        "detail": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Detail"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Detailed information about the event"\n        },\n        "deps": {\n          "anyOf": [\n            {\n              "items": {\n                "minimum": 0,\n                "type": "integer"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "This event may depend on other events. This array contains the IDs of those other event dependencies.",\n          "title": "Deps"\n        }\n      },\n      "required": [\n        "id"\n      ],\n      "title": "EventState",\n      "type": "object"\n    },\n    "Id": {\n      "minimum": 0,\n      "title": "Id",\n      "type": "integer"\n    },\n    "Interruption": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the interruption request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        },\n        "resumed_by": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/ResumedBy"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about the resume request that ended this interruption. This field will be missing if the interruption is still active."\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "Interruption",\n      "type": "object"\n    },\n    "Killed": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the cancellation request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "Killed",\n      "type": "object"\n    },\n    "Phase": {\n      "properties": {\n        "id": {\n          "$ref": "#/$defs/Id"\n        },\n        "category": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Category"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "detail": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Detail"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "unix_millis_start_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Start Time"\n        },\n        "unix_millis_finish_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Finish Time"\n        },\n        "original_estimate_millis": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/EstimateMillis"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "estimate_millis": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/EstimateMillis"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "final_event_id": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Id"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "events": {\n          "anyOf": [\n            {\n              "additionalProperties": {\n                "$ref": "#/$defs/EventState"\n              },\n              "type": "object"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.",\n          "title": "Events"\n        },\n        "skip_requests": {\n          "anyOf": [\n            {\n              "additionalProperties": {\n                "$ref": "#/$defs/SkipPhaseRequest"\n              },\n              "type": "object"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about any skip requests that have been received",\n          "title": "Skip Requests"\n        }\n      },\n      "required": [\n        "id"\n      ],\n      "title": "Phase",\n      "type": "object"\n    },\n    "ResumedBy": {\n      "properties": {\n        "unix_millis_request_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "The time that the resume request arrived",\n          "title": "Unix Millis Request Time"\n        },\n        "labels": {\n          "description": "Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        }\n      },\n      "required": [\n        "labels"\n      ],\n      "title": "ResumedBy",\n      "type": "object"\n    },\n    "SkipPhaseRequest": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the skip request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        },\n        "undo": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Undo"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about an undo skip request that applied to this request"\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "SkipPhaseRequest",\n      "type": "object"\n    },\n    "Status": {\n      "enum": [\n        "uninitialized",\n        "blocked",\n        "error",\n        "failed",\n        "queued",\n        "standby",\n        "underway",\n        "delayed",\n        "skipped",\n        "canceled",\n        "killed",\n        "completed"\n      ],\n      "title": "Status",\n      "type": "string"\n    },\n    "Status2": {\n      "enum": [\n        "queued",\n        "selected",\n        "dispatched",\n        "failed_to_assign",\n        "canceled_in_flight"\n      ],\n      "title": "Status2",\n      "type": "string"\n    },\n    "Undo": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the undo skip request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "Undo",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "booking": {\n      "$ref": "#/$defs/Booking"\n    },\n    "category": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Category"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "detail": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Detail"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "unix_millis_start_time": {\n      "anyOf": [\n        {\n          "type": "integer"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "title": "Unix Millis Start Time"\n    },\n    "unix_millis_finish_time": {\n      "anyOf": [\n        {\n          "type": "integer"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "title": "Unix Millis Finish Time"\n    },\n    "original_estimate_millis": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/EstimateMillis"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "estimate_millis": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/EstimateMillis"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "assigned_to": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/AssignedTo"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "Which agent (robot) is the task assigned to"\n    },\n    "status": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Status"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "dispatch": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Dispatch"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "phases": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "$ref": "#/$defs/Phase"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.",\n      "title": "Phases"\n    },\n    "completed": {\n      "anyOf": [\n        {\n          "items": {\n            "$ref": "#/$defs/Id"\n          },\n          "type": "array"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "An array of the IDs of completed phases of this task",\n      "title": "Completed"\n    },\n    "active": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Id"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "The ID of the active phase for this task"\n    },\n    "pending": {\n      "anyOf": [\n        {\n          "items": {\n            "$ref": "#/$defs/Id"\n          },\n          "type": "array"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "An array of the pending phases of this task",\n      "title": "Pending"\n    },\n    "interruptions": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "$ref": "#/$defs/Interruption"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.",\n      "title": "Interruptions"\n    },\n    "cancellation": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Cancellation"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "If the task was cancelled, this will describe information about the request."\n    },\n    "killed": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Killed"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "If the task was killed, this will describe information about the request."\n    }\n  },\n  "required": [\n    "booking"\n  ],\n  "title": "TaskState",\n  "type": "object"\n}\n```\n\n\n### /tasks/{task_id}/log\n\n\n```\n{\n  "$defs": {\n    "LogEntry": {\n      "properties": {\n        "seq": {\n          "description": "Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.",\n          "exclusiveMaximum": 4294967296,\n          "minimum": 0,\n          "title": "Seq",\n          "type": "integer"\n        },\n        "tier": {\n          "allOf": [\n            {\n              "$ref": "#/$defs/Tier"\n            }\n          ],\n          "description": "The importance level of the log entry"\n        },\n        "unix_millis_time": {\n          "title": "Unix Millis Time",\n          "type": "integer"\n        },\n        "text": {\n          "description": "The text of the log entry",\n          "title": "Text",\n          "type": "string"\n        }\n      },\n      "required": [\n        "seq",\n        "tier",\n        "unix_millis_time",\n        "text"\n      ],\n      "title": "LogEntry",\n      "type": "object"\n    },\n    "Phases": {\n      "additionalProperties": false,\n      "properties": {\n        "log": {\n          "anyOf": [\n            {\n              "items": {\n                "$ref": "#/$defs/LogEntry"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Log entries related to the overall phase",\n          "title": "Log"\n        },\n        "events": {\n          "anyOf": [\n            {\n              "additionalProperties": {\n                "items": {\n                  "$ref": "#/$defs/LogEntry"\n                },\n                "type": "array"\n              },\n              "type": "object"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A dictionary whose keys (property names) are the indices of an event in the phase",\n          "title": "Events"\n        }\n      },\n      "title": "Phases",\n      "type": "object"\n    },\n    "Tier": {\n      "enum": [\n        "uninitialized",\n        "info",\n        "warning",\n        "error"\n      ],\n      "title": "Tier",\n      "type": "string"\n    }\n  },\n  "additionalProperties": false,\n  "properties": {\n    "task_id": {\n      "title": "Task Id",\n      "type": "string"\n    },\n    "log": {\n      "anyOf": [\n        {\n          "items": {\n            "$ref": "#/$defs/LogEntry"\n          },\n          "type": "array"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "Log entries related to the overall task",\n      "title": "Log"\n    },\n    "phases": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "$ref": "#/$defs/Phases"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "A dictionary whose keys (property names) are the indices of a phase",\n      "title": "Phases"\n    }\n  },\n  "required": [\n    "task_id"\n  ],\n  "title": "TaskEventLog",\n  "type": "object"\n}\n```\n\n\n### /dispensers/{guid}/state\n\n\n```\n{\n  "$defs": {\n    "Time": {\n      "properties": {\n        "sec": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Sec",\n          "type": "integer"\n        },\n        "nanosec": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Nanosec",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "sec",\n        "nanosec"\n      ],\n      "title": "Time",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "time": {\n      "$ref": "#/$defs/Time"\n    },\n    "guid": {\n      "title": "Guid",\n      "type": "string"\n    },\n    "mode": {\n      "maximum": 2147483647,\n      "minimum": -2147483648,\n      "title": "Mode",\n      "type": "integer"\n    },\n    "request_guid_queue": {\n      "items": {\n        "type": "string"\n      },\n      "title": "Request Guid Queue",\n      "type": "array"\n    },\n    "seconds_remaining": {\n      "title": "Seconds Remaining",\n      "type": "number"\n    }\n  },\n  "required": [\n    "time",\n    "guid",\n    "mode",\n    "request_guid_queue",\n    "seconds_remaining"\n  ],\n  "title": "DispenserState",\n  "type": "object"\n}\n```\n\n\n### /ingestors/{guid}/state\n\n\n```\n{\n  "$defs": {\n    "Time": {\n      "properties": {\n        "sec": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Sec",\n          "type": "integer"\n        },\n        "nanosec": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Nanosec",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "sec",\n        "nanosec"\n      ],\n      "title": "Time",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "time": {\n      "$ref": "#/$defs/Time"\n    },\n    "guid": {\n      "title": "Guid",\n      "type": "string"\n    },\n    "mode": {\n      "maximum": 2147483647,\n      "minimum": -2147483648,\n      "title": "Mode",\n      "type": "integer"\n    },\n    "request_guid_queue": {\n      "items": {\n        "type": "string"\n      },\n      "title": "Request Guid Queue",\n      "type": "array"\n    },\n    "seconds_remaining": {\n      "title": "Seconds Remaining",\n      "type": "number"\n    }\n  },\n  "required": [\n    "time",\n    "guid",\n    "mode",\n    "request_guid_queue",\n    "seconds_remaining"\n  ],\n  "title": "IngestorState",\n  "type": "object"\n}\n```\n\n\n### /fleets/{name}/state\n\n\n```\n{\n  "$defs": {\n    "Commission": {\n      "properties": {\n        "dispatch_tasks": {\n          "anyOf": [\n            {\n              "type": "boolean"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.",\n          "title": "Dispatch Tasks"\n        },\n        "direct_tasks": {\n          "anyOf": [\n            {\n              "type": "boolean"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.",\n          "title": "Direct Tasks"\n        },\n        "idle_behavior": {\n          "anyOf": [\n            {\n              "type": "boolean"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.",\n          "title": "Idle Behavior"\n        }\n      },\n      "title": "Commission",\n      "type": "object"\n    },\n    "Issue": {\n      "properties": {\n        "category": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Category of the robot\'s issue",\n          "title": "Category"\n        },\n        "detail": {\n          "anyOf": [\n            {\n              "type": "object"\n            },\n            {\n              "items": {},\n              "type": "array"\n            },\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Detailed information about the issue",\n          "title": "Detail"\n        }\n      },\n      "title": "Issue",\n      "type": "object"\n    },\n    "Location2D": {\n      "properties": {\n        "map": {\n          "title": "Map",\n          "type": "string"\n        },\n        "x": {\n          "title": "X",\n          "type": "number"\n        },\n        "y": {\n          "title": "Y",\n          "type": "number"\n        },\n        "yaw": {\n          "title": "Yaw",\n          "type": "number"\n        }\n      },\n      "required": [\n        "map",\n        "x",\n        "y",\n        "yaw"\n      ],\n      "title": "Location2D",\n      "type": "object"\n    },\n    "MutexGroups": {\n      "properties": {\n        "locked": {\n          "anyOf": [\n            {\n              "items": {\n                "type": "string"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A list of mutex groups that this robot has currently locked",\n          "title": "Locked"\n        },\n        "requesting": {\n          "anyOf": [\n            {\n              "items": {\n                "type": "string"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A list of the mutex groups that this robot is currently requesting but has not lockd yet",\n          "title": "Requesting"\n        }\n      },\n      "title": "MutexGroups",\n      "type": "object"\n    },\n    "RobotState": {\n      "properties": {\n        "name": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Name"\n        },\n        "status": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Status"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A simple token representing the status of the robot"\n        },\n        "task_id": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.",\n          "title": "Task Id"\n        },\n        "unix_millis_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Time"\n        },\n        "location": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Location2D"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "battery": {\n          "anyOf": [\n            {\n              "maximum": 1.0,\n              "minimum": 0.0,\n              "type": "number"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)",\n          "title": "Battery"\n        },\n        "issues": {\n          "anyOf": [\n            {\n              "items": {\n                "$ref": "#/$defs/Issue"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A list of issues with the robot that operators need to address",\n          "title": "Issues"\n        },\n        "commission": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Commission"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "mutex_groups": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/MutexGroups"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about the mutex groups that this robot is interacting with"\n        }\n      },\n      "title": "RobotState",\n      "type": "object"\n    },\n    "Status": {\n      "enum": [\n        "uninitialized",\n        "offline",\n        "shutdown",\n        "idle",\n        "charging",\n        "working",\n        "error"\n      ],\n      "title": "Status",\n      "type": "string"\n    }\n  },\n  "properties": {\n    "name": {\n      "anyOf": [\n        {\n          "type": "string"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "title": "Name"\n    },\n    "robots": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "$ref": "#/$defs/RobotState"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "A dictionary of the states of the robots that belong to this fleet",\n      "title": "Robots"\n    }\n  },\n  "title": "FleetState",\n  "type": "object"\n}\n```\n\n\n### /fleets/{name}/log\n\n\n```\n{\n  "$defs": {\n    "LogEntry": {\n      "properties": {\n        "seq": {\n          "description": "Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.",\n          "exclusiveMaximum": 4294967296,\n          "minimum": 0,\n          "title": "Seq",\n          "type": "integer"\n        },\n        "tier": {\n          "allOf": [\n            {\n              "$ref": "#/$defs/Tier"\n            }\n          ],\n          "description": "The importance level of the log entry"\n        },\n        "unix_millis_time": {\n          "title": "Unix Millis Time",\n          "type": "integer"\n        },\n        "text": {\n          "description": "The text of the log entry",\n          "title": "Text",\n          "type": "string"\n        }\n      },\n      "required": [\n        "seq",\n        "tier",\n        "unix_millis_time",\n        "text"\n      ],\n      "title": "LogEntry",\n      "type": "object"\n    },\n    "Tier": {\n      "enum": [\n        "uninitialized",\n        "info",\n        "warning",\n        "error"\n      ],\n      "title": "Tier",\n      "type": "string"\n    }\n  },\n  "properties": {\n    "name": {\n      "anyOf": [\n        {\n          "type": "string"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "title": "Name"\n    },\n    "log": {\n      "anyOf": [\n        {\n          "items": {\n            "$ref": "#/$defs/LogEntry"\n          },\n          "type": "array"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "Log for the overall fleet",\n      "title": "Log"\n    },\n    "robots": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "items": {\n              "$ref": "#/$defs/LogEntry"\n            },\n            "type": "array"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "Dictionary of logs for the individual robots. The keys (property names) are the robot names.",\n      "title": "Robots"\n    }\n  },\n  "title": "FleetLog",\n  "type": "object"\n}\n```\n\n\n### /rios\n\n\n```\n{\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "type": {\n      "title": "Type",\n      "type": "string"\n    },\n    "data": {\n      "title": "Data",\n      "type": "object"\n    }\n  },\n  "required": [\n    "id",\n    "type",\n    "data"\n  ],\n  "title": "Rio",\n  "type": "object"\n}\n```\n\n',
+          '# NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.\n\n## About\nThis exposes a minimal pubsub system built on top of socket.io.\nIt works similar to a normal socket.io endpoint, except that are 2 special\nrooms which control subscriptions.\n\n## Rooms\n### subscribe\nClients must send a message to this room to start receiving messages on other rooms.\nThe message must be of the form:\n\n```\n{\n    "room": "<room_name>"\n}\n```\n\n### unsubscribe\nClients can send a message to this room to stop receiving messages on other rooms.\nThe message must be of the form:\n\n```\n{\n    "room": "<room_name>"\n}\n```\n### /alerts/requests\n\n\n```\n{\n  "$defs": {\n    "AlertParameter": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "value": {\n          "title": "Value",\n          "type": "string"\n        }\n      },\n      "required": [\n        "name",\n        "value"\n      ],\n      "title": "AlertParameter",\n      "type": "object"\n    },\n    "Tier": {\n      "enum": [\n        "info",\n        "warning",\n        "error"\n      ],\n      "title": "Tier",\n      "type": "string"\n    }\n  },\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "unix_millis_alert_time": {\n      "title": "Unix Millis Alert Time",\n      "type": "integer"\n    },\n    "title": {\n      "title": "Title",\n      "type": "string"\n    },\n    "subtitle": {\n      "title": "Subtitle",\n      "type": "string"\n    },\n    "message": {\n      "title": "Message",\n      "type": "string"\n    },\n    "display": {\n      "title": "Display",\n      "type": "boolean"\n    },\n    "tier": {\n      "$ref": "#/$defs/Tier"\n    },\n    "responses_available": {\n      "items": {\n        "type": "string"\n      },\n      "title": "Responses Available",\n      "type": "array"\n    },\n    "alert_parameters": {\n      "items": {\n        "$ref": "#/$defs/AlertParameter"\n      },\n      "title": "Alert Parameters",\n      "type": "array"\n    },\n    "task_id": {\n      "anyOf": [\n        {\n          "type": "string"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "title": "Task Id"\n    }\n  },\n  "required": [\n    "id",\n    "unix_millis_alert_time",\n    "title",\n    "subtitle",\n    "message",\n    "display",\n    "tier",\n    "responses_available",\n    "alert_parameters",\n    "task_id"\n  ],\n  "title": "AlertRequest",\n  "type": "object"\n}\n```\n\n\n### /alerts/responses\n\n\n```\n{\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "unix_millis_response_time": {\n      "title": "Unix Millis Response Time",\n      "type": "integer"\n    },\n    "response": {\n      "title": "Response",\n      "type": "string"\n    }\n  },\n  "required": [\n    "id",\n    "unix_millis_response_time",\n    "response"\n  ],\n  "title": "AlertResponse",\n  "type": "object"\n}\n```\n\n\n### /beacons\n\n\n```\n{\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "online": {\n      "title": "Online",\n      "type": "boolean"\n    },\n    "category": {\n      "title": "Category",\n      "type": "string"\n    },\n    "activated": {\n      "title": "Activated",\n      "type": "boolean"\n    },\n    "level": {\n      "title": "Level",\n      "type": "string"\n    }\n  },\n  "required": [\n    "id",\n    "online",\n    "category",\n    "activated",\n    "level"\n  ],\n  "title": "BeaconState",\n  "type": "object"\n}\n```\n\n\n### /building_map\n\n\n```\n{\n  "$defs": {\n    "AffineImage": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "x_offset": {\n          "title": "X Offset",\n          "type": "number"\n        },\n        "y_offset": {\n          "title": "Y Offset",\n          "type": "number"\n        },\n        "yaw": {\n          "title": "Yaw",\n          "type": "number"\n        },\n        "scale": {\n          "title": "Scale",\n          "type": "number"\n        },\n        "encoding": {\n          "title": "Encoding",\n          "type": "string"\n        },\n        "data": {\n          "title": "Data",\n          "type": "string"\n        }\n      },\n      "required": [\n        "name",\n        "x_offset",\n        "y_offset",\n        "yaw",\n        "scale",\n        "encoding",\n        "data"\n      ],\n      "title": "AffineImage",\n      "type": "object"\n    },\n    "Door": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "v1_x": {\n          "title": "V1 X",\n          "type": "number"\n        },\n        "v1_y": {\n          "title": "V1 Y",\n          "type": "number"\n        },\n        "v2_x": {\n          "title": "V2 X",\n          "type": "number"\n        },\n        "v2_y": {\n          "title": "V2 Y",\n          "type": "number"\n        },\n        "door_type": {\n          "maximum": 255,\n          "minimum": 0,\n          "title": "Door Type",\n          "type": "integer"\n        },\n        "motion_range": {\n          "title": "Motion Range",\n          "type": "number"\n        },\n        "motion_direction": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Motion Direction",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "name",\n        "v1_x",\n        "v1_y",\n        "v2_x",\n        "v2_y",\n        "door_type",\n        "motion_range",\n        "motion_direction"\n      ],\n      "title": "Door",\n      "type": "object"\n    },\n    "Graph": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "vertices": {\n          "items": {\n            "$ref": "#/$defs/GraphNode"\n          },\n          "title": "Vertices",\n          "type": "array"\n        },\n        "edges": {\n          "items": {\n            "$ref": "#/$defs/GraphEdge"\n          },\n          "title": "Edges",\n          "type": "array"\n        },\n        "params": {\n          "items": {\n            "$ref": "#/$defs/Param"\n          },\n          "title": "Params",\n          "type": "array"\n        }\n      },\n      "required": [\n        "name",\n        "vertices",\n        "edges",\n        "params"\n      ],\n      "title": "Graph",\n      "type": "object"\n    },\n    "GraphEdge": {\n      "properties": {\n        "v1_idx": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "V1 Idx",\n          "type": "integer"\n        },\n        "v2_idx": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "V2 Idx",\n          "type": "integer"\n        },\n        "params": {\n          "items": {\n            "$ref": "#/$defs/Param"\n          },\n          "title": "Params",\n          "type": "array"\n        },\n        "edge_type": {\n          "maximum": 255,\n          "minimum": 0,\n          "title": "Edge Type",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "v1_idx",\n        "v2_idx",\n        "params",\n        "edge_type"\n      ],\n      "title": "GraphEdge",\n      "type": "object"\n    },\n    "GraphNode": {\n      "properties": {\n        "x": {\n          "title": "X",\n          "type": "number"\n        },\n        "y": {\n          "title": "Y",\n          "type": "number"\n        },\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "params": {\n          "items": {\n            "$ref": "#/$defs/Param"\n          },\n          "title": "Params",\n          "type": "array"\n        }\n      },\n      "required": [\n        "x",\n        "y",\n        "name",\n        "params"\n      ],\n      "title": "GraphNode",\n      "type": "object"\n    },\n    "Level": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "elevation": {\n          "title": "Elevation",\n          "type": "number"\n        },\n        "images": {\n          "items": {\n            "$ref": "#/$defs/AffineImage"\n          },\n          "title": "Images",\n          "type": "array"\n        },\n        "places": {\n          "items": {\n            "$ref": "#/$defs/Place"\n          },\n          "title": "Places",\n          "type": "array"\n        },\n        "doors": {\n          "items": {\n            "$ref": "#/$defs/Door"\n          },\n          "title": "Doors",\n          "type": "array"\n        },\n        "nav_graphs": {\n          "items": {\n            "$ref": "#/$defs/Graph"\n          },\n          "title": "Nav Graphs",\n          "type": "array"\n        },\n        "wall_graph": {\n          "$ref": "#/$defs/Graph"\n        }\n      },\n      "required": [\n        "name",\n        "elevation",\n        "images",\n        "places",\n        "doors",\n        "nav_graphs",\n        "wall_graph"\n      ],\n      "title": "Level",\n      "type": "object"\n    },\n    "Lift": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "levels": {\n          "items": {\n            "type": "string"\n          },\n          "title": "Levels",\n          "type": "array"\n        },\n        "doors": {\n          "items": {\n            "$ref": "#/$defs/Door"\n          },\n          "title": "Doors",\n          "type": "array"\n        },\n        "wall_graph": {\n          "$ref": "#/$defs/Graph"\n        },\n        "ref_x": {\n          "title": "Ref X",\n          "type": "number"\n        },\n        "ref_y": {\n          "title": "Ref Y",\n          "type": "number"\n        },\n        "ref_yaw": {\n          "title": "Ref Yaw",\n          "type": "number"\n        },\n        "width": {\n          "title": "Width",\n          "type": "number"\n        },\n        "depth": {\n          "title": "Depth",\n          "type": "number"\n        }\n      },\n      "required": [\n        "name",\n        "levels",\n        "doors",\n        "wall_graph",\n        "ref_x",\n        "ref_y",\n        "ref_yaw",\n        "width",\n        "depth"\n      ],\n      "title": "Lift",\n      "type": "object"\n    },\n    "Param": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "type": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Type",\n          "type": "integer"\n        },\n        "value_int": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Value Int",\n          "type": "integer"\n        },\n        "value_float": {\n          "title": "Value Float",\n          "type": "number"\n        },\n        "value_string": {\n          "title": "Value String",\n          "type": "string"\n        },\n        "value_bool": {\n          "title": "Value Bool",\n          "type": "boolean"\n        }\n      },\n      "required": [\n        "name",\n        "type",\n        "value_int",\n        "value_float",\n        "value_string",\n        "value_bool"\n      ],\n      "title": "Param",\n      "type": "object"\n    },\n    "Place": {\n      "properties": {\n        "name": {\n          "title": "Name",\n          "type": "string"\n        },\n        "x": {\n          "title": "X",\n          "type": "number"\n        },\n        "y": {\n          "title": "Y",\n          "type": "number"\n        },\n        "yaw": {\n          "title": "Yaw",\n          "type": "number"\n        },\n        "position_tolerance": {\n          "title": "Position Tolerance",\n          "type": "number"\n        },\n        "yaw_tolerance": {\n          "title": "Yaw Tolerance",\n          "type": "number"\n        }\n      },\n      "required": [\n        "name",\n        "x",\n        "y",\n        "yaw",\n        "position_tolerance",\n        "yaw_tolerance"\n      ],\n      "title": "Place",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "name": {\n      "title": "Name",\n      "type": "string"\n    },\n    "levels": {\n      "items": {\n        "$ref": "#/$defs/Level"\n      },\n      "title": "Levels",\n      "type": "array"\n    },\n    "lifts": {\n      "items": {\n        "$ref": "#/$defs/Lift"\n      },\n      "title": "Lifts",\n      "type": "array"\n    }\n  },\n  "required": [\n    "name",\n    "levels",\n    "lifts"\n  ],\n  "title": "BuildingMap",\n  "type": "object"\n}\n```\n\n\n### /building_map/fire_alarm_trigger\n\n\n```\n{\n  "properties": {\n    "unix_millis_time": {\n      "title": "Unix Millis Time",\n      "type": "integer"\n    },\n    "trigger": {\n      "title": "Trigger",\n      "type": "boolean"\n    }\n  },\n  "required": [\n    "unix_millis_time",\n    "trigger"\n  ],\n  "title": "FireAlarmTriggerState",\n  "type": "object"\n}\n```\n\n\n### /doors/{door_name}/state\n\n\n```\n{\n  "$defs": {\n    "DoorMode": {\n      "properties": {\n        "value": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Value",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "value"\n      ],\n      "title": "DoorMode",\n      "type": "object"\n    },\n    "Time": {\n      "properties": {\n        "sec": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Sec",\n          "type": "integer"\n        },\n        "nanosec": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Nanosec",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "sec",\n        "nanosec"\n      ],\n      "title": "Time",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "door_time": {\n      "$ref": "#/$defs/Time"\n    },\n    "door_name": {\n      "title": "Door Name",\n      "type": "string"\n    },\n    "current_mode": {\n      "$ref": "#/$defs/DoorMode"\n    }\n  },\n  "required": [\n    "door_time",\n    "door_name",\n    "current_mode"\n  ],\n  "title": "DoorState",\n  "type": "object"\n}\n```\n\n\n### /lifts/{lift_name}/state\n\n\n```\n{\n  "$defs": {\n    "Time": {\n      "properties": {\n        "sec": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Sec",\n          "type": "integer"\n        },\n        "nanosec": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Nanosec",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "sec",\n        "nanosec"\n      ],\n      "title": "Time",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "lift_time": {\n      "$ref": "#/$defs/Time"\n    },\n    "lift_name": {\n      "title": "Lift Name",\n      "type": "string"\n    },\n    "available_floors": {\n      "items": {\n        "type": "string"\n      },\n      "title": "Available Floors",\n      "type": "array"\n    },\n    "current_floor": {\n      "title": "Current Floor",\n      "type": "string"\n    },\n    "destination_floor": {\n      "title": "Destination Floor",\n      "type": "string"\n    },\n    "door_state": {\n      "maximum": 255,\n      "minimum": 0,\n      "title": "Door State",\n      "type": "integer"\n    },\n    "motion_state": {\n      "maximum": 255,\n      "minimum": 0,\n      "title": "Motion State",\n      "type": "integer"\n    },\n    "available_modes": {\n      "items": {\n        "type": "integer"\n      },\n      "title": "Available Modes",\n      "type": "array"\n    },\n    "current_mode": {\n      "maximum": 255,\n      "minimum": 0,\n      "title": "Current Mode",\n      "type": "integer"\n    },\n    "session_id": {\n      "title": "Session Id",\n      "type": "string"\n    }\n  },\n  "required": [\n    "lift_time",\n    "lift_name",\n    "available_floors",\n    "current_floor",\n    "destination_floor",\n    "door_state",\n    "motion_state",\n    "available_modes",\n    "current_mode",\n    "session_id"\n  ],\n  "title": "LiftState",\n  "type": "object"\n}\n```\n\n\n### /tasks/{task_id}/state\n\n\n```\n{\n  "$defs": {\n    "AssignedTo": {\n      "properties": {\n        "group": {\n          "title": "Group",\n          "type": "string"\n        },\n        "name": {\n          "title": "Name",\n          "type": "string"\n        }\n      },\n      "required": [\n        "group",\n        "name"\n      ],\n      "title": "AssignedTo",\n      "type": "object"\n    },\n    "Assignment": {\n      "properties": {\n        "fleet_name": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Fleet Name"\n        },\n        "expected_robot_name": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Expected Robot Name"\n        }\n      },\n      "title": "Assignment",\n      "type": "object"\n    },\n    "Booking": {\n      "properties": {\n        "id": {\n          "description": "The unique identifier for this task",\n          "title": "Id",\n          "type": "string"\n        },\n        "unix_millis_earliest_start_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Earliest Start Time"\n        },\n        "unix_millis_request_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Request Time"\n        },\n        "priority": {\n          "anyOf": [\n            {\n              "type": "object"\n            },\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Priority information about this task",\n          "title": "Priority"\n        },\n        "labels": {\n          "anyOf": [\n            {\n              "items": {\n                "type": "string"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "title": "Labels"\n        },\n        "requester": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "(Optional) An identifier for the entity that requested this task",\n          "title": "Requester"\n        }\n      },\n      "required": [\n        "id"\n      ],\n      "title": "Booking",\n      "type": "object"\n    },\n    "Cancellation": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the cancellation request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "Cancellation",\n      "type": "object"\n    },\n    "Category": {\n      "description": "The category of this task or phase",\n      "title": "Category",\n      "type": "string"\n    },\n    "Detail": {\n      "anyOf": [\n        {\n          "type": "object"\n        },\n        {\n          "items": {},\n          "type": "array"\n        },\n        {\n          "type": "string"\n        }\n      ],\n      "description": "Detailed information about a task, phase, or event",\n      "title": "Detail"\n    },\n    "Dispatch": {\n      "properties": {\n        "status": {\n          "$ref": "#/$defs/Status2"\n        },\n        "assignment": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Assignment"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "errors": {\n          "anyOf": [\n            {\n              "items": {\n                "$ref": "#/$defs/Error"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Errors"\n        }\n      },\n      "required": [\n        "status"\n      ],\n      "title": "Dispatch",\n      "type": "object"\n    },\n    "Error": {\n      "properties": {\n        "code": {\n          "anyOf": [\n            {\n              "minimum": 0,\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A standard code for the kind of error that has occurred",\n          "title": "Code"\n        },\n        "category": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "The category of the error",\n          "title": "Category"\n        },\n        "detail": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Details about the error",\n          "title": "Detail"\n        }\n      },\n      "title": "Error",\n      "type": "object"\n    },\n    "EstimateMillis": {\n      "description": "An estimate, in milliseconds, of how long the subject will take to complete",\n      "minimum": 0,\n      "title": "EstimateMillis",\n      "type": "integer"\n    },\n    "EventState": {\n      "properties": {\n        "id": {\n          "$ref": "#/$defs/Id"\n        },\n        "status": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Status"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "name": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "The brief name of the event",\n          "title": "Name"\n        },\n        "detail": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Detail"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Detailed information about the event"\n        },\n        "deps": {\n          "anyOf": [\n            {\n              "items": {\n                "minimum": 0,\n                "type": "integer"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "This event may depend on other events. This array contains the IDs of those other event dependencies.",\n          "title": "Deps"\n        }\n      },\n      "required": [\n        "id"\n      ],\n      "title": "EventState",\n      "type": "object"\n    },\n    "Id": {\n      "minimum": 0,\n      "title": "Id",\n      "type": "integer"\n    },\n    "Interruption": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the interruption request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        },\n        "resumed_by": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/ResumedBy"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about the resume request that ended this interruption. This field will be missing if the interruption is still active."\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "Interruption",\n      "type": "object"\n    },\n    "Killed": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the cancellation request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "Killed",\n      "type": "object"\n    },\n    "Phase": {\n      "properties": {\n        "id": {\n          "$ref": "#/$defs/Id"\n        },\n        "category": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Category"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "detail": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Detail"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "unix_millis_start_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Start Time"\n        },\n        "unix_millis_finish_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Finish Time"\n        },\n        "original_estimate_millis": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/EstimateMillis"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "estimate_millis": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/EstimateMillis"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "final_event_id": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Id"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "events": {\n          "anyOf": [\n            {\n              "additionalProperties": {\n                "$ref": "#/$defs/EventState"\n              },\n              "type": "object"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.",\n          "title": "Events"\n        },\n        "skip_requests": {\n          "anyOf": [\n            {\n              "additionalProperties": {\n                "$ref": "#/$defs/SkipPhaseRequest"\n              },\n              "type": "object"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about any skip requests that have been received",\n          "title": "Skip Requests"\n        }\n      },\n      "required": [\n        "id"\n      ],\n      "title": "Phase",\n      "type": "object"\n    },\n    "ResumedBy": {\n      "properties": {\n        "unix_millis_request_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "The time that the resume request arrived",\n          "title": "Unix Millis Request Time"\n        },\n        "labels": {\n          "description": "Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        }\n      },\n      "required": [\n        "labels"\n      ],\n      "title": "ResumedBy",\n      "type": "object"\n    },\n    "SkipPhaseRequest": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the skip request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        },\n        "undo": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Undo"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about an undo skip request that applied to this request"\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "SkipPhaseRequest",\n      "type": "object"\n    },\n    "Status": {\n      "enum": [\n        "uninitialized",\n        "blocked",\n        "error",\n        "failed",\n        "queued",\n        "standby",\n        "underway",\n        "delayed",\n        "skipped",\n        "canceled",\n        "killed",\n        "completed"\n      ],\n      "title": "Status",\n      "type": "string"\n    },\n    "Status2": {\n      "enum": [\n        "queued",\n        "selected",\n        "dispatched",\n        "failed_to_assign",\n        "canceled_in_flight"\n      ],\n      "title": "Status2",\n      "type": "string"\n    },\n    "Undo": {\n      "properties": {\n        "unix_millis_request_time": {\n          "description": "The time that the undo skip request arrived",\n          "title": "Unix Millis Request Time",\n          "type": "integer"\n        },\n        "labels": {\n          "description": "Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",\n          "items": {\n            "type": "string"\n          },\n          "title": "Labels",\n          "type": "array"\n        }\n      },\n      "required": [\n        "unix_millis_request_time",\n        "labels"\n      ],\n      "title": "Undo",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "booking": {\n      "$ref": "#/$defs/Booking"\n    },\n    "category": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Category"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "detail": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Detail"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "unix_millis_start_time": {\n      "anyOf": [\n        {\n          "type": "integer"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "title": "Unix Millis Start Time"\n    },\n    "unix_millis_finish_time": {\n      "anyOf": [\n        {\n          "type": "integer"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "title": "Unix Millis Finish Time"\n    },\n    "original_estimate_millis": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/EstimateMillis"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "estimate_millis": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/EstimateMillis"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "assigned_to": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/AssignedTo"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "Which agent (robot) is the task assigned to"\n    },\n    "status": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Status"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "dispatch": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Dispatch"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null\n    },\n    "phases": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "$ref": "#/$defs/Phase"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.",\n      "title": "Phases"\n    },\n    "completed": {\n      "anyOf": [\n        {\n          "items": {\n            "$ref": "#/$defs/Id"\n          },\n          "type": "array"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "An array of the IDs of completed phases of this task",\n      "title": "Completed"\n    },\n    "active": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Id"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "The ID of the active phase for this task"\n    },\n    "pending": {\n      "anyOf": [\n        {\n          "items": {\n            "$ref": "#/$defs/Id"\n          },\n          "type": "array"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "An array of the pending phases of this task",\n      "title": "Pending"\n    },\n    "interruptions": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "$ref": "#/$defs/Interruption"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.",\n      "title": "Interruptions"\n    },\n    "cancellation": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Cancellation"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "If the task was cancelled, this will describe information about the request."\n    },\n    "killed": {\n      "anyOf": [\n        {\n          "$ref": "#/$defs/Killed"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "If the task was killed, this will describe information about the request."\n    }\n  },\n  "required": [\n    "booking"\n  ],\n  "title": "TaskState",\n  "type": "object"\n}\n```\n\n\n### /tasks/{task_id}/log\n\n\n```\n{\n  "$defs": {\n    "LogEntry": {\n      "properties": {\n        "seq": {\n          "description": "Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.",\n          "exclusiveMaximum": 4294967296,\n          "minimum": 0,\n          "title": "Seq",\n          "type": "integer"\n        },\n        "tier": {\n          "allOf": [\n            {\n              "$ref": "#/$defs/Tier"\n            }\n          ],\n          "description": "The importance level of the log entry"\n        },\n        "unix_millis_time": {\n          "title": "Unix Millis Time",\n          "type": "integer"\n        },\n        "text": {\n          "description": "The text of the log entry",\n          "title": "Text",\n          "type": "string"\n        }\n      },\n      "required": [\n        "seq",\n        "tier",\n        "unix_millis_time",\n        "text"\n      ],\n      "title": "LogEntry",\n      "type": "object"\n    },\n    "Phases": {\n      "additionalProperties": false,\n      "properties": {\n        "log": {\n          "anyOf": [\n            {\n              "items": {\n                "$ref": "#/$defs/LogEntry"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Log entries related to the overall phase",\n          "title": "Log"\n        },\n        "events": {\n          "anyOf": [\n            {\n              "additionalProperties": {\n                "items": {\n                  "$ref": "#/$defs/LogEntry"\n                },\n                "type": "array"\n              },\n              "type": "object"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A dictionary whose keys (property names) are the indices of an event in the phase",\n          "title": "Events"\n        }\n      },\n      "title": "Phases",\n      "type": "object"\n    },\n    "Tier": {\n      "enum": [\n        "uninitialized",\n        "info",\n        "warning",\n        "error"\n      ],\n      "title": "Tier",\n      "type": "string"\n    }\n  },\n  "additionalProperties": false,\n  "properties": {\n    "task_id": {\n      "title": "Task Id",\n      "type": "string"\n    },\n    "log": {\n      "anyOf": [\n        {\n          "items": {\n            "$ref": "#/$defs/LogEntry"\n          },\n          "type": "array"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "Log entries related to the overall task",\n      "title": "Log"\n    },\n    "phases": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "$ref": "#/$defs/Phases"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "A dictionary whose keys (property names) are the indices of a phase",\n      "title": "Phases"\n    }\n  },\n  "required": [\n    "task_id"\n  ],\n  "title": "TaskEventLog",\n  "type": "object"\n}\n```\n\n\n### /dispensers/{guid}/state\n\n\n```\n{\n  "$defs": {\n    "Time": {\n      "properties": {\n        "sec": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Sec",\n          "type": "integer"\n        },\n        "nanosec": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Nanosec",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "sec",\n        "nanosec"\n      ],\n      "title": "Time",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "time": {\n      "$ref": "#/$defs/Time"\n    },\n    "guid": {\n      "title": "Guid",\n      "type": "string"\n    },\n    "mode": {\n      "maximum": 2147483647,\n      "minimum": -2147483648,\n      "title": "Mode",\n      "type": "integer"\n    },\n    "request_guid_queue": {\n      "items": {\n        "type": "string"\n      },\n      "title": "Request Guid Queue",\n      "type": "array"\n    },\n    "seconds_remaining": {\n      "title": "Seconds Remaining",\n      "type": "number"\n    }\n  },\n  "required": [\n    "time",\n    "guid",\n    "mode",\n    "request_guid_queue",\n    "seconds_remaining"\n  ],\n  "title": "DispenserState",\n  "type": "object"\n}\n```\n\n\n### /ingestors/{guid}/state\n\n\n```\n{\n  "$defs": {\n    "Time": {\n      "properties": {\n        "sec": {\n          "maximum": 2147483647,\n          "minimum": -2147483648,\n          "title": "Sec",\n          "type": "integer"\n        },\n        "nanosec": {\n          "maximum": 4294967295,\n          "minimum": 0,\n          "title": "Nanosec",\n          "type": "integer"\n        }\n      },\n      "required": [\n        "sec",\n        "nanosec"\n      ],\n      "title": "Time",\n      "type": "object"\n    }\n  },\n  "properties": {\n    "time": {\n      "$ref": "#/$defs/Time"\n    },\n    "guid": {\n      "title": "Guid",\n      "type": "string"\n    },\n    "mode": {\n      "maximum": 2147483647,\n      "minimum": -2147483648,\n      "title": "Mode",\n      "type": "integer"\n    },\n    "request_guid_queue": {\n      "items": {\n        "type": "string"\n      },\n      "title": "Request Guid Queue",\n      "type": "array"\n    },\n    "seconds_remaining": {\n      "title": "Seconds Remaining",\n      "type": "number"\n    }\n  },\n  "required": [\n    "time",\n    "guid",\n    "mode",\n    "request_guid_queue",\n    "seconds_remaining"\n  ],\n  "title": "IngestorState",\n  "type": "object"\n}\n```\n\n\n### /fleets/{name}/state\n\n\n```\n{\n  "$defs": {\n    "Commission": {\n      "properties": {\n        "dispatch_tasks": {\n          "anyOf": [\n            {\n              "type": "boolean"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.",\n          "title": "Dispatch Tasks"\n        },\n        "direct_tasks": {\n          "anyOf": [\n            {\n              "type": "boolean"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.",\n          "title": "Direct Tasks"\n        },\n        "idle_behavior": {\n          "anyOf": [\n            {\n              "type": "boolean"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.",\n          "title": "Idle Behavior"\n        }\n      },\n      "title": "Commission",\n      "type": "object"\n    },\n    "Issue": {\n      "properties": {\n        "category": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Category of the robot\'s issue",\n          "title": "Category"\n        },\n        "detail": {\n          "anyOf": [\n            {\n              "type": "object"\n            },\n            {\n              "items": {},\n              "type": "array"\n            },\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Detailed information about the issue",\n          "title": "Detail"\n        }\n      },\n      "title": "Issue",\n      "type": "object"\n    },\n    "Location2D": {\n      "properties": {\n        "map": {\n          "title": "Map",\n          "type": "string"\n        },\n        "x": {\n          "title": "X",\n          "type": "number"\n        },\n        "y": {\n          "title": "Y",\n          "type": "number"\n        },\n        "yaw": {\n          "title": "Yaw",\n          "type": "number"\n        }\n      },\n      "required": [\n        "map",\n        "x",\n        "y",\n        "yaw"\n      ],\n      "title": "Location2D",\n      "type": "object"\n    },\n    "MutexGroups": {\n      "properties": {\n        "locked": {\n          "anyOf": [\n            {\n              "items": {\n                "type": "string"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A list of mutex groups that this robot has currently locked",\n          "title": "Locked"\n        },\n        "requesting": {\n          "anyOf": [\n            {\n              "items": {\n                "type": "string"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A list of the mutex groups that this robot is currently requesting but has not lockd yet",\n          "title": "Requesting"\n        }\n      },\n      "title": "MutexGroups",\n      "type": "object"\n    },\n    "RobotState": {\n      "properties": {\n        "name": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Name"\n        },\n        "status": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Status"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A simple token representing the status of the robot"\n        },\n        "task_id": {\n          "anyOf": [\n            {\n              "type": "string"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.",\n          "title": "Task Id"\n        },\n        "unix_millis_time": {\n          "anyOf": [\n            {\n              "type": "integer"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "title": "Unix Millis Time"\n        },\n        "location": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Location2D"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "battery": {\n          "anyOf": [\n            {\n              "maximum": 1.0,\n              "minimum": 0.0,\n              "type": "number"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)",\n          "title": "Battery"\n        },\n        "issues": {\n          "anyOf": [\n            {\n              "items": {\n                "$ref": "#/$defs/Issue"\n              },\n              "type": "array"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "A list of issues with the robot that operators need to address",\n          "title": "Issues"\n        },\n        "commission": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/Commission"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null\n        },\n        "mutex_groups": {\n          "anyOf": [\n            {\n              "$ref": "#/$defs/MutexGroups"\n            },\n            {\n              "type": "null"\n            }\n          ],\n          "default": null,\n          "description": "Information about the mutex groups that this robot is interacting with"\n        }\n      },\n      "title": "RobotState",\n      "type": "object"\n    },\n    "Status": {\n      "enum": [\n        "uninitialized",\n        "offline",\n        "shutdown",\n        "idle",\n        "charging",\n        "working",\n        "error"\n      ],\n      "title": "Status",\n      "type": "string"\n    }\n  },\n  "properties": {\n    "name": {\n      "anyOf": [\n        {\n          "type": "string"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "title": "Name"\n    },\n    "robots": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "$ref": "#/$defs/RobotState"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "A dictionary of the states of the robots that belong to this fleet",\n      "title": "Robots"\n    }\n  },\n  "title": "FleetState",\n  "type": "object"\n}\n```\n\n\n### /fleets/{name}/log\n\n\n```\n{\n  "$defs": {\n    "LogEntry": {\n      "properties": {\n        "seq": {\n          "description": "Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.",\n          "exclusiveMaximum": 4294967296,\n          "minimum": 0,\n          "title": "Seq",\n          "type": "integer"\n        },\n        "tier": {\n          "allOf": [\n            {\n              "$ref": "#/$defs/Tier"\n            }\n          ],\n          "description": "The importance level of the log entry"\n        },\n        "unix_millis_time": {\n          "title": "Unix Millis Time",\n          "type": "integer"\n        },\n        "text": {\n          "description": "The text of the log entry",\n          "title": "Text",\n          "type": "string"\n        }\n      },\n      "required": [\n        "seq",\n        "tier",\n        "unix_millis_time",\n        "text"\n      ],\n      "title": "LogEntry",\n      "type": "object"\n    },\n    "Tier": {\n      "enum": [\n        "uninitialized",\n        "info",\n        "warning",\n        "error"\n      ],\n      "title": "Tier",\n      "type": "string"\n    }\n  },\n  "properties": {\n    "name": {\n      "anyOf": [\n        {\n          "type": "string"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "title": "Name"\n    },\n    "log": {\n      "anyOf": [\n        {\n          "items": {\n            "$ref": "#/$defs/LogEntry"\n          },\n          "type": "array"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "Log for the overall fleet",\n      "title": "Log"\n    },\n    "robots": {\n      "anyOf": [\n        {\n          "additionalProperties": {\n            "items": {\n              "$ref": "#/$defs/LogEntry"\n            },\n            "type": "array"\n          },\n          "type": "object"\n        },\n        {\n          "type": "null"\n        }\n      ],\n      "default": null,\n      "description": "Dictionary of logs for the individual robots. The keys (property names) are the robot names.",\n      "title": "Robots"\n    }\n  },\n  "title": "FleetLog",\n  "type": "object"\n}\n```\n\n\n### /rios\n\n\n```\n{\n  "properties": {\n    "id": {\n      "title": "Id",\n      "type": "string"\n    },\n    "type": {\n      "title": "Type",\n      "type": "string"\n    },\n    "data": {\n      "title": "Data",\n      "type": "object"\n    }\n  },\n  "required": [\n    "id",\n    "type",\n    "data"\n  ],\n  "title": "Rio",\n  "type": "object"\n}\n```\n\n',
         operationId: '_lambda__socket_io_get',
         responses: {
           '200': {
@@ -21,26 +21,13 @@ export default {
         summary: 'Get User',
         description: 'Get the currently logged in user',
         operationId: 'get_user_user_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: { 'application/json': { schema: { $ref: '#/components/schemas/User' } } },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/permissions': {
@@ -48,34 +35,21 @@ export default {
         summary: 'Get Effective Permissions',
         description: 'Get the effective permissions of the current user',
         operationId: 'get_effective_permissions_permissions_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
                   items: { $ref: '#/components/schemas/Permission' },
+                  type: 'array',
                   title: 'Response Get Effective Permissions Permissions Get',
                 },
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/time': {
@@ -101,25 +75,17 @@ export default {
         summary: 'Create New Alert',
         description: 'Creates a new alert.',
         operationId: 'create_new_alert_alerts_request_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
-            'application/json': { schema: { $ref: '#/components/schemas/AlertRequest' } },
+            'application/json': { schema: { $ref: '#/components/schemas/AlertRequest-Input' } },
           },
+          required: true,
         },
         responses: {
           '201': {
             description: 'Successful Response',
             content: {
-              'application/json': { schema: { $ref: '#/components/schemas/AlertRequest' } },
+              'application/json': { schema: { $ref: '#/components/schemas/AlertRequest-Output' } },
             },
           },
           '422': {
@@ -129,6 +95,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/alerts/request/{alert_id}': {
@@ -137,6 +104,7 @@ export default {
         summary: 'Get Alert',
         description: 'Gets an alert based on the alert ID.',
         operationId: 'get_alert_alerts_request__alert_id__get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'alert_id',
@@ -144,18 +112,12 @@ export default {
             required: true,
             schema: { type: 'string', title: 'Alert Id' },
           },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: {
-              'application/json': { schema: { $ref: '#/components/schemas/AlertRequest' } },
+              'application/json': { schema: { $ref: '#/components/schemas/AlertRequest-Output' } },
             },
           },
           '422': {
@@ -174,6 +136,7 @@ export default {
         description:
           'Responds to an existing alert. The response must be one of the available\nresponses listed in the alert.',
         operationId: 'respond_to_alert_alerts_request__alert_id__respond_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'alert_id',
@@ -186,12 +149,6 @@ export default {
             in: 'query',
             required: true,
             schema: { type: 'string', title: 'Response' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -216,18 +173,13 @@ export default {
         summary: 'Get Alert Response',
         description: 'Gets the response to the alert based on the alert ID.',
         operationId: 'get_alert_response_alerts_request__alert_id__response_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'alert_id',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Alert Id' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -253,6 +205,7 @@ export default {
         description:
           'Returns all the alerts associated to a task ID. Provides the option to only\nreturn alerts that have not been responded to yet.',
         operationId: 'get_alerts_of_task_alerts_requests_task__task_id__get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
@@ -266,12 +219,6 @@ export default {
             required: false,
             schema: { type: 'boolean', default: true, title: 'Unresponded' },
           },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -280,7 +227,7 @@ export default {
               'application/json': {
                 schema: {
                   type: 'array',
-                  items: { $ref: '#/components/schemas/AlertRequest' },
+                  items: { $ref: '#/components/schemas/AlertRequest-Output' },
                   title: 'Response Get Alerts Of Task Alerts Requests Task  Task Id  Get',
                 },
               },
@@ -302,14 +249,6 @@ export default {
         description:
           'Returns the list of alert IDs that have yet to be responded to, while a\nresponse was required.',
         operationId: 'get_unresponded_alerts_alerts_unresponded_requests_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
           content: {
             'application/json': {
@@ -326,8 +265,8 @@ export default {
             content: {
               'application/json': {
                 schema: {
+                  items: { $ref: '#/components/schemas/AlertRequest-Output' },
                   type: 'array',
-                  items: { $ref: '#/components/schemas/AlertRequest' },
                   title: 'Response Get Unresponded Alerts Alerts Unresponded Requests Get',
                 },
               },
@@ -340,6 +279,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/beacons': {
@@ -347,14 +287,7 @@ export default {
         tags: ['Beacons'],
         summary: 'Get Beacons',
         operationId: 'get_beacons_beacons_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
+        security: [{ OpenIdConnect: [] }],
         responses: {
           '200': {
             description: 'Successful Response',
@@ -368,18 +301,13 @@ export default {
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
       },
       post: {
         tags: ['Beacons'],
         summary: 'Save Beacon State',
         operationId: 'save_beacon_state_beacons_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'beacon_id',
@@ -411,12 +339,6 @@ export default {
             required: true,
             schema: { type: 'string', title: 'Level' },
           },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '201': {
@@ -439,18 +361,13 @@ export default {
         tags: ['Beacons'],
         summary: 'Get Beacon',
         operationId: 'get_beacon_beacons__beacon_id__get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'beacon_id',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Beacon Id' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -475,14 +392,6 @@ export default {
         summary: 'Get Building Map',
         description: 'Available in socket.io',
         operationId: 'get_building_map_building_map_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
@@ -490,13 +399,8 @@ export default {
               'application/json': { schema: { $ref: '#/components/schemas/BuildingMap' } },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/building_map/previous_fire_alarm_trigger': {
@@ -504,14 +408,6 @@ export default {
         tags: ['Building'],
         summary: 'Get Previous Fire Alarm Trigger',
         operationId: 'get_previous_fire_alarm_trigger_building_map_previous_fire_alarm_trigger_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
@@ -521,13 +417,8 @@ export default {
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/building_map/reset_fire_alarm_trigger': {
@@ -535,14 +426,6 @@ export default {
         tags: ['Building'],
         summary: 'Reset Fire Alarm Trigger',
         operationId: 'reset_fire_alarm_trigger_building_map_reset_fire_alarm_trigger_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
@@ -552,82 +435,8 @@ export default {
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
-      },
-    },
-    '/delivery_alerts/{delivery_alert_id}/response': {
-      post: {
-        tags: ['DeliveryAlerts'],
-        summary: 'Respond To Delivery Alert',
-        operationId: 'respond_to_delivery_alert_delivery_alerts__delivery_alert_id__response_post',
-        parameters: [
-          {
-            name: 'delivery_alert_id',
-            in: 'path',
-            required: true,
-            schema: { type: 'string', title: 'Delivery Alert Id' },
-          },
-          {
-            name: 'category',
-            in: 'query',
-            required: true,
-            schema: {
-              $ref: '#/components/schemas/api_server__models__delivery_alerts__DeliveryAlert__Category',
-            },
-          },
-          {
-            name: 'tier',
-            in: 'query',
-            required: true,
-            schema: {
-              $ref: '#/components/schemas/api_server__models__delivery_alerts__DeliveryAlert__Tier',
-            },
-          },
-          {
-            name: 'task_id',
-            in: 'query',
-            required: true,
-            schema: { type: 'string', title: 'Task Id' },
-          },
-          {
-            name: 'action',
-            in: 'query',
-            required: true,
-            schema: { $ref: '#/components/schemas/Action' },
-          },
-          {
-            name: 'message',
-            in: 'query',
-            required: true,
-            schema: { type: 'string', title: 'Message' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
-        responses: {
-          '200': {
-            description: 'Successful Response',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/DeliveryAlert' } },
-            },
-          },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
-        },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/doors': {
@@ -635,34 +444,21 @@ export default {
         tags: ['Doors'],
         summary: 'Get Doors',
         operationId: 'get_doors_doors_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
                   items: { $ref: '#/components/schemas/Door' },
+                  type: 'array',
                   title: 'Response Get Doors Doors Get',
                 },
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/doors/{door_name}/state': {
@@ -671,18 +467,13 @@ export default {
         summary: 'Get Door State',
         description: 'Available in socket.io',
         operationId: 'get_door_state_doors__door_name__state_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'door_name',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Door Name' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -704,18 +495,13 @@ export default {
         tags: ['Doors'],
         summary: 'Post Door Request',
         operationId: 'post_door_request_doors__door_name__request_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'door_name',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Door Name' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         requestBody: {
@@ -741,34 +527,21 @@ export default {
         tags: ['Lifts'],
         summary: 'Get Lifts',
         operationId: 'get_lifts_lifts_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
                   items: { $ref: '#/components/schemas/Lift' },
+                  type: 'array',
                   title: 'Response Get Lifts Lifts Get',
                 },
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/lifts/{lift_name}/state': {
@@ -777,18 +550,13 @@ export default {
         summary: 'Get Lift State',
         description: 'Available in socket.io',
         operationId: 'get_lift_state_lifts__lift_name__state_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'lift_name',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Lift Name' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -810,18 +578,13 @@ export default {
         tags: ['Lifts'],
         summary: 'Post Lift Request',
         operationId: 'post_lift_request_lifts__lift_name__request_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'lift_name',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Lift Name' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         requestBody: {
@@ -847,6 +610,7 @@ export default {
         tags: ['Tasks'],
         summary: 'Get Task Request',
         operationId: 'get_task_request_tasks__task_id__request_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
@@ -854,12 +618,6 @@ export default {
             required: true,
             schema: { type: 'string', description: 'task_id', title: 'Task Id' },
             description: 'task_id',
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -883,6 +641,7 @@ export default {
         tags: ['Tasks'],
         summary: 'Query Task Requests',
         operationId: 'query_task_requests_tasks_requests_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_ids',
@@ -894,12 +653,6 @@ export default {
               title: 'Task Ids',
             },
             description: 'comma separated list of task ids',
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -929,6 +682,7 @@ export default {
         tags: ['Tasks'],
         summary: 'Query Task States',
         operationId: 'query_task_states_tasks_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
@@ -1072,12 +826,6 @@ export default {
             description:
               "common separated list of fields to order by, prefix with '-' to sort descendingly.",
           },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -1107,6 +855,7 @@ export default {
         summary: 'Get Task State',
         description: 'Available in socket.io',
         operationId: 'get_task_state_tasks__task_id__state_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
@@ -1114,12 +863,6 @@ export default {
             required: true,
             schema: { type: 'string', description: 'task_id', title: 'Task Id' },
             description: 'task_id',
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -1143,6 +886,7 @@ export default {
         tags: ['Tasks'],
         summary: 'Get Task Booking Label',
         operationId: 'get_task_booking_label_tasks__task_id__booking_label_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
@@ -1150,12 +894,6 @@ export default {
             required: true,
             schema: { type: 'string', description: 'task_id', title: 'Task Id' },
             description: 'task_id',
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -1178,6 +916,7 @@ export default {
         summary: 'Get Task Log',
         description: 'Available in socket.io',
         operationId: 'get_task_log_tasks__task_id__log_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
@@ -1199,12 +938,6 @@ export default {
             },
             description:
               '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -1228,21 +961,13 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Activity Discovery',
         operationId: 'post_activity_discovery_tasks_activity_discovery_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': {
               schema: { $ref: '#/components/schemas/ActivityDiscoveryRequest' },
             },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1258,6 +983,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/cancel_task': {
@@ -1265,19 +991,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Cancel Task',
         operationId: 'post_cancel_task_tasks_cancel_task_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/CancelTaskRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1293,6 +1011,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/dispatch_task': {
@@ -1300,19 +1019,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Dispatch Task',
         operationId: 'post_dispatch_task_tasks_dispatch_task_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/DispatchTaskRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1324,12 +1035,12 @@ export default {
             },
           },
           '400': {
+            description: 'Bad Request',
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/TaskDispatchResponse-Input' },
               },
             },
-            description: 'Bad Request',
           },
           '422': {
             description: 'Validation Error',
@@ -1338,6 +1049,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/robot_task': {
@@ -1345,19 +1057,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Robot Task',
         operationId: 'post_robot_task_tasks_robot_task_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/RobotTaskRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1369,12 +1073,12 @@ export default {
             },
           },
           '400': {
+            description: 'Bad Request',
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/RobotTaskResponse-Input' },
               },
             },
-            description: 'Bad Request',
           },
           '422': {
             description: 'Validation Error',
@@ -1383,6 +1087,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/interrupt_task': {
@@ -1390,21 +1095,13 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Interrupt Task',
         operationId: 'post_interrupt_task_tasks_interrupt_task_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': {
               schema: { $ref: '#/components/schemas/TaskInterruptionRequest' },
             },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1422,6 +1119,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/kill_task': {
@@ -1429,19 +1127,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Kill Task',
         operationId: 'post_kill_task_tasks_kill_task_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/TaskKillRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1457,6 +1147,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/resume_task': {
@@ -1464,19 +1155,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Resume Task',
         operationId: 'post_resume_task_tasks_resume_task_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/TaskResumeRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1492,6 +1175,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/rewind_task': {
@@ -1499,19 +1183,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Rewind Task',
         operationId: 'post_rewind_task_tasks_rewind_task_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/TaskRewindRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1527,6 +1203,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/skip_phase': {
@@ -1534,19 +1211,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Skip Phase',
         operationId: 'post_skip_phase_tasks_skip_phase_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/TaskPhaseSkipRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1562,6 +1231,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/task_discovery': {
@@ -1569,19 +1239,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Task Discovery',
         operationId: 'post_task_discovery_tasks_task_discovery_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/TaskDiscoveryRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1597,6 +1259,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/tasks/undo_skip_phase': {
@@ -1604,19 +1267,11 @@ export default {
         tags: ['Tasks'],
         summary: 'Post Undo Skip Phase',
         operationId: 'post_undo_skip_phase_tasks_undo_skip_phase_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/UndoPhaseSkipRequest' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1634,6 +1289,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/scheduled_tasks': {
@@ -1643,14 +1299,7 @@ export default {
         description:
           'Create a scheduled task. Below are some examples of how the schedules are represented.\nFor more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).\n\n| every | to | period | at | description |\n| - | - | - | - | - |\n| 10 | - | minutes | - | Every 10 minutes |\n| - | - | hour | - | Every hour |\n| - | - | day | 10:30 | Every day at 10:30am |\n| - | - | monday | - | Every monday |\n| - | - | wednesday | 13:15 | Every wednesday at 01:15pm |\n| - | - | minute | :17 | Every 17th sec of a mintue |\n| 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |',
         operationId: 'post_scheduled_task_scheduled_tasks_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
+        security: [{ OpenIdConnect: [] }],
         requestBody: {
           required: true,
           content: {
@@ -1678,6 +1327,7 @@ export default {
         tags: ['Tasks'],
         summary: 'Get Scheduled Tasks',
         operationId: 'get_scheduled_tasks_scheduled_tasks_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'start_before',
@@ -1738,12 +1388,6 @@ export default {
             description:
               "common separated list of fields to order by, prefix with '-' to sort descendingly.",
           },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -1772,18 +1416,13 @@ export default {
         tags: ['Tasks'],
         summary: 'Get Scheduled Task',
         operationId: 'get_scheduled_task_scheduled_tasks__task_id__get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
             in: 'path',
             required: true,
             schema: { type: 'integer', title: 'Task Id' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -1805,18 +1444,13 @@ export default {
         tags: ['Tasks'],
         summary: 'Del Scheduled Tasks',
         operationId: 'del_scheduled_tasks_scheduled_tasks__task_id__delete',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
             in: 'path',
             required: true,
             schema: { type: 'integer', title: 'Task Id' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -1839,18 +1473,13 @@ export default {
         summary: 'Add Except Date',
         description: 'Skip tasks on the excepted date',
         operationId: 'add_except_date_scheduled_tasks__task_id__except_date_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
             in: 'path',
             required: true,
             schema: { type: 'integer', title: 'Task Id' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         requestBody: {
@@ -1878,18 +1507,13 @@ export default {
         tags: ['Tasks'],
         summary: 'Update Schedule Task',
         operationId: 'update_schedule_task_scheduled_tasks__task_id__update_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'task_id',
             in: 'path',
             required: true,
             schema: { type: 'integer', title: 'Task Id' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         requestBody: {
@@ -1917,23 +1541,35 @@ export default {
       },
     },
     '/favorite_tasks': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Favorites Tasks',
+        operationId: 'get_favorites_tasks_favorite_tasks_get',
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  items: { $ref: '#/components/schemas/TaskFavorite' },
+                  type: 'array',
+                  title: 'Response Get Favorites Tasks Favorite Tasks Get',
+                },
+              },
+            },
+          },
+        },
+        security: [{ OpenIdConnect: [] }],
+      },
       post: {
         tags: ['Tasks'],
         summary: 'Post Favorite Task',
         operationId: 'post_favorite_task_favorite_tasks_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/TaskFavorite' } },
           },
+          required: true,
         },
         responses: {
           '200': {
@@ -1947,39 +1583,7 @@ export default {
             },
           },
         },
-      },
-      get: {
-        tags: ['Tasks'],
-        summary: 'Get Favorites Tasks',
-        operationId: 'get_favorites_tasks_favorite_tasks_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
-        responses: {
-          '200': {
-            description: 'Successful Response',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'array',
-                  items: { $ref: '#/components/schemas/TaskFavorite' },
-                  title: 'Response Get Favorites Tasks Favorite Tasks Get',
-                },
-              },
-            },
-          },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
-        },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/favorite_tasks/{favorite_task_id}': {
@@ -1987,18 +1591,13 @@ export default {
         tags: ['Tasks'],
         summary: 'Delete Favorite Task',
         operationId: 'delete_favorite_task_favorite_tasks__favorite_task_id__delete',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'favorite_task_id',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Favorite Task Id' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -2020,34 +1619,21 @@ export default {
         tags: ['Dispensers'],
         summary: 'Get Dispensers',
         operationId: 'get_dispensers_dispensers_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
                   items: { $ref: '#/components/schemas/Dispenser' },
+                  type: 'array',
                   title: 'Response Get Dispensers Dispensers Get',
                 },
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/dispensers/{guid}/state': {
@@ -2056,14 +1642,9 @@ export default {
         summary: 'Get Dispenser State',
         description: 'Available in socket.io',
         operationId: 'get_dispenser_state_dispensers__guid__state_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'guid', in: 'path', required: true, schema: { type: 'string', title: 'Guid' } },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -2086,34 +1667,21 @@ export default {
         tags: ['Ingestors'],
         summary: 'Get Ingestors',
         operationId: 'get_ingestors_ingestors_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
                   items: { $ref: '#/components/schemas/Ingestor' },
+                  type: 'array',
                   title: 'Response Get Ingestors Ingestors Get',
                 },
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/ingestors/{guid}/state': {
@@ -2122,14 +1690,9 @@ export default {
         summary: 'Get Ingestor State',
         description: 'Available in socket.io',
         operationId: 'get_ingestor_state_ingestors__guid__state_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'guid', in: 'path', required: true, schema: { type: 'string', title: 'Guid' } },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -2152,34 +1715,21 @@ export default {
         tags: ['Fleets'],
         summary: 'Get Fleets',
         operationId: 'get_fleets_fleets_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
                   items: { $ref: '#/components/schemas/FleetState' },
+                  type: 'array',
                   title: 'Response Get Fleets Fleets Get',
                 },
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/fleets/{name}/state': {
@@ -2188,14 +1738,9 @@ export default {
         summary: 'Get Fleet State',
         description: 'Available in socket.io',
         operationId: 'get_fleet_state_fleets__name__state_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'name', in: 'path', required: true, schema: { type: 'string', title: 'Name' } },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -2219,6 +1764,7 @@ export default {
         summary: 'Get Fleet Log',
         description: 'Available in socket.io',
         operationId: 'get_fleet_log_fleets__name__log_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'name', in: 'path', required: true, schema: { type: 'string', title: 'Name' } },
           {
@@ -2234,12 +1780,6 @@ export default {
             },
             description:
               '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -2263,6 +1803,7 @@ export default {
         description:
           'Decommissions a robot, cancels all direct tasks, and preventing it from\naccepting any new tasks (both dispatch tasks and direct tasks), with the\noptions to:\n\n- Reassign all queued dispatch tasks to other robots. If task reassignment\n  is chosen, the response will contain the results of the reassignment as\n  well, any failed reassignments will be cancelled instead.\n- Still allow idle behaviors (formerly known as finishing tasks). If\n  allowed, the robot will still be issued idle behavior commands (e.g.\n  return to charger, park somewhere) once it is decommissioned, as opposed\n  to waiting for human intervention at the same position when it was\n  decommissioned.\n\nThis will not affect the ongoing task that the robot is currently\nperforming.',
         operationId: 'decommission_robot_fleets__name__decommission_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'name', in: 'path', required: true, schema: { type: 'string', title: 'Name' } },
           {
@@ -2282,12 +1823,6 @@ export default {
             in: 'query',
             required: true,
             schema: { type: 'boolean', title: 'Allow Idle Behavior' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -2315,6 +1850,7 @@ export default {
         description:
           'Recommissions a robot, allowing it to accept new dispatch tasks and direct\ntasks, as well as resume idle behaviors (formerly known as finishing tasks).',
         operationId: 'recommission_robot_fleets__name__recommission_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'name', in: 'path', required: true, schema: { type: 'string', title: 'Name' } },
           {
@@ -2322,12 +1858,6 @@ export default {
             in: 'query',
             required: true,
             schema: { type: 'string', title: 'Robot Name' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -2355,6 +1885,7 @@ export default {
         description:
           'Request to manually unlock a mutex group that is currently being held by a\nspecific robot of a specific fleet.',
         operationId: 'unlock_mutex_group_fleets__name__unlock_mutex_group_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'name', in: 'path', required: true, schema: { type: 'string', title: 'Name' } },
           {
@@ -2368,12 +1899,6 @@ export default {
             in: 'query',
             required: true,
             schema: { type: 'string', title: 'Mutex Group' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -2395,6 +1920,7 @@ export default {
         tags: ['RIOs'],
         summary: 'Query Rios',
         operationId: 'query_rios_rios_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'id',
@@ -2417,12 +1943,6 @@ export default {
               title: 'Type',
             },
             description: 'comma separated list of types',
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -2450,14 +1970,7 @@ export default {
         tags: ['RIOs'],
         summary: 'Put Rio',
         operationId: 'put_rio_rios_put',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
+        security: [{ OpenIdConnect: [] }],
         requestBody: {
           required: true,
           content: { 'application/json': { schema: { $ref: '#/components/schemas/Rio' } } },
@@ -2482,6 +1995,7 @@ export default {
         summary: 'Get Users',
         description: 'Search users',
         operationId: 'get_users_admin_users_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'username',
@@ -2535,12 +2049,6 @@ export default {
             description:
               "common separated list of fields to order by, prefix with '-' to sort descendingly.",
           },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -2568,14 +2076,7 @@ export default {
         summary: 'Create User',
         description: 'Create a user',
         operationId: 'create_user_admin_users_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
+        security: [{ OpenIdConnect: [] }],
         requestBody: {
           required: true,
           content: { 'application/json': { schema: { $ref: '#/components/schemas/PostUsers' } } },
@@ -2600,18 +2101,13 @@ export default {
         summary: 'Get User',
         description: 'Get a user',
         operationId: 'get_user_admin_users__username__get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'username',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Username' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -2633,18 +2129,13 @@ export default {
         description:
           'Delete a user\n\nThis only performs a soft delete, while the user is deleted from the app database,\nit still exists in the idp so they can still log in, the user will then be re-created\nwith the default permissions.',
         operationId: 'delete_user_admin_users__username__delete',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'username',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Username' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         responses: {
@@ -2667,18 +2158,13 @@ export default {
         summary: 'Make Admin',
         description: 'Make or remove admin privilege from a user',
         operationId: 'make_admin_admin_users__username__make_admin_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'username',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Username' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         requestBody: {
@@ -2707,18 +2193,13 @@ export default {
         summary: 'Add User Role',
         description: 'Add role to a user',
         operationId: 'add_user_role_admin_users__username__roles_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'username',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Username' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         requestBody: {
@@ -2743,18 +2224,13 @@ export default {
         summary: 'Set User Roles',
         description: 'Set the roles of a user',
         operationId: 'set_user_roles_admin_users__username__roles_put',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'username',
             in: 'path',
             required: true,
             schema: { type: 'string', title: 'Username' },
-          },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
           },
         ],
         requestBody: {
@@ -2789,6 +2265,7 @@ export default {
         summary: 'Delete User Role',
         description: 'Remove role from a user',
         operationId: 'delete_user_role_admin_users__username__roles__role__delete',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           {
             name: 'username',
@@ -2797,12 +2274,6 @@ export default {
             schema: { type: 'string', title: 'Username' },
           },
           { name: 'role', in: 'path', required: true, schema: { type: 'string', title: 'Role' } },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -2824,51 +2295,30 @@ export default {
         summary: 'Get Roles',
         description: 'Get all roles',
         operationId: 'get_roles_admin_roles_get',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         responses: {
           '200': {
             description: 'Successful Response',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
                   items: { type: 'string' },
+                  type: 'array',
                   title: 'Response Get Roles Admin Roles Get',
                 },
               },
             },
           },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
         },
+        security: [{ OpenIdConnect: [] }],
       },
       post: {
         tags: ['Admin'],
         summary: 'Create Role',
         description: 'Create a new role',
         operationId: 'create_role_admin_roles_post',
-        parameters: [
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
-        ],
         requestBody: {
-          required: true,
           content: { 'application/json': { schema: { $ref: '#/components/schemas/PostRoles' } } },
+          required: true,
         },
         responses: {
           '200': {
@@ -2882,6 +2332,7 @@ export default {
             },
           },
         },
+        security: [{ OpenIdConnect: [] }],
       },
     },
     '/admin/roles/{role}': {
@@ -2890,14 +2341,9 @@ export default {
         summary: 'Delete Role',
         description: 'Delete a role',
         operationId: 'delete_role_admin_roles__role__delete',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'role', in: 'path', required: true, schema: { type: 'string', title: 'Role' } },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -2919,14 +2365,9 @@ export default {
         summary: 'Get Role Permissions',
         description: 'Get all permissions of a role',
         operationId: 'get_role_permissions_admin_roles__role__permissions_get',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'role', in: 'path', required: true, schema: { type: 'string', title: 'Role' } },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         responses: {
           '200': {
@@ -2954,14 +2395,9 @@ export default {
         summary: 'Add Role Permission',
         description: 'Add a permission to a role',
         operationId: 'add_role_permission_admin_roles__role__permissions_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'role', in: 'path', required: true, schema: { type: 'string', title: 'Role' } },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         requestBody: {
           required: true,
@@ -2987,14 +2423,9 @@ export default {
         summary: 'Remove Role Permission',
         description: 'Delete a permission from a role',
         operationId: 'remove_role_permission_admin_roles__role__permissions_remove_post',
+        security: [{ OpenIdConnect: [] }],
         parameters: [
           { name: 'role', in: 'path', required: true, schema: { type: 'string', title: 'Role' } },
-          {
-            name: 'authorization',
-            in: 'header',
-            required: false,
-            schema: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Authorization' },
-          },
         ],
         requestBody: {
           required: true,
@@ -3017,11 +2448,6 @@ export default {
   },
   components: {
     schemas: {
-      Action: {
-        type: 'string',
-        enum: ['waiting', 'cancel', 'override', 'resume'],
-        title: 'Action',
-      },
       Activity: {
         properties: {
           category: {
@@ -3101,7 +2527,43 @@ export default {
         required: ['name', 'value'],
         title: 'AlertParameter',
       },
-      AlertRequest: {
+      'AlertRequest-Input': {
+        properties: {
+          id: { type: 'string', title: 'Id' },
+          unix_millis_alert_time: { type: 'integer', title: 'Unix Millis Alert Time' },
+          title: { type: 'string', title: 'Title' },
+          subtitle: { type: 'string', title: 'Subtitle' },
+          message: { type: 'string', title: 'Message' },
+          display: { type: 'boolean', title: 'Display' },
+          tier: { $ref: '#/components/schemas/Tier-Input' },
+          responses_available: {
+            items: { type: 'string' },
+            type: 'array',
+            title: 'Responses Available',
+          },
+          alert_parameters: {
+            items: { $ref: '#/components/schemas/AlertParameter' },
+            type: 'array',
+            title: 'Alert Parameters',
+          },
+          task_id: { anyOf: [{ type: 'string' }, { type: 'null' }], title: 'Task Id' },
+        },
+        type: 'object',
+        required: [
+          'id',
+          'unix_millis_alert_time',
+          'title',
+          'subtitle',
+          'message',
+          'display',
+          'tier',
+          'responses_available',
+          'alert_parameters',
+          'task_id',
+        ],
+        title: 'AlertRequest',
+      },
+      'AlertRequest-Output': {
         properties: {
           id: { type: 'string', title: 'Id' },
           unix_millis_alert_time: { type: 'integer', title: 'Unix Millis Alert Time' },
@@ -3265,6 +2727,11 @@ export default {
         required: ['unix_millis_request_time', 'labels'],
         title: 'Cancellation',
       },
+      Category: {
+        type: 'string',
+        title: 'Category',
+        description: 'The category of this task or phase',
+      },
       Commission: {
         properties: {
           dispatch_tasks: {
@@ -3325,23 +2792,6 @@ export default {
         type: 'object',
         required: ['fleet_name', 'activities'],
         title: 'Datum',
-      },
-      DeliveryAlert: {
-        properties: {
-          id: { type: 'string', title: 'Id' },
-          category: {
-            $ref: '#/components/schemas/api_server__models__delivery_alerts__DeliveryAlert__Category',
-          },
-          tier: {
-            $ref: '#/components/schemas/api_server__models__delivery_alerts__DeliveryAlert__Tier',
-          },
-          action: { $ref: '#/components/schemas/Action' },
-          task_id: { type: 'string', title: 'Task Id' },
-          message: { type: 'string', title: 'Message' },
-        },
-        type: 'object',
-        required: ['id', 'category', 'tier', 'action', 'task_id', 'message'],
-        title: 'DeliveryAlert',
       },
       Detail: {
         anyOf: [{ type: 'object' }, { items: {}, type: 'array' }, { type: 'string' }],
@@ -3956,12 +3406,7 @@ export default {
       'Phase-Input': {
         properties: {
           id: { $ref: '#/components/schemas/Id' },
-          category: {
-            anyOf: [
-              { $ref: '#/components/schemas/api_server__models__rmf_api__task_state__Category' },
-              { type: 'null' },
-            ],
-          },
+          category: { anyOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] },
           detail: { anyOf: [{ $ref: '#/components/schemas/Detail' }, { type: 'null' }] },
           unix_millis_start_time: {
             anyOf: [{ type: 'integer' }, { type: 'null' }],
@@ -4009,12 +3454,7 @@ export default {
       'Phase-Output': {
         properties: {
           id: { $ref: '#/components/schemas/Id' },
-          category: {
-            anyOf: [
-              { $ref: '#/components/schemas/api_server__models__rmf_api__task_state__Category' },
-              { type: 'null' },
-            ],
-          },
+          category: { anyOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] },
           detail: { anyOf: [{ $ref: '#/components/schemas/Detail' }, { type: 'null' }] },
           unix_millis_start_time: {
             anyOf: [{ type: 'integer' }, { type: 'null' }],
@@ -4803,12 +4243,7 @@ export default {
       'TaskState-Input': {
         properties: {
           booking: { $ref: '#/components/schemas/Booking' },
-          category: {
-            anyOf: [
-              { $ref: '#/components/schemas/api_server__models__rmf_api__task_state__Category' },
-              { type: 'null' },
-            ],
-          },
+          category: { anyOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] },
           detail: { anyOf: [{ $ref: '#/components/schemas/Detail' }, { type: 'null' }] },
           unix_millis_start_time: {
             anyOf: [{ type: 'integer' }, { type: 'null' }],
@@ -4892,12 +4327,7 @@ export default {
       'TaskState-Output': {
         properties: {
           booking: { $ref: '#/components/schemas/Booking' },
-          category: {
-            anyOf: [
-              { $ref: '#/components/schemas/api_server__models__rmf_api__task_state__Category' },
-              { type: 'null' },
-            ],
-          },
+          category: { anyOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] },
           detail: { anyOf: [{ $ref: '#/components/schemas/Detail' }, { type: 'null' }] },
           unix_millis_start_time: {
             anyOf: [{ type: 'integer' }, { type: 'null' }],
@@ -4983,6 +4413,7 @@ export default {
         required: ['booking'],
         title: 'TaskState',
       },
+      'Tier-Input': { type: 'string', enum: ['info', 'warning', 'error'], title: 'Tier' },
       Time: {
         properties: {
           sec: { type: 'integer', maximum: 2147483647.0, minimum: -2147483648.0, title: 'Sec' },
@@ -5117,16 +4548,6 @@ export default {
         enum: ['info', 'warning', 'error'],
         title: 'Tier',
       },
-      api_server__models__delivery_alerts__DeliveryAlert__Category: {
-        type: 'string',
-        enum: ['missing', 'wrong', 'obstructed', 'cancelled'],
-        title: 'Category',
-      },
-      api_server__models__delivery_alerts__DeliveryAlert__Tier: {
-        type: 'string',
-        enum: ['warning', 'error'],
-        title: 'Tier',
-      },
       api_server__models__rmf_api__log_entry__Tier: {
         type: 'string',
         enum: ['uninitialized', 'info', 'warning', 'error'],
@@ -5136,11 +4557,6 @@ export default {
         type: 'string',
         enum: ['uninitialized', 'offline', 'shutdown', 'idle', 'charging', 'working', 'error'],
         title: 'Status',
-      },
-      api_server__models__rmf_api__task_state__Category: {
-        type: 'string',
-        title: 'Category',
-        description: 'The category of this task or phase',
       },
       api_server__models__rmf_api__task_state__Status: {
         type: 'string',
@@ -5161,5 +4577,6 @@ export default {
         title: 'Status',
       },
     },
+    securitySchemes: { OpenIdConnect: { type: 'openIdConnect', openIdConnectUrl: '' } },
   },
 };

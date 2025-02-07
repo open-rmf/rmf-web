@@ -9,7 +9,7 @@ from api_server.logging import LoggerAdapter, get_logger
 from api_server.models.delivery_alerts import DeliveryAlert
 from api_server.rmf_io import RmfEvents, get_rmf_events
 
-router = FastIORouter(tags=["DeliveryAlerts"])
+router = FastIORouter(tags=["DeliveryAlerts"], deprecated=True)
 
 
 @router.sub("", response_model=DeliveryAlert)

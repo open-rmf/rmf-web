@@ -11,8 +11,6 @@ import {
   BuildingApi,
   BuildingMap,
   DefaultApi,
-  DeliveryAlert,
-  DeliveryAlertsApi,
   Dispenser,
   DispensersApi,
   DispenserState,
@@ -81,7 +79,6 @@ export class MockRmfApi implements RmfApi {
   tasksApi = new TasksApi(undefined, undefined, this.axiosInst);
   alertsApi = new AlertsApi(undefined, undefined, this.axiosInst);
   adminApi = new AdminApi(undefined, undefined, this.axiosInst);
-  deliveryAlertsApi = new DeliveryAlertsApi(undefined, undefined, this.axiosInst);
   trajectoryManager = undefined;
   buildingMapObs = new Subject<BuildingMap>();
   beaconsObsStore = new Subject<BeaconState>();
@@ -116,7 +113,6 @@ export class MockRmfApi implements RmfApi {
   }
   alertRequestsObsStore = new Subject<AlertRequest>();
   alertResponsesObsStore = new Subject<AlertResponse>();
-  deliveryAlertObsStore = new Subject<DeliveryAlert>();
 
   private _cacheObs<T>(store: Record<string, Subject<T>>, key: string): Subject<T> {
     if (!(key in store)) {

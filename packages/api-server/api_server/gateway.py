@@ -21,10 +21,6 @@ from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 from rmf_fleet_msgs.msg import BeaconState as RmfBeaconState
-from rmf_fleet_msgs.msg import DeliveryAlert as RmfDeliveryAlert
-from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
-from rmf_fleet_msgs.msg import DeliveryAlertCategory as RmfDeliveryAlertCategory
-from rmf_fleet_msgs.msg import DeliveryAlertTier as RmfDeliveryAlertTier
 from rmf_fleet_msgs.msg import MutexGroupManualRelease as RmfMutexGroupManualRelease
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
@@ -56,7 +52,6 @@ from .models import (
     AlertRequest,
     BeaconState,
     BuildingMap,
-    DeliveryAlert,
     DispenserState,
     DoorState,
     FireAlarmTriggerState,
@@ -107,17 +102,6 @@ class RmfGateway:
         )
         self._cancel_task_srv = self._ros_node.create_client(
             RmfCancelTask, "cancel_task"
-        )
-
-        self._delivery_alert_response = self._ros_node.create_publisher(
-            RmfDeliveryAlert,
-            "delivery_alert_response",
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
-                depth=10,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
         )
 
         self._alert_response = self._ros_node.create_publisher(
@@ -305,32 +289,6 @@ class RmfGateway:
         )
         self._subscriptions.append(beacon_sub)
 
-        def handle_delivery_alert(msg):
-            msg = cast(RmfDeliveryAlert, msg)
-            da = DeliveryAlert(
-                id=msg.id,
-                category=DeliveryAlert.Category.from_rmf_value(msg.category.value),
-                tier=DeliveryAlert.Tier.from_rmf_value(msg.tier.value),
-                task_id=msg.task_id,
-                action=DeliveryAlert.Action.from_rmf_value(msg.action.value),
-                message=msg.message,
-            )
-            self._rmf_events.delivery_alerts.on_next(da)
-            logging.debug("%s", da)
-
-        delivery_alert_request_sub = self._ros_node.create_subscription(
-            RmfDeliveryAlert,
-            "delivery_alert_request",
-            handle_delivery_alert,
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
-                depth=10,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
-        )
-        self._subscriptions.append(delivery_alert_request_sub)
-
         def convert_alert(msg):
             alert = cast(RmfAlert, msg)
             tier = AlertRequest.Tier.Info
@@ -510,24 +468,6 @@ class RmfGateway:
         for session_id in additional_session_ids:
             msg.session_id = session_id
             self._adapter_lift_req.publish(msg)
-
-    def respond_to_delivery_alert(
-        self,
-        alert_id: str,
-        category: int,
-        tier: int,
-        task_id: str,
-        action: int,
-        message: str,
-    ):
-        msg = RmfDeliveryAlert()
-        msg.id = alert_id
-        msg.category = RmfDeliveryAlertCategory(value=category)
-        msg.tier = RmfDeliveryAlertTier(value=tier)
-        msg.task_id = task_id
-        msg.action = RmfDeliveryAlertAction(value=action)
-        msg.message = message
-        self._delivery_alert_response.publish(msg)
 
     def respond_to_alert(self, alert_id: str, response: str):
         msg = RmfAlertResponse()

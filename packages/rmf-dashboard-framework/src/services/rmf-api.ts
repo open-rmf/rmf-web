@@ -1,6 +1,6 @@
 import {
   AdminApi,
-  AlertRequest,
+  AlertRequestOutput,
   AlertResponse,
   AlertsApi,
   BeaconsApi,
@@ -9,8 +9,6 @@ import {
   BuildingMap,
   Configuration,
   DefaultApi,
-  DeliveryAlert,
-  DeliveryAlertsApi,
   Dispenser,
   DispensersApi,
   DispenserState,
@@ -48,7 +46,6 @@ export interface RmfApi {
   tasksApi: TasksApi;
   alertsApi: AlertsApi;
   adminApi: AdminApi;
-  deliveryAlertsApi: DeliveryAlertsApi;
   trajectoryManager?: RobotTrajectoryManager;
 
   buildingMapObs: Observable<BuildingMap>;
@@ -64,9 +61,8 @@ export interface RmfApi {
   fleetsObs: Observable<FleetState[]>;
   getFleetStateObs(name: string): Observable<FleetState>;
   getTaskStateObs(taskId: string): Observable<TaskState>;
-  alertRequestsObsStore: Observable<AlertRequest>;
+  alertRequestsObsStore: Observable<AlertRequestOutput>;
   alertResponsesObsStore: Observable<AlertResponse>;
-  deliveryAlertObsStore: Observable<DeliveryAlert>;
 }
 
 export class DefaultRmfApi implements RmfApi {
@@ -83,7 +79,6 @@ export class DefaultRmfApi implements RmfApi {
   tasksApi: TasksApi;
   alertsApi: AlertsApi;
   adminApi: AdminApi;
-  deliveryAlertsApi: DeliveryAlertsApi;
   trajectoryManager?: RobotTrajectoryManager;
 
   constructor(
@@ -132,7 +127,6 @@ export class DefaultRmfApi implements RmfApi {
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
     this.alertsApi = new AlertsApi(apiConfig, undefined, axiosInst);
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
-    this.deliveryAlertsApi = new DeliveryAlertsApi(apiConfig, undefined, axiosInst);
 
     this.buildingMapObs = this._convertSioToRxObs((sioClient, handler) =>
       sioClient.subscribeBuildingMap(handler),
@@ -175,10 +169,6 @@ export class DefaultRmfApi implements RmfApi {
 
     this.alertResponsesObsStore = this._convertSioToRxObs((sioClient, handler) =>
       sioClient.subscribeAlertResponses(handler),
-    );
-
-    this.deliveryAlertObsStore = this._convertSioToRxObs((sioClient, handler) =>
-      sioClient.subscribeDeliveryAlerts(handler),
     );
 
     try {
@@ -313,7 +303,6 @@ export class DefaultRmfApi implements RmfApi {
     return this._taskStateObsStore[taskId];
   }
 
-  alertRequestsObsStore: Observable<AlertRequest>;
+  alertRequestsObsStore: Observable<AlertRequestOutput>;
   alertResponsesObsStore: Observable<AlertResponse>;
-  deliveryAlertObsStore: Observable<DeliveryAlert>;
 }

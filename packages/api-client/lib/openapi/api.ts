@@ -36,21 +36,6 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerM
 /**
  *
  * @export
- * @enum {string}
- */
-
-export const Action = {
-  Waiting: 'waiting',
-  Cancel: 'cancel',
-  Override: 'override',
-  Resume: 'resume',
-} as const;
-
-export type Action = (typeof Action)[keyof typeof Action];
-
-/**
- *
- * @export
  * @interface Activity
  */
 export interface Activity {
@@ -191,67 +176,135 @@ export interface AlertParameter {
 /**
  *
  * @export
- * @interface AlertRequest
+ * @interface AlertRequestInput
  */
-export interface AlertRequest {
+export interface AlertRequestInput {
   /**
    *
    * @type {string}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
    */
   id: string;
   /**
    *
    * @type {number}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
    */
   unix_millis_alert_time: number;
   /**
    *
    * @type {string}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
    */
   title: string;
   /**
    *
    * @type {string}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
    */
   subtitle: string;
   /**
    *
    * @type {string}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
    */
   message: string;
   /**
    *
    * @type {boolean}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
    */
   display: boolean;
   /**
    *
-   * @type {ApiServerModelsAlertsAlertRequestTier}
-   * @memberof AlertRequest
+   * @type {TierInput}
+   * @memberof AlertRequestInput
    */
-  tier: ApiServerModelsAlertsAlertRequestTier;
+  tier: TierInput;
   /**
    *
    * @type {Array<string>}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
    */
   responses_available: Array<string>;
   /**
    *
    * @type {Array<AlertParameter>}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
    */
   alert_parameters: Array<AlertParameter>;
   /**
    *
    * @type {string}
-   * @memberof AlertRequest
+   * @memberof AlertRequestInput
+   */
+  task_id: string | null;
+}
+
+/**
+ *
+ * @export
+ * @interface AlertRequestOutput
+ */
+export interface AlertRequestOutput {
+  /**
+   *
+   * @type {string}
+   * @memberof AlertRequestOutput
+   */
+  id: string;
+  /**
+   *
+   * @type {number}
+   * @memberof AlertRequestOutput
+   */
+  unix_millis_alert_time: number;
+  /**
+   *
+   * @type {string}
+   * @memberof AlertRequestOutput
+   */
+  title: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AlertRequestOutput
+   */
+  subtitle: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AlertRequestOutput
+   */
+  message: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof AlertRequestOutput
+   */
+  display: boolean;
+  /**
+   *
+   * @type {ApiServerModelsAlertsAlertRequestTier}
+   * @memberof AlertRequestOutput
+   */
+  tier: ApiServerModelsAlertsAlertRequestTier;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof AlertRequestOutput
+   */
+  responses_available: Array<string>;
+  /**
+   *
+   * @type {Array<AlertParameter>}
+   * @memberof AlertRequestOutput
+   */
+  alert_parameters: Array<AlertParameter>;
+  /**
+   *
+   * @type {string}
+   * @memberof AlertRequestOutput
    */
   task_id: string | null;
 }
@@ -295,36 +348,6 @@ export const ApiServerModelsAlertsAlertRequestTier = {
 
 export type ApiServerModelsAlertsAlertRequestTier =
   (typeof ApiServerModelsAlertsAlertRequestTier)[keyof typeof ApiServerModelsAlertsAlertRequestTier];
-
-/**
- *
- * @export
- * @enum {string}
- */
-
-export const ApiServerModelsDeliveryAlertsDeliveryAlertCategory = {
-  Missing: 'missing',
-  Wrong: 'wrong',
-  Obstructed: 'obstructed',
-  Cancelled: 'cancelled',
-} as const;
-
-export type ApiServerModelsDeliveryAlertsDeliveryAlertCategory =
-  (typeof ApiServerModelsDeliveryAlertsDeliveryAlertCategory)[keyof typeof ApiServerModelsDeliveryAlertsDeliveryAlertCategory];
-
-/**
- *
- * @export
- * @enum {string}
- */
-
-export const ApiServerModelsDeliveryAlertsDeliveryAlertTier = {
-  Warning: 'warning',
-  Error: 'error',
-} as const;
-
-export type ApiServerModelsDeliveryAlertsDeliveryAlertTier =
-  (typeof ApiServerModelsDeliveryAlertsDeliveryAlertTier)[keyof typeof ApiServerModelsDeliveryAlertsDeliveryAlertTier];
 
 /**
  *
@@ -643,50 +666,6 @@ export interface Datum {
    */
   activities: Array<Activity>;
 }
-/**
- *
- * @export
- * @interface DeliveryAlert
- */
-export interface DeliveryAlert {
-  /**
-   *
-   * @type {string}
-   * @memberof DeliveryAlert
-   */
-  id: string;
-  /**
-   *
-   * @type {ApiServerModelsDeliveryAlertsDeliveryAlertCategory}
-   * @memberof DeliveryAlert
-   */
-  category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory;
-  /**
-   *
-   * @type {ApiServerModelsDeliveryAlertsDeliveryAlertTier}
-   * @memberof DeliveryAlert
-   */
-  tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier;
-  /**
-   *
-   * @type {Action}
-   * @memberof DeliveryAlert
-   */
-  action: Action;
-  /**
-   *
-   * @type {string}
-   * @memberof DeliveryAlert
-   */
-  task_id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof DeliveryAlert
-   */
-  message: string;
-}
-
 /**
  * Detailed information about a task, phase, or event
  * @export
@@ -3305,6 +3284,20 @@ export interface TaskStateOutput {
 /**
  *
  * @export
+ * @enum {string}
+ */
+
+export const TierInput = {
+  Info: 'info',
+  Warning: 'warning',
+  Error: 'error',
+} as const;
+
+export type TierInput = (typeof TierInput)[keyof typeof TierInput];
+
+/**
+ *
+ * @export
  * @interface Time
  */
 export interface Time {
@@ -3523,14 +3516,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Add Role Permission
      * @param {string} role
      * @param {Permission} permission
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     addRolePermissionAdminRolesRolePermissionsPost: async (
       role: string,
       permission: Permission,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'role' is not null or undefined
@@ -3552,9 +3543,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3581,14 +3570,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Add User Role
      * @param {string} username
      * @param {PostRoles} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     addUserRoleAdminUsersUsernameRolesPost: async (
       username: string,
       postRoles: PostRoles,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
@@ -3610,9 +3597,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3638,13 +3623,11 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * Create a new role
      * @summary Create Role
      * @param {PostRoles} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createRoleAdminRolesPost: async (
       postRoles: PostRoles,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'postRoles' is not null or undefined
@@ -3661,9 +3644,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3689,13 +3670,11 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * Create a user
      * @summary Create User
      * @param {PostUsers} postUsers
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createUserAdminUsersPost: async (
       postUsers: PostUsers,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'postUsers' is not null or undefined
@@ -3712,9 +3691,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -3740,13 +3717,11 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * Delete a role
      * @summary Delete Role
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteRoleAdminRolesRoleDelete: async (
       role: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'role' is not null or undefined
@@ -3766,9 +3741,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3787,13 +3760,11 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * Delete a user  This only performs a soft delete, while the user is deleted from the app database, it still exists in the idp so they can still log in, the user will then be re-created with the default permissions.
      * @summary Delete User
      * @param {string} username
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteUserAdminUsersUsernameDelete: async (
       username: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
@@ -3813,9 +3784,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3835,14 +3804,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Delete User Role
      * @param {string} username
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteUserRoleAdminUsersUsernameRolesRoleDelete: async (
       username: string,
       role: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
@@ -3863,9 +3830,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3884,13 +3849,11 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * Get all permissions of a role
      * @summary Get Role Permissions
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getRolePermissionsAdminRolesRolePermissionsGet: async (
       role: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'role' is not null or undefined
@@ -3910,9 +3873,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3930,14 +3891,10 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     /**
      * Get all roles
      * @summary Get Roles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getRolesAdminRolesGet: async (
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    getRolesAdminRolesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/admin/roles`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3950,9 +3907,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3971,13 +3926,11 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * Get a user
      * @summary Get User
      * @param {string} username
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getUserAdminUsersUsernameGet: async (
       username: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
@@ -3997,9 +3950,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -4022,7 +3973,6 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -4032,7 +3982,6 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/admin/users`;
@@ -4046,6 +3995,8 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication OpenIdConnect required
 
       if (username !== undefined) {
         localVarQueryParameter['username'] = username;
@@ -4067,10 +4018,6 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['order_by'] = orderBy;
       }
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
-
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -4089,14 +4036,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Make Admin
      * @param {string} username
      * @param {PostMakeAdmin} postMakeAdmin
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     makeAdminAdminUsersUsernameMakeAdminPost: async (
       username: string,
       postMakeAdmin: PostMakeAdmin,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
@@ -4118,9 +4063,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4147,14 +4090,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Remove Role Permission
      * @param {string} role
      * @param {Permission} permission
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     removeRolePermissionAdminRolesRolePermissionsRemovePost: async (
       role: string,
       permission: Permission,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'role' is not null or undefined
@@ -4180,9 +4121,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4209,14 +4148,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Set User Roles
      * @param {string} username
      * @param {Array<PostRoles>} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     setUserRolesAdminUsersUsernameRolesPut: async (
       username: string,
       postRoles: Array<PostRoles>,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
@@ -4238,9 +4175,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4277,21 +4212,18 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @summary Add Role Permission
      * @param {string} role
      * @param {Permission} permission
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async addRolePermissionAdminRolesRolePermissionsPost(
       role: string,
       permission: Permission,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.addRolePermissionAdminRolesRolePermissionsPost(
           role,
           permission,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4312,21 +4244,18 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @summary Add User Role
      * @param {string} username
      * @param {PostRoles} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async addUserRoleAdminUsersUsernameRolesPost(
       username: string,
       postRoles: PostRoles,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.addUserRoleAdminUsersUsernameRolesPost(
           username,
           postRoles,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4346,18 +4275,15 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * Create a new role
      * @summary Create Role
      * @param {PostRoles} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createRoleAdminRolesPost(
       postRoles: PostRoles,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createRoleAdminRolesPost(
         postRoles,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4376,18 +4302,15 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * Create a user
      * @summary Create User
      * @param {PostUsers} postUsers
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createUserAdminUsersPost(
       postUsers: PostUsers,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createUserAdminUsersPost(
         postUsers,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4406,18 +4329,15 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * Delete a role
      * @summary Delete Role
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async deleteRoleAdminRolesRoleDelete(
       role: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRoleAdminRolesRoleDelete(
         role,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4437,18 +4357,15 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * Delete a user  This only performs a soft delete, while the user is deleted from the app database, it still exists in the idp so they can still log in, the user will then be re-created with the default permissions.
      * @summary Delete User
      * @param {string} username
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async deleteUserAdminUsersUsernameDelete(
       username: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUserAdminUsersUsernameDelete(
         username,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4469,21 +4386,18 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @summary Delete User Role
      * @param {string} username
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async deleteUserRoleAdminUsersUsernameRolesRoleDelete(
       username: string,
       role: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.deleteUserRoleAdminUsersUsernameRolesRoleDelete(
           username,
           role,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4503,19 +4417,16 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * Get all permissions of a role
      * @summary Get Role Permissions
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getRolePermissionsAdminRolesRolePermissionsGet(
       role: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Permission>>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getRolePermissionsAdminRolesRolePermissionsGet(
           role,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4534,18 +4445,13 @@ export const AdminApiFp = function (configuration?: Configuration) {
     /**
      * Get all roles
      * @summary Get Roles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getRolesAdminRolesGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getRolesAdminRolesGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getRolesAdminRolesGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['AdminApi.getRolesAdminRolesGet']?.[localVarOperationServerIndex]?.url;
@@ -4561,18 +4467,15 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * Get a user
      * @summary Get User
      * @param {string} username
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getUserAdminUsersUsernameGet(
       username: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUserAdminUsersUsernameGet(
         username,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4595,7 +4498,6 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -4605,7 +4507,6 @@ export const AdminApiFp = function (configuration?: Configuration) {
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUsersAdminUsersGet(
@@ -4614,7 +4515,6 @@ export const AdminApiFp = function (configuration?: Configuration) {
         limit,
         offset,
         orderBy,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4633,21 +4533,18 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @summary Make Admin
      * @param {string} username
      * @param {PostMakeAdmin} postMakeAdmin
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async makeAdminAdminUsersUsernameMakeAdminPost(
       username: string,
       postMakeAdmin: PostMakeAdmin,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.makeAdminAdminUsersUsernameMakeAdminPost(
           username,
           postMakeAdmin,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4668,21 +4565,18 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @summary Remove Role Permission
      * @param {string} role
      * @param {Permission} permission
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async removeRolePermissionAdminRolesRolePermissionsRemovePost(
       role: string,
       permission: Permission,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.removeRolePermissionAdminRolesRolePermissionsRemovePost(
           role,
           permission,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4703,21 +4597,18 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @summary Set User Roles
      * @param {string} username
      * @param {Array<PostRoles>} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async setUserRolesAdminUsersUsernameRolesPut(
       username: string,
       postRoles: Array<PostRoles>,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.setUserRolesAdminUsersUsernameRolesPut(
           username,
           postRoles,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -4752,18 +4643,16 @@ export const AdminApiFactory = function (
      * @summary Add Role Permission
      * @param {string} role
      * @param {Permission} permission
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     addRolePermissionAdminRolesRolePermissionsPost(
       role: string,
       permission: Permission,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .addRolePermissionAdminRolesRolePermissionsPost(role, permission, authorization, options)
+        .addRolePermissionAdminRolesRolePermissionsPost(role, permission, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4771,86 +4660,64 @@ export const AdminApiFactory = function (
      * @summary Add User Role
      * @param {string} username
      * @param {PostRoles} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     addUserRoleAdminUsersUsernameRolesPost(
       username: string,
       postRoles: PostRoles,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .addUserRoleAdminUsersUsernameRolesPost(username, postRoles, authorization, options)
+        .addUserRoleAdminUsersUsernameRolesPost(username, postRoles, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Create a new role
      * @summary Create Role
      * @param {PostRoles} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createRoleAdminRolesPost(
-      postRoles: PostRoles,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<any> {
+    createRoleAdminRolesPost(postRoles: PostRoles, options?: any): AxiosPromise<any> {
       return localVarFp
-        .createRoleAdminRolesPost(postRoles, authorization, options)
+        .createRoleAdminRolesPost(postRoles, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Create a user
      * @summary Create User
      * @param {PostUsers} postUsers
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createUserAdminUsersPost(
-      postUsers: PostUsers,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<any> {
+    createUserAdminUsersPost(postUsers: PostUsers, options?: any): AxiosPromise<any> {
       return localVarFp
-        .createUserAdminUsersPost(postUsers, authorization, options)
+        .createUserAdminUsersPost(postUsers, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Delete a role
      * @summary Delete Role
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteRoleAdminRolesRoleDelete(
-      role: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<any> {
+    deleteRoleAdminRolesRoleDelete(role: string, options?: any): AxiosPromise<any> {
       return localVarFp
-        .deleteRoleAdminRolesRoleDelete(role, authorization, options)
+        .deleteRoleAdminRolesRoleDelete(role, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Delete a user  This only performs a soft delete, while the user is deleted from the app database, it still exists in the idp so they can still log in, the user will then be re-created with the default permissions.
      * @summary Delete User
      * @param {string} username
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteUserAdminUsersUsernameDelete(
-      username: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<any> {
+    deleteUserAdminUsersUsernameDelete(username: string, options?: any): AxiosPromise<any> {
       return localVarFp
-        .deleteUserAdminUsersUsernameDelete(username, authorization, options)
+        .deleteUserAdminUsersUsernameDelete(username, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4858,67 +4725,52 @@ export const AdminApiFactory = function (
      * @summary Delete User Role
      * @param {string} username
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteUserRoleAdminUsersUsernameRolesRoleDelete(
       username: string,
       role: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .deleteUserRoleAdminUsersUsernameRolesRoleDelete(username, role, authorization, options)
+        .deleteUserRoleAdminUsersUsernameRolesRoleDelete(username, role, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Get all permissions of a role
      * @summary Get Role Permissions
      * @param {string} role
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getRolePermissionsAdminRolesRolePermissionsGet(
       role: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<Array<Permission>> {
       return localVarFp
-        .getRolePermissionsAdminRolesRolePermissionsGet(role, authorization, options)
+        .getRolePermissionsAdminRolesRolePermissionsGet(role, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Get all roles
      * @summary Get Roles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getRolesAdminRolesGet(
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<Array<string>> {
-      return localVarFp
-        .getRolesAdminRolesGet(authorization, options)
-        .then((request) => request(axios, basePath));
+    getRolesAdminRolesGet(options?: any): AxiosPromise<Array<string>> {
+      return localVarFp.getRolesAdminRolesGet(options).then((request) => request(axios, basePath));
     },
     /**
      * Get a user
      * @summary Get User
      * @param {string} username
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getUserAdminUsersUsernameGet(
-      username: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<User> {
+    getUserAdminUsersUsernameGet(username: string, options?: any): AxiosPromise<User> {
       return localVarFp
-        .getUserAdminUsersUsernameGet(username, authorization, options)
+        .getUserAdminUsersUsernameGet(username, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4929,7 +4781,6 @@ export const AdminApiFactory = function (
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -4939,11 +4790,10 @@ export const AdminApiFactory = function (
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<Array<string>> {
       return localVarFp
-        .getUsersAdminUsersGet(username, isAdmin, limit, offset, orderBy, authorization, options)
+        .getUsersAdminUsersGet(username, isAdmin, limit, offset, orderBy, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4951,18 +4801,16 @@ export const AdminApiFactory = function (
      * @summary Make Admin
      * @param {string} username
      * @param {PostMakeAdmin} postMakeAdmin
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     makeAdminAdminUsersUsernameMakeAdminPost(
       username: string,
       postMakeAdmin: PostMakeAdmin,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .makeAdminAdminUsersUsernameMakeAdminPost(username, postMakeAdmin, authorization, options)
+        .makeAdminAdminUsersUsernameMakeAdminPost(username, postMakeAdmin, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4970,23 +4818,16 @@ export const AdminApiFactory = function (
      * @summary Remove Role Permission
      * @param {string} role
      * @param {Permission} permission
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     removeRolePermissionAdminRolesRolePermissionsRemovePost(
       role: string,
       permission: Permission,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .removeRolePermissionAdminRolesRolePermissionsRemovePost(
-          role,
-          permission,
-          authorization,
-          options,
-        )
+        .removeRolePermissionAdminRolesRolePermissionsRemovePost(role, permission, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4994,18 +4835,16 @@ export const AdminApiFactory = function (
      * @summary Set User Roles
      * @param {string} username
      * @param {Array<PostRoles>} postRoles
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     setUserRolesAdminUsersUsernameRolesPut(
       username: string,
       postRoles: Array<PostRoles>,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .setUserRolesAdminUsersUsernameRolesPut(username, postRoles, authorization, options)
+        .setUserRolesAdminUsersUsernameRolesPut(username, postRoles, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -5023,7 +4862,6 @@ export class AdminApi extends BaseAPI {
    * @summary Add Role Permission
    * @param {string} role
    * @param {Permission} permission
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
@@ -5031,11 +4869,10 @@ export class AdminApi extends BaseAPI {
   public addRolePermissionAdminRolesRolePermissionsPost(
     role: string,
     permission: Permission,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
-      .addRolePermissionAdminRolesRolePermissionsPost(role, permission, authorization, options)
+      .addRolePermissionAdminRolesRolePermissionsPost(role, permission, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5044,7 +4881,6 @@ export class AdminApi extends BaseAPI {
    * @summary Add User Role
    * @param {string} username
    * @param {PostRoles} postRoles
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
@@ -5052,11 +4888,10 @@ export class AdminApi extends BaseAPI {
   public addUserRoleAdminUsersUsernameRolesPost(
     username: string,
     postRoles: PostRoles,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
-      .addUserRoleAdminUsersUsernameRolesPost(username, postRoles, authorization, options)
+      .addUserRoleAdminUsersUsernameRolesPost(username, postRoles, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5064,18 +4899,13 @@ export class AdminApi extends BaseAPI {
    * Create a new role
    * @summary Create Role
    * @param {PostRoles} postRoles
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public createRoleAdminRolesPost(
-    postRoles: PostRoles,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public createRoleAdminRolesPost(postRoles: PostRoles, options?: RawAxiosRequestConfig) {
     return AdminApiFp(this.configuration)
-      .createRoleAdminRolesPost(postRoles, authorization, options)
+      .createRoleAdminRolesPost(postRoles, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5083,18 +4913,13 @@ export class AdminApi extends BaseAPI {
    * Create a user
    * @summary Create User
    * @param {PostUsers} postUsers
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public createUserAdminUsersPost(
-    postUsers: PostUsers,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public createUserAdminUsersPost(postUsers: PostUsers, options?: RawAxiosRequestConfig) {
     return AdminApiFp(this.configuration)
-      .createUserAdminUsersPost(postUsers, authorization, options)
+      .createUserAdminUsersPost(postUsers, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5102,18 +4927,13 @@ export class AdminApi extends BaseAPI {
    * Delete a role
    * @summary Delete Role
    * @param {string} role
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public deleteRoleAdminRolesRoleDelete(
-    role: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public deleteRoleAdminRolesRoleDelete(role: string, options?: RawAxiosRequestConfig) {
     return AdminApiFp(this.configuration)
-      .deleteRoleAdminRolesRoleDelete(role, authorization, options)
+      .deleteRoleAdminRolesRoleDelete(role, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5121,18 +4941,13 @@ export class AdminApi extends BaseAPI {
    * Delete a user  This only performs a soft delete, while the user is deleted from the app database, it still exists in the idp so they can still log in, the user will then be re-created with the default permissions.
    * @summary Delete User
    * @param {string} username
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public deleteUserAdminUsersUsernameDelete(
-    username: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public deleteUserAdminUsersUsernameDelete(username: string, options?: RawAxiosRequestConfig) {
     return AdminApiFp(this.configuration)
-      .deleteUserAdminUsersUsernameDelete(username, authorization, options)
+      .deleteUserAdminUsersUsernameDelete(username, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5141,7 +4956,6 @@ export class AdminApi extends BaseAPI {
    * @summary Delete User Role
    * @param {string} username
    * @param {string} role
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
@@ -5149,11 +4963,10 @@ export class AdminApi extends BaseAPI {
   public deleteUserRoleAdminUsersUsernameRolesRoleDelete(
     username: string,
     role: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
-      .deleteUserRoleAdminUsersUsernameRolesRoleDelete(username, role, authorization, options)
+      .deleteUserRoleAdminUsersUsernameRolesRoleDelete(username, role, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5161,32 +4974,29 @@ export class AdminApi extends BaseAPI {
    * Get all permissions of a role
    * @summary Get Role Permissions
    * @param {string} role
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
   public getRolePermissionsAdminRolesRolePermissionsGet(
     role: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
-      .getRolePermissionsAdminRolesRolePermissionsGet(role, authorization, options)
+      .getRolePermissionsAdminRolesRolePermissionsGet(role, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    * Get all roles
    * @summary Get Roles
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public getRolesAdminRolesGet(authorization?: string | null, options?: RawAxiosRequestConfig) {
+  public getRolesAdminRolesGet(options?: RawAxiosRequestConfig) {
     return AdminApiFp(this.configuration)
-      .getRolesAdminRolesGet(authorization, options)
+      .getRolesAdminRolesGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5194,18 +5004,13 @@ export class AdminApi extends BaseAPI {
    * Get a user
    * @summary Get User
    * @param {string} username
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public getUserAdminUsersUsernameGet(
-    username: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getUserAdminUsersUsernameGet(username: string, options?: RawAxiosRequestConfig) {
     return AdminApiFp(this.configuration)
-      .getUserAdminUsersUsernameGet(username, authorization, options)
+      .getUserAdminUsersUsernameGet(username, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5217,7 +5022,6 @@ export class AdminApi extends BaseAPI {
    * @param {number | null} [limit] defaults to 100
    * @param {number | null} [offset] defaults to 0
    * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
@@ -5228,11 +5032,10 @@ export class AdminApi extends BaseAPI {
     limit?: number | null,
     offset?: number | null,
     orderBy?: string | null,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
-      .getUsersAdminUsersGet(username, isAdmin, limit, offset, orderBy, authorization, options)
+      .getUsersAdminUsersGet(username, isAdmin, limit, offset, orderBy, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5241,7 +5044,6 @@ export class AdminApi extends BaseAPI {
    * @summary Make Admin
    * @param {string} username
    * @param {PostMakeAdmin} postMakeAdmin
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
@@ -5249,11 +5051,10 @@ export class AdminApi extends BaseAPI {
   public makeAdminAdminUsersUsernameMakeAdminPost(
     username: string,
     postMakeAdmin: PostMakeAdmin,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
-      .makeAdminAdminUsersUsernameMakeAdminPost(username, postMakeAdmin, authorization, options)
+      .makeAdminAdminUsersUsernameMakeAdminPost(username, postMakeAdmin, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5262,7 +5063,6 @@ export class AdminApi extends BaseAPI {
    * @summary Remove Role Permission
    * @param {string} role
    * @param {Permission} permission
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
@@ -5270,16 +5070,10 @@ export class AdminApi extends BaseAPI {
   public removeRolePermissionAdminRolesRolePermissionsRemovePost(
     role: string,
     permission: Permission,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
-      .removeRolePermissionAdminRolesRolePermissionsRemovePost(
-        role,
-        permission,
-        authorization,
-        options,
-      )
+      .removeRolePermissionAdminRolesRolePermissionsRemovePost(role, permission, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5288,7 +5082,6 @@ export class AdminApi extends BaseAPI {
    * @summary Set User Roles
    * @param {string} username
    * @param {Array<PostRoles>} postRoles
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AdminApi
@@ -5296,11 +5089,10 @@ export class AdminApi extends BaseAPI {
   public setUserRolesAdminUsersUsernameRolesPut(
     username: string,
     postRoles: Array<PostRoles>,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
-      .setUserRolesAdminUsersUsernameRolesPut(username, postRoles, authorization, options)
+      .setUserRolesAdminUsersUsernameRolesPut(username, postRoles, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -5314,18 +5106,16 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      * Creates a new alert.
      * @summary Create New Alert
-     * @param {AlertRequest} alertRequest
-     * @param {string | null} [authorization]
+     * @param {AlertRequestInput} alertRequestInput
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createNewAlertAlertsRequestPost: async (
-      alertRequest: AlertRequest,
-      authorization?: string | null,
+      alertRequestInput: AlertRequestInput,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'alertRequest' is not null or undefined
-      assertParamExists('createNewAlertAlertsRequestPost', 'alertRequest', alertRequest);
+      // verify required parameter 'alertRequestInput' is not null or undefined
+      assertParamExists('createNewAlertAlertsRequestPost', 'alertRequestInput', alertRequestInput);
       const localVarPath = `/alerts/request`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5338,9 +5128,7 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5352,7 +5140,7 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        alertRequest,
+        alertRequestInput,
         localVarRequestOptions,
         configuration,
       );
@@ -5366,13 +5154,11 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
      * Gets an alert based on the alert ID.
      * @summary Get Alert
      * @param {string} alertId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getAlertAlertsRequestAlertIdGet: async (
       alertId: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'alertId' is not null or undefined
@@ -5392,9 +5178,7 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -5413,13 +5197,11 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
      * Gets the response to the alert based on the alert ID.
      * @summary Get Alert Response
      * @param {string} alertId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getAlertResponseAlertsRequestAlertIdResponseGet: async (
       alertId: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'alertId' is not null or undefined
@@ -5439,9 +5221,7 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -5461,14 +5241,12 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
      * @summary Get Alerts Of Task
      * @param {string} taskId
      * @param {boolean} [unresponded]
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getAlertsOfTaskAlertsRequestsTaskTaskIdGet: async (
       taskId: string,
       unresponded?: boolean,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -5488,12 +5266,10 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (unresponded !== undefined) {
         localVarQueryParameter['unresponded'] = unresponded;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -5512,13 +5288,11 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      * Returns the list of alert IDs that have yet to be responded to, while a response was required.
      * @summary Get Unresponded Alerts
-     * @param {string | null} [authorization]
      * @param {Pagination} [pagination]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getUnrespondedAlertsAlertsUnrespondedRequestsGet: async (
-      authorization?: string | null,
       pagination?: Pagination,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
@@ -5534,9 +5308,7 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -5563,14 +5335,12 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
      * @summary Respond To Alert
      * @param {string} alertId
      * @param {string} response
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     respondToAlertAlertsRequestAlertIdRespondPost: async (
       alertId: string,
       response: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'alertId' is not null or undefined
@@ -5592,12 +5362,10 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (response !== undefined) {
         localVarQueryParameter['response'] = response;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -5626,19 +5394,16 @@ export const AlertsApiFp = function (configuration?: Configuration) {
     /**
      * Creates a new alert.
      * @summary Create New Alert
-     * @param {AlertRequest} alertRequest
-     * @param {string | null} [authorization]
+     * @param {AlertRequestInput} alertRequestInput
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createNewAlertAlertsRequestPost(
-      alertRequest: AlertRequest,
-      authorization?: string | null,
+      alertRequestInput: AlertRequestInput,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlertRequest>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlertRequestOutput>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createNewAlertAlertsRequestPost(
-        alertRequest,
-        authorization,
+        alertRequestInput,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -5658,18 +5423,15 @@ export const AlertsApiFp = function (configuration?: Configuration) {
      * Gets an alert based on the alert ID.
      * @summary Get Alert
      * @param {string} alertId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getAlertAlertsRequestAlertIdGet(
       alertId: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlertRequest>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlertRequestOutput>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getAlertAlertsRequestAlertIdGet(
         alertId,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -5689,19 +5451,16 @@ export const AlertsApiFp = function (configuration?: Configuration) {
      * Gets the response to the alert based on the alert ID.
      * @summary Get Alert Response
      * @param {string} alertId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getAlertResponseAlertsRequestAlertIdResponseGet(
       alertId: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlertResponse>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getAlertResponseAlertsRequestAlertIdResponseGet(
           alertId,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -5722,21 +5481,20 @@ export const AlertsApiFp = function (configuration?: Configuration) {
      * @summary Get Alerts Of Task
      * @param {string} taskId
      * @param {boolean} [unresponded]
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getAlertsOfTaskAlertsRequestsTaskTaskIdGet(
       taskId: string,
       unresponded?: boolean,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlertRequest>>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlertRequestOutput>>
+    > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getAlertsOfTaskAlertsRequestsTaskTaskIdGet(
           taskId,
           unresponded,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -5755,19 +5513,18 @@ export const AlertsApiFp = function (configuration?: Configuration) {
     /**
      * Returns the list of alert IDs that have yet to be responded to, while a response was required.
      * @summary Get Unresponded Alerts
-     * @param {string | null} [authorization]
      * @param {Pagination} [pagination]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getUnrespondedAlertsAlertsUnrespondedRequestsGet(
-      authorization?: string | null,
       pagination?: Pagination,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlertRequest>>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlertRequestOutput>>
+    > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getUnrespondedAlertsAlertsUnrespondedRequestsGet(
-          authorization,
           pagination,
           options,
         );
@@ -5789,21 +5546,18 @@ export const AlertsApiFp = function (configuration?: Configuration) {
      * @summary Respond To Alert
      * @param {string} alertId
      * @param {string} response
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async respondToAlertAlertsRequestAlertIdRespondPost(
       alertId: string,
       response: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlertResponse>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.respondToAlertAlertsRequestAlertIdRespondPost(
           alertId,
           response,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -5836,52 +5590,46 @@ export const AlertsApiFactory = function (
     /**
      * Creates a new alert.
      * @summary Create New Alert
-     * @param {AlertRequest} alertRequest
-     * @param {string | null} [authorization]
+     * @param {AlertRequestInput} alertRequestInput
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createNewAlertAlertsRequestPost(
-      alertRequest: AlertRequest,
-      authorization?: string | null,
+      alertRequestInput: AlertRequestInput,
       options?: any,
-    ): AxiosPromise<AlertRequest> {
+    ): AxiosPromise<AlertRequestOutput> {
       return localVarFp
-        .createNewAlertAlertsRequestPost(alertRequest, authorization, options)
+        .createNewAlertAlertsRequestPost(alertRequestInput, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets an alert based on the alert ID.
      * @summary Get Alert
      * @param {string} alertId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getAlertAlertsRequestAlertIdGet(
       alertId: string,
-      authorization?: string | null,
       options?: any,
-    ): AxiosPromise<AlertRequest> {
+    ): AxiosPromise<AlertRequestOutput> {
       return localVarFp
-        .getAlertAlertsRequestAlertIdGet(alertId, authorization, options)
+        .getAlertAlertsRequestAlertIdGet(alertId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Gets the response to the alert based on the alert ID.
      * @summary Get Alert Response
      * @param {string} alertId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getAlertResponseAlertsRequestAlertIdResponseGet(
       alertId: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<AlertResponse> {
       return localVarFp
-        .getAlertResponseAlertsRequestAlertIdResponseGet(alertId, authorization, options)
+        .getAlertResponseAlertsRequestAlertIdResponseGet(alertId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -5889,35 +5637,31 @@ export const AlertsApiFactory = function (
      * @summary Get Alerts Of Task
      * @param {string} taskId
      * @param {boolean} [unresponded]
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getAlertsOfTaskAlertsRequestsTaskTaskIdGet(
       taskId: string,
       unresponded?: boolean,
-      authorization?: string | null,
       options?: any,
-    ): AxiosPromise<Array<AlertRequest>> {
+    ): AxiosPromise<Array<AlertRequestOutput>> {
       return localVarFp
-        .getAlertsOfTaskAlertsRequestsTaskTaskIdGet(taskId, unresponded, authorization, options)
+        .getAlertsOfTaskAlertsRequestsTaskTaskIdGet(taskId, unresponded, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Returns the list of alert IDs that have yet to be responded to, while a response was required.
      * @summary Get Unresponded Alerts
-     * @param {string | null} [authorization]
      * @param {Pagination} [pagination]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getUnrespondedAlertsAlertsUnrespondedRequestsGet(
-      authorization?: string | null,
       pagination?: Pagination,
       options?: any,
-    ): AxiosPromise<Array<AlertRequest>> {
+    ): AxiosPromise<Array<AlertRequestOutput>> {
       return localVarFp
-        .getUnrespondedAlertsAlertsUnrespondedRequestsGet(authorization, pagination, options)
+        .getUnrespondedAlertsAlertsUnrespondedRequestsGet(pagination, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -5925,18 +5669,16 @@ export const AlertsApiFactory = function (
      * @summary Respond To Alert
      * @param {string} alertId
      * @param {string} response
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     respondToAlertAlertsRequestAlertIdRespondPost(
       alertId: string,
       response: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<AlertResponse> {
       return localVarFp
-        .respondToAlertAlertsRequestAlertIdRespondPost(alertId, response, authorization, options)
+        .respondToAlertAlertsRequestAlertIdRespondPost(alertId, response, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -5952,19 +5694,17 @@ export class AlertsApi extends BaseAPI {
   /**
    * Creates a new alert.
    * @summary Create New Alert
-   * @param {AlertRequest} alertRequest
-   * @param {string | null} [authorization]
+   * @param {AlertRequestInput} alertRequestInput
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
   public createNewAlertAlertsRequestPost(
-    alertRequest: AlertRequest,
-    authorization?: string | null,
+    alertRequestInput: AlertRequestInput,
     options?: RawAxiosRequestConfig,
   ) {
     return AlertsApiFp(this.configuration)
-      .createNewAlertAlertsRequestPost(alertRequest, authorization, options)
+      .createNewAlertAlertsRequestPost(alertRequestInput, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5972,18 +5712,13 @@ export class AlertsApi extends BaseAPI {
    * Gets an alert based on the alert ID.
    * @summary Get Alert
    * @param {string} alertId
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
-  public getAlertAlertsRequestAlertIdGet(
-    alertId: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getAlertAlertsRequestAlertIdGet(alertId: string, options?: RawAxiosRequestConfig) {
     return AlertsApiFp(this.configuration)
-      .getAlertAlertsRequestAlertIdGet(alertId, authorization, options)
+      .getAlertAlertsRequestAlertIdGet(alertId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5991,18 +5726,16 @@ export class AlertsApi extends BaseAPI {
    * Gets the response to the alert based on the alert ID.
    * @summary Get Alert Response
    * @param {string} alertId
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
   public getAlertResponseAlertsRequestAlertIdResponseGet(
     alertId: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AlertsApiFp(this.configuration)
-      .getAlertResponseAlertsRequestAlertIdResponseGet(alertId, authorization, options)
+      .getAlertResponseAlertsRequestAlertIdResponseGet(alertId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -6011,7 +5744,6 @@ export class AlertsApi extends BaseAPI {
    * @summary Get Alerts Of Task
    * @param {string} taskId
    * @param {boolean} [unresponded]
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
@@ -6019,30 +5751,27 @@ export class AlertsApi extends BaseAPI {
   public getAlertsOfTaskAlertsRequestsTaskTaskIdGet(
     taskId: string,
     unresponded?: boolean,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AlertsApiFp(this.configuration)
-      .getAlertsOfTaskAlertsRequestsTaskTaskIdGet(taskId, unresponded, authorization, options)
+      .getAlertsOfTaskAlertsRequestsTaskTaskIdGet(taskId, unresponded, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    * Returns the list of alert IDs that have yet to be responded to, while a response was required.
    * @summary Get Unresponded Alerts
-   * @param {string | null} [authorization]
    * @param {Pagination} [pagination]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
   public getUnrespondedAlertsAlertsUnrespondedRequestsGet(
-    authorization?: string | null,
     pagination?: Pagination,
     options?: RawAxiosRequestConfig,
   ) {
     return AlertsApiFp(this.configuration)
-      .getUnrespondedAlertsAlertsUnrespondedRequestsGet(authorization, pagination, options)
+      .getUnrespondedAlertsAlertsUnrespondedRequestsGet(pagination, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -6051,7 +5780,6 @@ export class AlertsApi extends BaseAPI {
    * @summary Respond To Alert
    * @param {string} alertId
    * @param {string} response
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
@@ -6059,11 +5787,10 @@ export class AlertsApi extends BaseAPI {
   public respondToAlertAlertsRequestAlertIdRespondPost(
     alertId: string,
     response: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return AlertsApiFp(this.configuration)
-      .respondToAlertAlertsRequestAlertIdRespondPost(alertId, response, authorization, options)
+      .respondToAlertAlertsRequestAlertIdRespondPost(alertId, response, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -6078,13 +5805,11 @@ export const BeaconsApiAxiosParamCreator = function (configuration?: Configurati
      *
      * @summary Get Beacon
      * @param {string} beaconId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getBeaconBeaconsBeaconIdGet: async (
       beaconId: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'beaconId' is not null or undefined
@@ -6104,9 +5829,7 @@ export const BeaconsApiAxiosParamCreator = function (configuration?: Configurati
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6124,14 +5847,10 @@ export const BeaconsApiAxiosParamCreator = function (configuration?: Configurati
     /**
      *
      * @summary Get Beacons
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getBeaconsBeaconsGet: async (
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    getBeaconsBeaconsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/beacons`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6144,9 +5863,7 @@ export const BeaconsApiAxiosParamCreator = function (configuration?: Configurati
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6169,7 +5886,6 @@ export const BeaconsApiAxiosParamCreator = function (configuration?: Configurati
      * @param {string} category
      * @param {boolean} activated
      * @param {string} level
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -6179,7 +5895,6 @@ export const BeaconsApiAxiosParamCreator = function (configuration?: Configurati
       category: string,
       activated: boolean,
       level: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'beaconId' is not null or undefined
@@ -6204,6 +5919,8 @@ export const BeaconsApiAxiosParamCreator = function (configuration?: Configurati
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (beaconId !== undefined) {
         localVarQueryParameter['beacon_id'] = beaconId;
       }
@@ -6222,10 +5939,6 @@ export const BeaconsApiAxiosParamCreator = function (configuration?: Configurati
 
       if (level !== undefined) {
         localVarQueryParameter['level'] = level;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -6255,18 +5968,15 @@ export const BeaconsApiFp = function (configuration?: Configuration) {
      *
      * @summary Get Beacon
      * @param {string} beaconId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getBeaconBeaconsBeaconIdGet(
       beaconId: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BeaconState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getBeaconBeaconsBeaconIdGet(
         beaconId,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -6284,18 +5994,13 @@ export const BeaconsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Beacons
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getBeaconsBeaconsGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BeaconState>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getBeaconsBeaconsGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getBeaconsBeaconsGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['BeaconsApi.getBeaconsBeaconsGet']?.[localVarOperationServerIndex]?.url;
@@ -6315,7 +6020,6 @@ export const BeaconsApiFp = function (configuration?: Configuration) {
      * @param {string} category
      * @param {boolean} activated
      * @param {string} level
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -6325,7 +6029,6 @@ export const BeaconsApiFp = function (configuration?: Configuration) {
       category: string,
       activated: boolean,
       level: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BeaconState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.saveBeaconStateBeaconsPost(
@@ -6334,7 +6037,6 @@ export const BeaconsApiFp = function (configuration?: Configuration) {
         category,
         activated,
         level,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -6367,33 +6069,22 @@ export const BeaconsApiFactory = function (
      *
      * @summary Get Beacon
      * @param {string} beaconId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getBeaconBeaconsBeaconIdGet(
-      beaconId: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<BeaconState> {
+    getBeaconBeaconsBeaconIdGet(beaconId: string, options?: any): AxiosPromise<BeaconState> {
       return localVarFp
-        .getBeaconBeaconsBeaconIdGet(beaconId, authorization, options)
+        .getBeaconBeaconsBeaconIdGet(beaconId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Beacons
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getBeaconsBeaconsGet(
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<Array<BeaconState>> {
-      return localVarFp
-        .getBeaconsBeaconsGet(authorization, options)
-        .then((request) => request(axios, basePath));
+    getBeaconsBeaconsGet(options?: any): AxiosPromise<Array<BeaconState>> {
+      return localVarFp.getBeaconsBeaconsGet(options).then((request) => request(axios, basePath));
     },
     /**
      *
@@ -6403,7 +6094,6 @@ export const BeaconsApiFactory = function (
      * @param {string} category
      * @param {boolean} activated
      * @param {string} level
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -6413,19 +6103,10 @@ export const BeaconsApiFactory = function (
       category: string,
       activated: boolean,
       level: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<BeaconState> {
       return localVarFp
-        .saveBeaconStateBeaconsPost(
-          beaconId,
-          online,
-          category,
-          activated,
-          level,
-          authorization,
-          options,
-        )
+        .saveBeaconStateBeaconsPost(beaconId, online, category, activated, level, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -6442,32 +6123,26 @@ export class BeaconsApi extends BaseAPI {
    *
    * @summary Get Beacon
    * @param {string} beaconId
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof BeaconsApi
    */
-  public getBeaconBeaconsBeaconIdGet(
-    beaconId: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getBeaconBeaconsBeaconIdGet(beaconId: string, options?: RawAxiosRequestConfig) {
     return BeaconsApiFp(this.configuration)
-      .getBeaconBeaconsBeaconIdGet(beaconId, authorization, options)
+      .getBeaconBeaconsBeaconIdGet(beaconId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Beacons
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof BeaconsApi
    */
-  public getBeaconsBeaconsGet(authorization?: string | null, options?: RawAxiosRequestConfig) {
+  public getBeaconsBeaconsGet(options?: RawAxiosRequestConfig) {
     return BeaconsApiFp(this.configuration)
-      .getBeaconsBeaconsGet(authorization, options)
+      .getBeaconsBeaconsGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -6479,7 +6154,6 @@ export class BeaconsApi extends BaseAPI {
    * @param {string} category
    * @param {boolean} activated
    * @param {string} level
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof BeaconsApi
@@ -6490,19 +6164,10 @@ export class BeaconsApi extends BaseAPI {
     category: string,
     activated: boolean,
     level: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return BeaconsApiFp(this.configuration)
-      .saveBeaconStateBeaconsPost(
-        beaconId,
-        online,
-        category,
-        activated,
-        level,
-        authorization,
-        options,
-      )
+      .saveBeaconStateBeaconsPost(beaconId, online, category, activated, level, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -6516,12 +6181,10 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
     /**
      * Available in socket.io
      * @summary Get Building Map
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getBuildingMapBuildingMapGet: async (
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/building_map`;
@@ -6536,9 +6199,7 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6556,12 +6217,10 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
     /**
      *
      * @summary Get Previous Fire Alarm Trigger
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet: async (
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/building_map/previous_fire_alarm_trigger`;
@@ -6576,9 +6235,7 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6596,12 +6253,10 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
     /**
      *
      * @summary Reset Fire Alarm Trigger
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost: async (
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/building_map/reset_fire_alarm_trigger`;
@@ -6616,9 +6271,7 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6646,18 +6299,14 @@ export const BuildingApiFp = function (configuration?: Configuration) {
     /**
      * Available in socket.io
      * @summary Get Building Map
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getBuildingMapBuildingMapGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BuildingMap>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getBuildingMapBuildingMapGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getBuildingMapBuildingMapGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['BuildingApi.getBuildingMapBuildingMapGet']?.[
@@ -6674,17 +6323,14 @@ export const BuildingApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Previous Fire Alarm Trigger
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FireAlarmTriggerState>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet(
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -6703,17 +6349,14 @@ export const BuildingApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Reset Fire Alarm Trigger
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FireAlarmTriggerState>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost(
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -6746,46 +6389,38 @@ export const BuildingApiFactory = function (
     /**
      * Available in socket.io
      * @summary Get Building Map
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getBuildingMapBuildingMapGet(
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<BuildingMap> {
+    getBuildingMapBuildingMapGet(options?: any): AxiosPromise<BuildingMap> {
       return localVarFp
-        .getBuildingMapBuildingMapGet(authorization, options)
+        .getBuildingMapBuildingMapGet(options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Previous Fire Alarm Trigger
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet(
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<FireAlarmTriggerState> {
       return localVarFp
-        .getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet(authorization, options)
+        .getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet(options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Reset Fire Alarm Trigger
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost(
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<FireAlarmTriggerState> {
       return localVarFp
-        .resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost(authorization, options)
+        .resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost(options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -6801,51 +6436,43 @@ export class BuildingApi extends BaseAPI {
   /**
    * Available in socket.io
    * @summary Get Building Map
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof BuildingApi
    */
-  public getBuildingMapBuildingMapGet(
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getBuildingMapBuildingMapGet(options?: RawAxiosRequestConfig) {
     return BuildingApiFp(this.configuration)
-      .getBuildingMapBuildingMapGet(authorization, options)
+      .getBuildingMapBuildingMapGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Previous Fire Alarm Trigger
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof BuildingApi
    */
   public getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet(
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return BuildingApiFp(this.configuration)
-      .getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet(authorization, options)
+      .getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Reset Fire Alarm Trigger
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof BuildingApi
    */
   public resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost(
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return BuildingApiFp(this.configuration)
-      .resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost(authorization, options)
+      .resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -6859,12 +6486,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
     /**
      * Get the effective permissions of the current user
      * @summary Get Effective Permissions
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getEffectivePermissionsPermissionsGet: async (
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/permissions`;
@@ -6879,9 +6504,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6931,14 +6554,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
     /**
      * Get the currently logged in user
      * @summary Get User
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getUserUserGet: async (
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    getUserUserGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/user`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6951,9 +6570,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6969,7 +6586,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
-     * # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ``` ### /alerts/requests   ``` {   \"$defs\": {     \"AlertParameter\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"value\": {           \"title\": \"Value\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"value\"       ],       \"title\": \"AlertParameter\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_alert_time\": {       \"title\": \"Unix Millis Alert Time\",       \"type\": \"integer\"     },     \"title\": {       \"title\": \"Title\",       \"type\": \"string\"     },     \"subtitle\": {       \"title\": \"Subtitle\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     },     \"display\": {       \"title\": \"Display\",       \"type\": \"boolean\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"responses_available\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Responses Available\",       \"type\": \"array\"     },     \"alert_parameters\": {       \"items\": {         \"$ref\": \"#/$defs/AlertParameter\"       },       \"title\": \"Alert Parameters\",       \"type\": \"array\"     },     \"task_id\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"title\": \"Task Id\"     }   },   \"required\": [     \"id\",     \"unix_millis_alert_time\",     \"title\",     \"subtitle\",     \"message\",     \"display\",     \"tier\",     \"responses_available\",     \"alert_parameters\",     \"task_id\"   ],   \"title\": \"AlertRequest\",   \"type\": \"object\" } ```   ### /alerts/responses   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_response_time\": {       \"title\": \"Unix Millis Response Time\",       \"type\": \"integer\"     },     \"response\": {       \"title\": \"Response\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"unix_millis_response_time\",     \"response\"   ],   \"title\": \"AlertResponse\",   \"type\": \"object\" } ```   ### /beacons   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"online\": {       \"title\": \"Online\",       \"type\": \"boolean\"     },     \"category\": {       \"title\": \"Category\",       \"type\": \"string\"     },     \"activated\": {       \"title\": \"Activated\",       \"type\": \"boolean\"     },     \"level\": {       \"title\": \"Level\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"online\",     \"category\",     \"activated\",     \"level\"   ],   \"title\": \"BeaconState\",   \"type\": \"object\" } ```   ### /building_map   ``` {   \"$defs\": {     \"AffineImage\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ],       \"title\": \"AffineImage\",       \"type\": \"object\"     },     \"Door\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"type\": \"number\"         },         \"door_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Door Type\",           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"type\": \"number\"         },         \"motion_direction\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Motion Direction\",           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ],       \"title\": \"Door\",       \"type\": \"object\"     },     \"Graph\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"vertices\": {           \"items\": {             \"$ref\": \"#/$defs/GraphNode\"           },           \"title\": \"Vertices\",           \"type\": \"array\"         },         \"edges\": {           \"items\": {             \"$ref\": \"#/$defs/GraphEdge\"           },           \"title\": \"Edges\",           \"type\": \"array\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ],       \"title\": \"Graph\",       \"type\": \"object\"     },     \"GraphEdge\": {       \"properties\": {         \"v1_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V1 Idx\",           \"type\": \"integer\"         },         \"v2_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V2 Idx\",           \"type\": \"integer\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         },         \"edge_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Edge Type\",           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ],       \"title\": \"GraphEdge\",       \"type\": \"object\"     },     \"GraphNode\": {       \"properties\": {         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ],       \"title\": \"GraphNode\",       \"type\": \"object\"     },     \"Level\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"type\": \"number\"         },         \"images\": {           \"items\": {             \"$ref\": \"#/$defs/AffineImage\"           },           \"title\": \"Images\",           \"type\": \"array\"         },         \"places\": {           \"items\": {             \"$ref\": \"#/$defs/Place\"           },           \"title\": \"Places\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"nav_graphs\": {           \"items\": {             \"$ref\": \"#/$defs/Graph\"           },           \"title\": \"Nav Graphs\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ],       \"title\": \"Level\",       \"type\": \"object\"     },     \"Lift\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"levels\": {           \"items\": {             \"type\": \"string\"           },           \"title\": \"Levels\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         },         \"ref_x\": {           \"title\": \"Ref X\",           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ],       \"title\": \"Lift\",       \"type\": \"object\"     },     \"Param\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"type\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Type\",           \"type\": \"integer\"         },         \"value_int\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Value Int\",           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ],       \"title\": \"Param\",       \"type\": \"object\"     },     \"Place\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ],       \"title\": \"Place\",       \"type\": \"object\"     }   },   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"levels\": {       \"items\": {         \"$ref\": \"#/$defs/Level\"       },       \"title\": \"Levels\",       \"type\": \"array\"     },     \"lifts\": {       \"items\": {         \"$ref\": \"#/$defs/Lift\"       },       \"title\": \"Lifts\",       \"type\": \"array\"     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"title\": \"BuildingMap\",   \"type\": \"object\" } ```   ### /building_map/fire_alarm_trigger   ``` {   \"properties\": {     \"unix_millis_time\": {       \"title\": \"Unix Millis Time\",       \"type\": \"integer\"     },     \"trigger\": {       \"title\": \"Trigger\",       \"type\": \"boolean\"     }   },   \"required\": [     \"unix_millis_time\",     \"trigger\"   ],   \"title\": \"FireAlarmTriggerState\",   \"type\": \"object\" } ```   ### /delivery_alerts   ``` {   \"$defs\": {     \"Action\": {       \"enum\": [         \"waiting\",         \"cancel\",         \"override\",         \"resume\"       ],       \"title\": \"Action\",       \"type\": \"string\"     },     \"Category\": {       \"enum\": [         \"missing\",         \"wrong\",         \"obstructed\",         \"cancelled\"       ],       \"title\": \"Category\",       \"type\": \"string\"     },     \"Tier\": {       \"enum\": [         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"category\": {       \"$ref\": \"#/$defs/Category\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"action\": {       \"$ref\": \"#/$defs/Action\"     },     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"category\",     \"tier\",     \"action\",     \"task_id\",     \"message\"   ],   \"title\": \"DeliveryAlert\",   \"type\": \"object\" } ```   ### /doors/{door_name}/state   ``` {   \"$defs\": {     \"DoorMode\": {       \"properties\": {         \"value\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Value\",           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ],       \"title\": \"DoorMode\",       \"type\": \"object\"     },     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"door_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"door_name\": {       \"title\": \"Door Name\",       \"type\": \"string\"     },     \"current_mode\": {       \"$ref\": \"#/$defs/DoorMode\"     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"title\": \"DoorState\",   \"type\": \"object\" } ```   ### /lifts/{lift_name}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"lift_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"type\": \"string\"     },     \"available_floors\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Available Floors\",       \"type\": \"array\"     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"type\": \"string\"     },     \"door_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Door State\",       \"type\": \"integer\"     },     \"motion_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Motion State\",       \"type\": \"integer\"     },     \"available_modes\": {       \"items\": {         \"type\": \"integer\"       },       \"title\": \"Available Modes\",       \"type\": \"array\"     },     \"current_mode\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Current Mode\",       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"title\": \"LiftState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/state   ``` {   \"$defs\": {     \"AssignedTo\": {       \"properties\": {         \"group\": {           \"title\": \"Group\",           \"type\": \"string\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         }       },       \"required\": [         \"group\",         \"name\"       ],       \"title\": \"AssignedTo\",       \"type\": \"object\"     },     \"Assignment\": {       \"properties\": {         \"fleet_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Fleet Name\"         },         \"expected_robot_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Expected Robot Name\"         }       },       \"title\": \"Assignment\",       \"type\": \"object\"     },     \"Booking\": {       \"properties\": {         \"id\": {           \"description\": \"The unique identifier for this task\",           \"title\": \"Id\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Earliest Start Time\"         },         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Request Time\"         },         \"priority\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Priority information about this task\",           \"title\": \"Priority\"         },         \"labels\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"title\": \"Labels\"         },         \"requester\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"(Optional) An identifier for the entity that requested this task\",           \"title\": \"Requester\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Booking\",       \"type\": \"object\"     },     \"Cancellation\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Cancellation\",       \"type\": \"object\"     },     \"Category\": {       \"description\": \"The category of this task or phase\",       \"title\": \"Category\",       \"type\": \"string\"     },     \"Detail\": {       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"items\": {},           \"type\": \"array\"         },         {           \"type\": \"string\"         }       ],       \"description\": \"Detailed information about a task, phase, or event\",       \"title\": \"Detail\"     },     \"Dispatch\": {       \"properties\": {         \"status\": {           \"$ref\": \"#/$defs/Status2\"         },         \"assignment\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Assignment\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"errors\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Error\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Errors\"         }       },       \"required\": [         \"status\"       ],       \"title\": \"Dispatch\",       \"type\": \"object\"     },     \"Error\": {       \"properties\": {         \"code\": {           \"anyOf\": [             {               \"minimum\": 0,               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A standard code for the kind of error that has occurred\",           \"title\": \"Code\"         },         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The category of the error\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Details about the error\",           \"title\": \"Detail\"         }       },       \"title\": \"Error\",       \"type\": \"object\"     },     \"EstimateMillis\": {       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"title\": \"EstimateMillis\",       \"type\": \"integer\"     },     \"EventState\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The brief name of the event\",           \"title\": \"Name\"         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the event\"         },         \"deps\": {           \"anyOf\": [             {               \"items\": {                 \"minimum\": 0,                 \"type\": \"integer\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"title\": \"Deps\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"EventState\",       \"type\": \"object\"     },     \"Id\": {       \"minimum\": 0,       \"title\": \"Id\",       \"type\": \"integer\"     },     \"Interruption\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the interruption request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"resumed_by\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/ResumedBy\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Interruption\",       \"type\": \"object\"     },     \"Killed\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Killed\",       \"type\": \"object\"     },     \"Phase\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"category\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Category\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"unix_millis_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Start Time\"         },         \"unix_millis_finish_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Finish Time\"         },         \"original_estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"final_event_id\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Id\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/EventState\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"title\": \"Events\"         },         \"skip_requests\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/SkipPhaseRequest\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about any skip requests that have been received\",           \"title\": \"Skip Requests\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Phase\",       \"type\": \"object\"     },     \"ResumedBy\": {       \"properties\": {         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The time that the resume request arrived\",           \"title\": \"Unix Millis Request Time\"         },         \"labels\": {           \"description\": \"Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"labels\"       ],       \"title\": \"ResumedBy\",       \"type\": \"object\"     },     \"SkipPhaseRequest\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"undo\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Undo\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about an undo skip request that applied to this request\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"queued\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ],       \"title\": \"Status\",       \"type\": \"string\"     },     \"Status2\": {       \"enum\": [         \"queued\",         \"selected\",         \"dispatched\",         \"failed_to_assign\",         \"canceled_in_flight\"       ],       \"title\": \"Status2\",       \"type\": \"string\"     },     \"Undo\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the undo skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Undo\",       \"type\": \"object\"     }   },   \"properties\": {     \"booking\": {       \"$ref\": \"#/$defs/Booking\"     },     \"category\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Category\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"detail\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Detail\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"unix_millis_start_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Start Time\"     },     \"unix_millis_finish_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Finish Time\"     },     \"original_estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"assigned_to\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/AssignedTo\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Which agent (robot) is the task assigned to\"     },     \"status\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Status\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"dispatch\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Dispatch\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phase\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"title\": \"Phases\"     },     \"completed\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the IDs of completed phases of this task\",       \"title\": \"Completed\"     },     \"active\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Id\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"The ID of the active phase for this task\"     },     \"pending\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the pending phases of this task\",       \"title\": \"Pending\"     },     \"interruptions\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Interruption\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"title\": \"Interruptions\"     },     \"cancellation\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Cancellation\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was cancelled, this will describe information about the request.\"     },     \"killed\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Killed\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was killed, this will describe information about the request.\"     }   },   \"required\": [     \"booking\"   ],   \"title\": \"TaskState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Phases\": {       \"additionalProperties\": false,       \"properties\": {         \"log\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/LogEntry\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Log entries related to the overall phase\",           \"title\": \"Log\"         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"items\": {                   \"$ref\": \"#/$defs/LogEntry\"                 },                 \"type\": \"array\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary whose keys (property names) are the indices of an event in the phase\",           \"title\": \"Events\"         }       },       \"title\": \"Phases\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"additionalProperties\": false,   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log entries related to the overall task\",       \"title\": \"Log\"     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phases\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"title\": \"Phases\"     }   },   \"required\": [     \"task_id\"   ],   \"title\": \"TaskEventLog\",   \"type\": \"object\" } ```   ### /dispensers/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"DispenserState\",   \"type\": \"object\" } ```   ### /ingestors/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"IngestorState\",   \"type\": \"object\" } ```   ### /fleets/{name}/state   ``` {   \"$defs\": {     \"Commission\": {       \"properties\": {         \"dispatch_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Dispatch Tasks\"         },         \"direct_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Direct Tasks\"         },         \"idle_behavior\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Idle Behavior\"         }       },       \"title\": \"Commission\",       \"type\": \"object\"     },     \"Issue\": {       \"properties\": {         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Category of the robot\'s issue\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"items\": {},               \"type\": \"array\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the issue\",           \"title\": \"Detail\"         }       },       \"title\": \"Issue\",       \"type\": \"object\"     },     \"Location2D\": {       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ],       \"title\": \"Location2D\",       \"type\": \"object\"     },     \"MutexGroups\": {       \"properties\": {         \"locked\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of mutex groups that this robot has currently locked\",           \"title\": \"Locked\"         },         \"requesting\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of the mutex groups that this robot is currently requesting but has not lockd yet\",           \"title\": \"Requesting\"         }       },       \"title\": \"MutexGroups\",       \"type\": \"object\"     },     \"RobotState\": {       \"properties\": {         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Name\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A simple token representing the status of the robot\"         },         \"task_id\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"title\": \"Task Id\"         },         \"unix_millis_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Time\"         },         \"location\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Location2D\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"battery\": {           \"anyOf\": [             {               \"maximum\": 1.0,               \"minimum\": 0.0,               \"type\": \"number\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"title\": \"Battery\"         },         \"issues\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Issue\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of issues with the robot that operators need to address\",           \"title\": \"Issues\"         },         \"commission\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Commission\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"mutex_groups\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/MutexGroups\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the mutex groups that this robot is interacting with\"         }       },       \"title\": \"RobotState\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ],       \"title\": \"Status\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/RobotState\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetState\",   \"type\": \"object\" } ```   ### /fleets/{name}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log for the overall fleet\",       \"title\": \"Log\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"items\": {               \"$ref\": \"#/$defs/LogEntry\"             },             \"type\": \"array\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetLog\",   \"type\": \"object\" } ```   ### /rios   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"type\": {       \"title\": \"Type\",       \"type\": \"string\"     },     \"data\": {       \"title\": \"Data\",       \"type\": \"object\"     }   },   \"required\": [     \"id\",     \"type\",     \"data\"   ],   \"title\": \"Rio\",   \"type\": \"object\" } ```
+     * # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ``` ### /alerts/requests   ``` {   \"$defs\": {     \"AlertParameter\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"value\": {           \"title\": \"Value\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"value\"       ],       \"title\": \"AlertParameter\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_alert_time\": {       \"title\": \"Unix Millis Alert Time\",       \"type\": \"integer\"     },     \"title\": {       \"title\": \"Title\",       \"type\": \"string\"     },     \"subtitle\": {       \"title\": \"Subtitle\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     },     \"display\": {       \"title\": \"Display\",       \"type\": \"boolean\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"responses_available\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Responses Available\",       \"type\": \"array\"     },     \"alert_parameters\": {       \"items\": {         \"$ref\": \"#/$defs/AlertParameter\"       },       \"title\": \"Alert Parameters\",       \"type\": \"array\"     },     \"task_id\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"title\": \"Task Id\"     }   },   \"required\": [     \"id\",     \"unix_millis_alert_time\",     \"title\",     \"subtitle\",     \"message\",     \"display\",     \"tier\",     \"responses_available\",     \"alert_parameters\",     \"task_id\"   ],   \"title\": \"AlertRequest\",   \"type\": \"object\" } ```   ### /alerts/responses   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_response_time\": {       \"title\": \"Unix Millis Response Time\",       \"type\": \"integer\"     },     \"response\": {       \"title\": \"Response\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"unix_millis_response_time\",     \"response\"   ],   \"title\": \"AlertResponse\",   \"type\": \"object\" } ```   ### /beacons   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"online\": {       \"title\": \"Online\",       \"type\": \"boolean\"     },     \"category\": {       \"title\": \"Category\",       \"type\": \"string\"     },     \"activated\": {       \"title\": \"Activated\",       \"type\": \"boolean\"     },     \"level\": {       \"title\": \"Level\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"online\",     \"category\",     \"activated\",     \"level\"   ],   \"title\": \"BeaconState\",   \"type\": \"object\" } ```   ### /building_map   ``` {   \"$defs\": {     \"AffineImage\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ],       \"title\": \"AffineImage\",       \"type\": \"object\"     },     \"Door\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"type\": \"number\"         },         \"door_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Door Type\",           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"type\": \"number\"         },         \"motion_direction\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Motion Direction\",           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ],       \"title\": \"Door\",       \"type\": \"object\"     },     \"Graph\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"vertices\": {           \"items\": {             \"$ref\": \"#/$defs/GraphNode\"           },           \"title\": \"Vertices\",           \"type\": \"array\"         },         \"edges\": {           \"items\": {             \"$ref\": \"#/$defs/GraphEdge\"           },           \"title\": \"Edges\",           \"type\": \"array\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ],       \"title\": \"Graph\",       \"type\": \"object\"     },     \"GraphEdge\": {       \"properties\": {         \"v1_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V1 Idx\",           \"type\": \"integer\"         },         \"v2_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V2 Idx\",           \"type\": \"integer\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         },         \"edge_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Edge Type\",           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ],       \"title\": \"GraphEdge\",       \"type\": \"object\"     },     \"GraphNode\": {       \"properties\": {         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ],       \"title\": \"GraphNode\",       \"type\": \"object\"     },     \"Level\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"type\": \"number\"         },         \"images\": {           \"items\": {             \"$ref\": \"#/$defs/AffineImage\"           },           \"title\": \"Images\",           \"type\": \"array\"         },         \"places\": {           \"items\": {             \"$ref\": \"#/$defs/Place\"           },           \"title\": \"Places\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"nav_graphs\": {           \"items\": {             \"$ref\": \"#/$defs/Graph\"           },           \"title\": \"Nav Graphs\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ],       \"title\": \"Level\",       \"type\": \"object\"     },     \"Lift\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"levels\": {           \"items\": {             \"type\": \"string\"           },           \"title\": \"Levels\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         },         \"ref_x\": {           \"title\": \"Ref X\",           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ],       \"title\": \"Lift\",       \"type\": \"object\"     },     \"Param\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"type\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Type\",           \"type\": \"integer\"         },         \"value_int\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Value Int\",           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ],       \"title\": \"Param\",       \"type\": \"object\"     },     \"Place\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ],       \"title\": \"Place\",       \"type\": \"object\"     }   },   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"levels\": {       \"items\": {         \"$ref\": \"#/$defs/Level\"       },       \"title\": \"Levels\",       \"type\": \"array\"     },     \"lifts\": {       \"items\": {         \"$ref\": \"#/$defs/Lift\"       },       \"title\": \"Lifts\",       \"type\": \"array\"     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"title\": \"BuildingMap\",   \"type\": \"object\" } ```   ### /building_map/fire_alarm_trigger   ``` {   \"properties\": {     \"unix_millis_time\": {       \"title\": \"Unix Millis Time\",       \"type\": \"integer\"     },     \"trigger\": {       \"title\": \"Trigger\",       \"type\": \"boolean\"     }   },   \"required\": [     \"unix_millis_time\",     \"trigger\"   ],   \"title\": \"FireAlarmTriggerState\",   \"type\": \"object\" } ```   ### /doors/{door_name}/state   ``` {   \"$defs\": {     \"DoorMode\": {       \"properties\": {         \"value\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Value\",           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ],       \"title\": \"DoorMode\",       \"type\": \"object\"     },     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"door_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"door_name\": {       \"title\": \"Door Name\",       \"type\": \"string\"     },     \"current_mode\": {       \"$ref\": \"#/$defs/DoorMode\"     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"title\": \"DoorState\",   \"type\": \"object\" } ```   ### /lifts/{lift_name}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"lift_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"type\": \"string\"     },     \"available_floors\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Available Floors\",       \"type\": \"array\"     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"type\": \"string\"     },     \"door_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Door State\",       \"type\": \"integer\"     },     \"motion_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Motion State\",       \"type\": \"integer\"     },     \"available_modes\": {       \"items\": {         \"type\": \"integer\"       },       \"title\": \"Available Modes\",       \"type\": \"array\"     },     \"current_mode\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Current Mode\",       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"title\": \"LiftState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/state   ``` {   \"$defs\": {     \"AssignedTo\": {       \"properties\": {         \"group\": {           \"title\": \"Group\",           \"type\": \"string\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         }       },       \"required\": [         \"group\",         \"name\"       ],       \"title\": \"AssignedTo\",       \"type\": \"object\"     },     \"Assignment\": {       \"properties\": {         \"fleet_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Fleet Name\"         },         \"expected_robot_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Expected Robot Name\"         }       },       \"title\": \"Assignment\",       \"type\": \"object\"     },     \"Booking\": {       \"properties\": {         \"id\": {           \"description\": \"The unique identifier for this task\",           \"title\": \"Id\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Earliest Start Time\"         },         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Request Time\"         },         \"priority\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Priority information about this task\",           \"title\": \"Priority\"         },         \"labels\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"title\": \"Labels\"         },         \"requester\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"(Optional) An identifier for the entity that requested this task\",           \"title\": \"Requester\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Booking\",       \"type\": \"object\"     },     \"Cancellation\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Cancellation\",       \"type\": \"object\"     },     \"Category\": {       \"description\": \"The category of this task or phase\",       \"title\": \"Category\",       \"type\": \"string\"     },     \"Detail\": {       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"items\": {},           \"type\": \"array\"         },         {           \"type\": \"string\"         }       ],       \"description\": \"Detailed information about a task, phase, or event\",       \"title\": \"Detail\"     },     \"Dispatch\": {       \"properties\": {         \"status\": {           \"$ref\": \"#/$defs/Status2\"         },         \"assignment\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Assignment\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"errors\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Error\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Errors\"         }       },       \"required\": [         \"status\"       ],       \"title\": \"Dispatch\",       \"type\": \"object\"     },     \"Error\": {       \"properties\": {         \"code\": {           \"anyOf\": [             {               \"minimum\": 0,               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A standard code for the kind of error that has occurred\",           \"title\": \"Code\"         },         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The category of the error\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Details about the error\",           \"title\": \"Detail\"         }       },       \"title\": \"Error\",       \"type\": \"object\"     },     \"EstimateMillis\": {       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"title\": \"EstimateMillis\",       \"type\": \"integer\"     },     \"EventState\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The brief name of the event\",           \"title\": \"Name\"         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the event\"         },         \"deps\": {           \"anyOf\": [             {               \"items\": {                 \"minimum\": 0,                 \"type\": \"integer\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"title\": \"Deps\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"EventState\",       \"type\": \"object\"     },     \"Id\": {       \"minimum\": 0,       \"title\": \"Id\",       \"type\": \"integer\"     },     \"Interruption\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the interruption request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"resumed_by\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/ResumedBy\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Interruption\",       \"type\": \"object\"     },     \"Killed\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Killed\",       \"type\": \"object\"     },     \"Phase\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"category\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Category\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"unix_millis_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Start Time\"         },         \"unix_millis_finish_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Finish Time\"         },         \"original_estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"final_event_id\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Id\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/EventState\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"title\": \"Events\"         },         \"skip_requests\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/SkipPhaseRequest\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about any skip requests that have been received\",           \"title\": \"Skip Requests\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Phase\",       \"type\": \"object\"     },     \"ResumedBy\": {       \"properties\": {         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The time that the resume request arrived\",           \"title\": \"Unix Millis Request Time\"         },         \"labels\": {           \"description\": \"Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"labels\"       ],       \"title\": \"ResumedBy\",       \"type\": \"object\"     },     \"SkipPhaseRequest\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"undo\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Undo\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about an undo skip request that applied to this request\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"queued\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ],       \"title\": \"Status\",       \"type\": \"string\"     },     \"Status2\": {       \"enum\": [         \"queued\",         \"selected\",         \"dispatched\",         \"failed_to_assign\",         \"canceled_in_flight\"       ],       \"title\": \"Status2\",       \"type\": \"string\"     },     \"Undo\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the undo skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Undo\",       \"type\": \"object\"     }   },   \"properties\": {     \"booking\": {       \"$ref\": \"#/$defs/Booking\"     },     \"category\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Category\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"detail\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Detail\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"unix_millis_start_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Start Time\"     },     \"unix_millis_finish_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Finish Time\"     },     \"original_estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"assigned_to\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/AssignedTo\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Which agent (robot) is the task assigned to\"     },     \"status\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Status\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"dispatch\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Dispatch\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phase\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"title\": \"Phases\"     },     \"completed\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the IDs of completed phases of this task\",       \"title\": \"Completed\"     },     \"active\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Id\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"The ID of the active phase for this task\"     },     \"pending\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the pending phases of this task\",       \"title\": \"Pending\"     },     \"interruptions\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Interruption\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"title\": \"Interruptions\"     },     \"cancellation\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Cancellation\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was cancelled, this will describe information about the request.\"     },     \"killed\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Killed\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was killed, this will describe information about the request.\"     }   },   \"required\": [     \"booking\"   ],   \"title\": \"TaskState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Phases\": {       \"additionalProperties\": false,       \"properties\": {         \"log\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/LogEntry\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Log entries related to the overall phase\",           \"title\": \"Log\"         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"items\": {                   \"$ref\": \"#/$defs/LogEntry\"                 },                 \"type\": \"array\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary whose keys (property names) are the indices of an event in the phase\",           \"title\": \"Events\"         }       },       \"title\": \"Phases\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"additionalProperties\": false,   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log entries related to the overall task\",       \"title\": \"Log\"     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phases\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"title\": \"Phases\"     }   },   \"required\": [     \"task_id\"   ],   \"title\": \"TaskEventLog\",   \"type\": \"object\" } ```   ### /dispensers/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"DispenserState\",   \"type\": \"object\" } ```   ### /ingestors/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"IngestorState\",   \"type\": \"object\" } ```   ### /fleets/{name}/state   ``` {   \"$defs\": {     \"Commission\": {       \"properties\": {         \"dispatch_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Dispatch Tasks\"         },         \"direct_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Direct Tasks\"         },         \"idle_behavior\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Idle Behavior\"         }       },       \"title\": \"Commission\",       \"type\": \"object\"     },     \"Issue\": {       \"properties\": {         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Category of the robot\'s issue\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"items\": {},               \"type\": \"array\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the issue\",           \"title\": \"Detail\"         }       },       \"title\": \"Issue\",       \"type\": \"object\"     },     \"Location2D\": {       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ],       \"title\": \"Location2D\",       \"type\": \"object\"     },     \"MutexGroups\": {       \"properties\": {         \"locked\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of mutex groups that this robot has currently locked\",           \"title\": \"Locked\"         },         \"requesting\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of the mutex groups that this robot is currently requesting but has not lockd yet\",           \"title\": \"Requesting\"         }       },       \"title\": \"MutexGroups\",       \"type\": \"object\"     },     \"RobotState\": {       \"properties\": {         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Name\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A simple token representing the status of the robot\"         },         \"task_id\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"title\": \"Task Id\"         },         \"unix_millis_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Time\"         },         \"location\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Location2D\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"battery\": {           \"anyOf\": [             {               \"maximum\": 1.0,               \"minimum\": 0.0,               \"type\": \"number\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"title\": \"Battery\"         },         \"issues\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Issue\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of issues with the robot that operators need to address\",           \"title\": \"Issues\"         },         \"commission\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Commission\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"mutex_groups\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/MutexGroups\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the mutex groups that this robot is interacting with\"         }       },       \"title\": \"RobotState\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ],       \"title\": \"Status\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/RobotState\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetState\",   \"type\": \"object\" } ```   ### /fleets/{name}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log for the overall fleet\",       \"title\": \"Log\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"items\": {               \"$ref\": \"#/$defs/LogEntry\"             },             \"type\": \"array\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetLog\",   \"type\": \"object\" } ```   ### /rios   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"type\": {       \"title\": \"Type\",       \"type\": \"string\"     },     \"data\": {       \"title\": \"Data\",       \"type\": \"object\"     }   },   \"required\": [     \"id\",     \"type\",     \"data\"   ],   \"title\": \"Rio\",   \"type\": \"object\" } ```
      * @summary Socket.io endpoint
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7013,19 +6630,14 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     /**
      * Get the effective permissions of the current user
      * @summary Get Effective Permissions
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getEffectivePermissionsPermissionsGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Permission>>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getEffectivePermissionsPermissionsGet(
-          authorization,
-          options,
-        );
+        await localVarAxiosParamCreator.getEffectivePermissionsPermissionsGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['DefaultApi.getEffectivePermissionsPermissionsGet']?.[
@@ -7063,18 +6675,13 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     /**
      * Get the currently logged in user
      * @summary Get User
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getUserUserGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getUserUserGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getUserUserGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['DefaultApi.getUserUserGet']?.[localVarOperationServerIndex]?.url;
@@ -7087,7 +6694,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ``` ### /alerts/requests   ``` {   \"$defs\": {     \"AlertParameter\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"value\": {           \"title\": \"Value\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"value\"       ],       \"title\": \"AlertParameter\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_alert_time\": {       \"title\": \"Unix Millis Alert Time\",       \"type\": \"integer\"     },     \"title\": {       \"title\": \"Title\",       \"type\": \"string\"     },     \"subtitle\": {       \"title\": \"Subtitle\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     },     \"display\": {       \"title\": \"Display\",       \"type\": \"boolean\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"responses_available\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Responses Available\",       \"type\": \"array\"     },     \"alert_parameters\": {       \"items\": {         \"$ref\": \"#/$defs/AlertParameter\"       },       \"title\": \"Alert Parameters\",       \"type\": \"array\"     },     \"task_id\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"title\": \"Task Id\"     }   },   \"required\": [     \"id\",     \"unix_millis_alert_time\",     \"title\",     \"subtitle\",     \"message\",     \"display\",     \"tier\",     \"responses_available\",     \"alert_parameters\",     \"task_id\"   ],   \"title\": \"AlertRequest\",   \"type\": \"object\" } ```   ### /alerts/responses   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_response_time\": {       \"title\": \"Unix Millis Response Time\",       \"type\": \"integer\"     },     \"response\": {       \"title\": \"Response\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"unix_millis_response_time\",     \"response\"   ],   \"title\": \"AlertResponse\",   \"type\": \"object\" } ```   ### /beacons   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"online\": {       \"title\": \"Online\",       \"type\": \"boolean\"     },     \"category\": {       \"title\": \"Category\",       \"type\": \"string\"     },     \"activated\": {       \"title\": \"Activated\",       \"type\": \"boolean\"     },     \"level\": {       \"title\": \"Level\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"online\",     \"category\",     \"activated\",     \"level\"   ],   \"title\": \"BeaconState\",   \"type\": \"object\" } ```   ### /building_map   ``` {   \"$defs\": {     \"AffineImage\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ],       \"title\": \"AffineImage\",       \"type\": \"object\"     },     \"Door\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"type\": \"number\"         },         \"door_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Door Type\",           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"type\": \"number\"         },         \"motion_direction\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Motion Direction\",           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ],       \"title\": \"Door\",       \"type\": \"object\"     },     \"Graph\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"vertices\": {           \"items\": {             \"$ref\": \"#/$defs/GraphNode\"           },           \"title\": \"Vertices\",           \"type\": \"array\"         },         \"edges\": {           \"items\": {             \"$ref\": \"#/$defs/GraphEdge\"           },           \"title\": \"Edges\",           \"type\": \"array\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ],       \"title\": \"Graph\",       \"type\": \"object\"     },     \"GraphEdge\": {       \"properties\": {         \"v1_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V1 Idx\",           \"type\": \"integer\"         },         \"v2_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V2 Idx\",           \"type\": \"integer\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         },         \"edge_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Edge Type\",           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ],       \"title\": \"GraphEdge\",       \"type\": \"object\"     },     \"GraphNode\": {       \"properties\": {         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ],       \"title\": \"GraphNode\",       \"type\": \"object\"     },     \"Level\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"type\": \"number\"         },         \"images\": {           \"items\": {             \"$ref\": \"#/$defs/AffineImage\"           },           \"title\": \"Images\",           \"type\": \"array\"         },         \"places\": {           \"items\": {             \"$ref\": \"#/$defs/Place\"           },           \"title\": \"Places\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"nav_graphs\": {           \"items\": {             \"$ref\": \"#/$defs/Graph\"           },           \"title\": \"Nav Graphs\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ],       \"title\": \"Level\",       \"type\": \"object\"     },     \"Lift\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"levels\": {           \"items\": {             \"type\": \"string\"           },           \"title\": \"Levels\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         },         \"ref_x\": {           \"title\": \"Ref X\",           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ],       \"title\": \"Lift\",       \"type\": \"object\"     },     \"Param\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"type\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Type\",           \"type\": \"integer\"         },         \"value_int\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Value Int\",           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ],       \"title\": \"Param\",       \"type\": \"object\"     },     \"Place\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ],       \"title\": \"Place\",       \"type\": \"object\"     }   },   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"levels\": {       \"items\": {         \"$ref\": \"#/$defs/Level\"       },       \"title\": \"Levels\",       \"type\": \"array\"     },     \"lifts\": {       \"items\": {         \"$ref\": \"#/$defs/Lift\"       },       \"title\": \"Lifts\",       \"type\": \"array\"     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"title\": \"BuildingMap\",   \"type\": \"object\" } ```   ### /building_map/fire_alarm_trigger   ``` {   \"properties\": {     \"unix_millis_time\": {       \"title\": \"Unix Millis Time\",       \"type\": \"integer\"     },     \"trigger\": {       \"title\": \"Trigger\",       \"type\": \"boolean\"     }   },   \"required\": [     \"unix_millis_time\",     \"trigger\"   ],   \"title\": \"FireAlarmTriggerState\",   \"type\": \"object\" } ```   ### /delivery_alerts   ``` {   \"$defs\": {     \"Action\": {       \"enum\": [         \"waiting\",         \"cancel\",         \"override\",         \"resume\"       ],       \"title\": \"Action\",       \"type\": \"string\"     },     \"Category\": {       \"enum\": [         \"missing\",         \"wrong\",         \"obstructed\",         \"cancelled\"       ],       \"title\": \"Category\",       \"type\": \"string\"     },     \"Tier\": {       \"enum\": [         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"category\": {       \"$ref\": \"#/$defs/Category\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"action\": {       \"$ref\": \"#/$defs/Action\"     },     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"category\",     \"tier\",     \"action\",     \"task_id\",     \"message\"   ],   \"title\": \"DeliveryAlert\",   \"type\": \"object\" } ```   ### /doors/{door_name}/state   ``` {   \"$defs\": {     \"DoorMode\": {       \"properties\": {         \"value\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Value\",           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ],       \"title\": \"DoorMode\",       \"type\": \"object\"     },     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"door_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"door_name\": {       \"title\": \"Door Name\",       \"type\": \"string\"     },     \"current_mode\": {       \"$ref\": \"#/$defs/DoorMode\"     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"title\": \"DoorState\",   \"type\": \"object\" } ```   ### /lifts/{lift_name}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"lift_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"type\": \"string\"     },     \"available_floors\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Available Floors\",       \"type\": \"array\"     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"type\": \"string\"     },     \"door_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Door State\",       \"type\": \"integer\"     },     \"motion_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Motion State\",       \"type\": \"integer\"     },     \"available_modes\": {       \"items\": {         \"type\": \"integer\"       },       \"title\": \"Available Modes\",       \"type\": \"array\"     },     \"current_mode\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Current Mode\",       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"title\": \"LiftState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/state   ``` {   \"$defs\": {     \"AssignedTo\": {       \"properties\": {         \"group\": {           \"title\": \"Group\",           \"type\": \"string\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         }       },       \"required\": [         \"group\",         \"name\"       ],       \"title\": \"AssignedTo\",       \"type\": \"object\"     },     \"Assignment\": {       \"properties\": {         \"fleet_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Fleet Name\"         },         \"expected_robot_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Expected Robot Name\"         }       },       \"title\": \"Assignment\",       \"type\": \"object\"     },     \"Booking\": {       \"properties\": {         \"id\": {           \"description\": \"The unique identifier for this task\",           \"title\": \"Id\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Earliest Start Time\"         },         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Request Time\"         },         \"priority\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Priority information about this task\",           \"title\": \"Priority\"         },         \"labels\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"title\": \"Labels\"         },         \"requester\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"(Optional) An identifier for the entity that requested this task\",           \"title\": \"Requester\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Booking\",       \"type\": \"object\"     },     \"Cancellation\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Cancellation\",       \"type\": \"object\"     },     \"Category\": {       \"description\": \"The category of this task or phase\",       \"title\": \"Category\",       \"type\": \"string\"     },     \"Detail\": {       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"items\": {},           \"type\": \"array\"         },         {           \"type\": \"string\"         }       ],       \"description\": \"Detailed information about a task, phase, or event\",       \"title\": \"Detail\"     },     \"Dispatch\": {       \"properties\": {         \"status\": {           \"$ref\": \"#/$defs/Status2\"         },         \"assignment\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Assignment\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"errors\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Error\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Errors\"         }       },       \"required\": [         \"status\"       ],       \"title\": \"Dispatch\",       \"type\": \"object\"     },     \"Error\": {       \"properties\": {         \"code\": {           \"anyOf\": [             {               \"minimum\": 0,               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A standard code for the kind of error that has occurred\",           \"title\": \"Code\"         },         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The category of the error\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Details about the error\",           \"title\": \"Detail\"         }       },       \"title\": \"Error\",       \"type\": \"object\"     },     \"EstimateMillis\": {       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"title\": \"EstimateMillis\",       \"type\": \"integer\"     },     \"EventState\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The brief name of the event\",           \"title\": \"Name\"         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the event\"         },         \"deps\": {           \"anyOf\": [             {               \"items\": {                 \"minimum\": 0,                 \"type\": \"integer\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"title\": \"Deps\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"EventState\",       \"type\": \"object\"     },     \"Id\": {       \"minimum\": 0,       \"title\": \"Id\",       \"type\": \"integer\"     },     \"Interruption\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the interruption request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"resumed_by\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/ResumedBy\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Interruption\",       \"type\": \"object\"     },     \"Killed\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Killed\",       \"type\": \"object\"     },     \"Phase\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"category\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Category\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"unix_millis_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Start Time\"         },         \"unix_millis_finish_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Finish Time\"         },         \"original_estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"final_event_id\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Id\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/EventState\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"title\": \"Events\"         },         \"skip_requests\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/SkipPhaseRequest\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about any skip requests that have been received\",           \"title\": \"Skip Requests\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Phase\",       \"type\": \"object\"     },     \"ResumedBy\": {       \"properties\": {         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The time that the resume request arrived\",           \"title\": \"Unix Millis Request Time\"         },         \"labels\": {           \"description\": \"Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"labels\"       ],       \"title\": \"ResumedBy\",       \"type\": \"object\"     },     \"SkipPhaseRequest\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"undo\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Undo\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about an undo skip request that applied to this request\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"queued\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ],       \"title\": \"Status\",       \"type\": \"string\"     },     \"Status2\": {       \"enum\": [         \"queued\",         \"selected\",         \"dispatched\",         \"failed_to_assign\",         \"canceled_in_flight\"       ],       \"title\": \"Status2\",       \"type\": \"string\"     },     \"Undo\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the undo skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Undo\",       \"type\": \"object\"     }   },   \"properties\": {     \"booking\": {       \"$ref\": \"#/$defs/Booking\"     },     \"category\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Category\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"detail\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Detail\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"unix_millis_start_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Start Time\"     },     \"unix_millis_finish_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Finish Time\"     },     \"original_estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"assigned_to\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/AssignedTo\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Which agent (robot) is the task assigned to\"     },     \"status\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Status\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"dispatch\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Dispatch\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phase\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"title\": \"Phases\"     },     \"completed\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the IDs of completed phases of this task\",       \"title\": \"Completed\"     },     \"active\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Id\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"The ID of the active phase for this task\"     },     \"pending\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the pending phases of this task\",       \"title\": \"Pending\"     },     \"interruptions\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Interruption\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"title\": \"Interruptions\"     },     \"cancellation\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Cancellation\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was cancelled, this will describe information about the request.\"     },     \"killed\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Killed\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was killed, this will describe information about the request.\"     }   },   \"required\": [     \"booking\"   ],   \"title\": \"TaskState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Phases\": {       \"additionalProperties\": false,       \"properties\": {         \"log\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/LogEntry\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Log entries related to the overall phase\",           \"title\": \"Log\"         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"items\": {                   \"$ref\": \"#/$defs/LogEntry\"                 },                 \"type\": \"array\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary whose keys (property names) are the indices of an event in the phase\",           \"title\": \"Events\"         }       },       \"title\": \"Phases\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"additionalProperties\": false,   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log entries related to the overall task\",       \"title\": \"Log\"     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phases\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"title\": \"Phases\"     }   },   \"required\": [     \"task_id\"   ],   \"title\": \"TaskEventLog\",   \"type\": \"object\" } ```   ### /dispensers/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"DispenserState\",   \"type\": \"object\" } ```   ### /ingestors/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"IngestorState\",   \"type\": \"object\" } ```   ### /fleets/{name}/state   ``` {   \"$defs\": {     \"Commission\": {       \"properties\": {         \"dispatch_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Dispatch Tasks\"         },         \"direct_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Direct Tasks\"         },         \"idle_behavior\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Idle Behavior\"         }       },       \"title\": \"Commission\",       \"type\": \"object\"     },     \"Issue\": {       \"properties\": {         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Category of the robot\'s issue\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"items\": {},               \"type\": \"array\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the issue\",           \"title\": \"Detail\"         }       },       \"title\": \"Issue\",       \"type\": \"object\"     },     \"Location2D\": {       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ],       \"title\": \"Location2D\",       \"type\": \"object\"     },     \"MutexGroups\": {       \"properties\": {         \"locked\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of mutex groups that this robot has currently locked\",           \"title\": \"Locked\"         },         \"requesting\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of the mutex groups that this robot is currently requesting but has not lockd yet\",           \"title\": \"Requesting\"         }       },       \"title\": \"MutexGroups\",       \"type\": \"object\"     },     \"RobotState\": {       \"properties\": {         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Name\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A simple token representing the status of the robot\"         },         \"task_id\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"title\": \"Task Id\"         },         \"unix_millis_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Time\"         },         \"location\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Location2D\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"battery\": {           \"anyOf\": [             {               \"maximum\": 1.0,               \"minimum\": 0.0,               \"type\": \"number\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"title\": \"Battery\"         },         \"issues\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Issue\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of issues with the robot that operators need to address\",           \"title\": \"Issues\"         },         \"commission\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Commission\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"mutex_groups\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/MutexGroups\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the mutex groups that this robot is interacting with\"         }       },       \"title\": \"RobotState\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ],       \"title\": \"Status\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/RobotState\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetState\",   \"type\": \"object\" } ```   ### /fleets/{name}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log for the overall fleet\",       \"title\": \"Log\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"items\": {               \"$ref\": \"#/$defs/LogEntry\"             },             \"type\": \"array\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetLog\",   \"type\": \"object\" } ```   ### /rios   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"type\": {       \"title\": \"Type\",       \"type\": \"string\"     },     \"data\": {       \"title\": \"Data\",       \"type\": \"object\"     }   },   \"required\": [     \"id\",     \"type\",     \"data\"   ],   \"title\": \"Rio\",   \"type\": \"object\" } ```
+     * # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ``` ### /alerts/requests   ``` {   \"$defs\": {     \"AlertParameter\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"value\": {           \"title\": \"Value\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"value\"       ],       \"title\": \"AlertParameter\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_alert_time\": {       \"title\": \"Unix Millis Alert Time\",       \"type\": \"integer\"     },     \"title\": {       \"title\": \"Title\",       \"type\": \"string\"     },     \"subtitle\": {       \"title\": \"Subtitle\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     },     \"display\": {       \"title\": \"Display\",       \"type\": \"boolean\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"responses_available\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Responses Available\",       \"type\": \"array\"     },     \"alert_parameters\": {       \"items\": {         \"$ref\": \"#/$defs/AlertParameter\"       },       \"title\": \"Alert Parameters\",       \"type\": \"array\"     },     \"task_id\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"title\": \"Task Id\"     }   },   \"required\": [     \"id\",     \"unix_millis_alert_time\",     \"title\",     \"subtitle\",     \"message\",     \"display\",     \"tier\",     \"responses_available\",     \"alert_parameters\",     \"task_id\"   ],   \"title\": \"AlertRequest\",   \"type\": \"object\" } ```   ### /alerts/responses   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_response_time\": {       \"title\": \"Unix Millis Response Time\",       \"type\": \"integer\"     },     \"response\": {       \"title\": \"Response\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"unix_millis_response_time\",     \"response\"   ],   \"title\": \"AlertResponse\",   \"type\": \"object\" } ```   ### /beacons   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"online\": {       \"title\": \"Online\",       \"type\": \"boolean\"     },     \"category\": {       \"title\": \"Category\",       \"type\": \"string\"     },     \"activated\": {       \"title\": \"Activated\",       \"type\": \"boolean\"     },     \"level\": {       \"title\": \"Level\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"online\",     \"category\",     \"activated\",     \"level\"   ],   \"title\": \"BeaconState\",   \"type\": \"object\" } ```   ### /building_map   ``` {   \"$defs\": {     \"AffineImage\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ],       \"title\": \"AffineImage\",       \"type\": \"object\"     },     \"Door\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"type\": \"number\"         },         \"door_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Door Type\",           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"type\": \"number\"         },         \"motion_direction\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Motion Direction\",           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ],       \"title\": \"Door\",       \"type\": \"object\"     },     \"Graph\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"vertices\": {           \"items\": {             \"$ref\": \"#/$defs/GraphNode\"           },           \"title\": \"Vertices\",           \"type\": \"array\"         },         \"edges\": {           \"items\": {             \"$ref\": \"#/$defs/GraphEdge\"           },           \"title\": \"Edges\",           \"type\": \"array\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ],       \"title\": \"Graph\",       \"type\": \"object\"     },     \"GraphEdge\": {       \"properties\": {         \"v1_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V1 Idx\",           \"type\": \"integer\"         },         \"v2_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V2 Idx\",           \"type\": \"integer\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         },         \"edge_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Edge Type\",           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ],       \"title\": \"GraphEdge\",       \"type\": \"object\"     },     \"GraphNode\": {       \"properties\": {         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ],       \"title\": \"GraphNode\",       \"type\": \"object\"     },     \"Level\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"type\": \"number\"         },         \"images\": {           \"items\": {             \"$ref\": \"#/$defs/AffineImage\"           },           \"title\": \"Images\",           \"type\": \"array\"         },         \"places\": {           \"items\": {             \"$ref\": \"#/$defs/Place\"           },           \"title\": \"Places\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"nav_graphs\": {           \"items\": {             \"$ref\": \"#/$defs/Graph\"           },           \"title\": \"Nav Graphs\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ],       \"title\": \"Level\",       \"type\": \"object\"     },     \"Lift\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"levels\": {           \"items\": {             \"type\": \"string\"           },           \"title\": \"Levels\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         },         \"ref_x\": {           \"title\": \"Ref X\",           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ],       \"title\": \"Lift\",       \"type\": \"object\"     },     \"Param\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"type\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Type\",           \"type\": \"integer\"         },         \"value_int\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Value Int\",           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ],       \"title\": \"Param\",       \"type\": \"object\"     },     \"Place\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ],       \"title\": \"Place\",       \"type\": \"object\"     }   },   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"levels\": {       \"items\": {         \"$ref\": \"#/$defs/Level\"       },       \"title\": \"Levels\",       \"type\": \"array\"     },     \"lifts\": {       \"items\": {         \"$ref\": \"#/$defs/Lift\"       },       \"title\": \"Lifts\",       \"type\": \"array\"     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"title\": \"BuildingMap\",   \"type\": \"object\" } ```   ### /building_map/fire_alarm_trigger   ``` {   \"properties\": {     \"unix_millis_time\": {       \"title\": \"Unix Millis Time\",       \"type\": \"integer\"     },     \"trigger\": {       \"title\": \"Trigger\",       \"type\": \"boolean\"     }   },   \"required\": [     \"unix_millis_time\",     \"trigger\"   ],   \"title\": \"FireAlarmTriggerState\",   \"type\": \"object\" } ```   ### /doors/{door_name}/state   ``` {   \"$defs\": {     \"DoorMode\": {       \"properties\": {         \"value\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Value\",           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ],       \"title\": \"DoorMode\",       \"type\": \"object\"     },     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"door_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"door_name\": {       \"title\": \"Door Name\",       \"type\": \"string\"     },     \"current_mode\": {       \"$ref\": \"#/$defs/DoorMode\"     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"title\": \"DoorState\",   \"type\": \"object\" } ```   ### /lifts/{lift_name}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"lift_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"type\": \"string\"     },     \"available_floors\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Available Floors\",       \"type\": \"array\"     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"type\": \"string\"     },     \"door_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Door State\",       \"type\": \"integer\"     },     \"motion_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Motion State\",       \"type\": \"integer\"     },     \"available_modes\": {       \"items\": {         \"type\": \"integer\"       },       \"title\": \"Available Modes\",       \"type\": \"array\"     },     \"current_mode\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Current Mode\",       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"title\": \"LiftState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/state   ``` {   \"$defs\": {     \"AssignedTo\": {       \"properties\": {         \"group\": {           \"title\": \"Group\",           \"type\": \"string\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         }       },       \"required\": [         \"group\",         \"name\"       ],       \"title\": \"AssignedTo\",       \"type\": \"object\"     },     \"Assignment\": {       \"properties\": {         \"fleet_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Fleet Name\"         },         \"expected_robot_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Expected Robot Name\"         }       },       \"title\": \"Assignment\",       \"type\": \"object\"     },     \"Booking\": {       \"properties\": {         \"id\": {           \"description\": \"The unique identifier for this task\",           \"title\": \"Id\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Earliest Start Time\"         },         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Request Time\"         },         \"priority\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Priority information about this task\",           \"title\": \"Priority\"         },         \"labels\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"title\": \"Labels\"         },         \"requester\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"(Optional) An identifier for the entity that requested this task\",           \"title\": \"Requester\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Booking\",       \"type\": \"object\"     },     \"Cancellation\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Cancellation\",       \"type\": \"object\"     },     \"Category\": {       \"description\": \"The category of this task or phase\",       \"title\": \"Category\",       \"type\": \"string\"     },     \"Detail\": {       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"items\": {},           \"type\": \"array\"         },         {           \"type\": \"string\"         }       ],       \"description\": \"Detailed information about a task, phase, or event\",       \"title\": \"Detail\"     },     \"Dispatch\": {       \"properties\": {         \"status\": {           \"$ref\": \"#/$defs/Status2\"         },         \"assignment\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Assignment\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"errors\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Error\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Errors\"         }       },       \"required\": [         \"status\"       ],       \"title\": \"Dispatch\",       \"type\": \"object\"     },     \"Error\": {       \"properties\": {         \"code\": {           \"anyOf\": [             {               \"minimum\": 0,               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A standard code for the kind of error that has occurred\",           \"title\": \"Code\"         },         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The category of the error\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Details about the error\",           \"title\": \"Detail\"         }       },       \"title\": \"Error\",       \"type\": \"object\"     },     \"EstimateMillis\": {       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"title\": \"EstimateMillis\",       \"type\": \"integer\"     },     \"EventState\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The brief name of the event\",           \"title\": \"Name\"         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the event\"         },         \"deps\": {           \"anyOf\": [             {               \"items\": {                 \"minimum\": 0,                 \"type\": \"integer\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"title\": \"Deps\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"EventState\",       \"type\": \"object\"     },     \"Id\": {       \"minimum\": 0,       \"title\": \"Id\",       \"type\": \"integer\"     },     \"Interruption\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the interruption request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"resumed_by\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/ResumedBy\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Interruption\",       \"type\": \"object\"     },     \"Killed\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Killed\",       \"type\": \"object\"     },     \"Phase\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"category\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Category\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"unix_millis_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Start Time\"         },         \"unix_millis_finish_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Finish Time\"         },         \"original_estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"final_event_id\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Id\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/EventState\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"title\": \"Events\"         },         \"skip_requests\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/SkipPhaseRequest\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about any skip requests that have been received\",           \"title\": \"Skip Requests\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Phase\",       \"type\": \"object\"     },     \"ResumedBy\": {       \"properties\": {         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The time that the resume request arrived\",           \"title\": \"Unix Millis Request Time\"         },         \"labels\": {           \"description\": \"Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"labels\"       ],       \"title\": \"ResumedBy\",       \"type\": \"object\"     },     \"SkipPhaseRequest\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"undo\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Undo\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about an undo skip request that applied to this request\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"queued\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ],       \"title\": \"Status\",       \"type\": \"string\"     },     \"Status2\": {       \"enum\": [         \"queued\",         \"selected\",         \"dispatched\",         \"failed_to_assign\",         \"canceled_in_flight\"       ],       \"title\": \"Status2\",       \"type\": \"string\"     },     \"Undo\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the undo skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Undo\",       \"type\": \"object\"     }   },   \"properties\": {     \"booking\": {       \"$ref\": \"#/$defs/Booking\"     },     \"category\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Category\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"detail\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Detail\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"unix_millis_start_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Start Time\"     },     \"unix_millis_finish_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Finish Time\"     },     \"original_estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"assigned_to\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/AssignedTo\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Which agent (robot) is the task assigned to\"     },     \"status\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Status\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"dispatch\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Dispatch\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phase\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"title\": \"Phases\"     },     \"completed\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the IDs of completed phases of this task\",       \"title\": \"Completed\"     },     \"active\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Id\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"The ID of the active phase for this task\"     },     \"pending\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the pending phases of this task\",       \"title\": \"Pending\"     },     \"interruptions\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Interruption\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"title\": \"Interruptions\"     },     \"cancellation\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Cancellation\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was cancelled, this will describe information about the request.\"     },     \"killed\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Killed\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was killed, this will describe information about the request.\"     }   },   \"required\": [     \"booking\"   ],   \"title\": \"TaskState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Phases\": {       \"additionalProperties\": false,       \"properties\": {         \"log\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/LogEntry\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Log entries related to the overall phase\",           \"title\": \"Log\"         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"items\": {                   \"$ref\": \"#/$defs/LogEntry\"                 },                 \"type\": \"array\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary whose keys (property names) are the indices of an event in the phase\",           \"title\": \"Events\"         }       },       \"title\": \"Phases\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"additionalProperties\": false,   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log entries related to the overall task\",       \"title\": \"Log\"     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phases\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"title\": \"Phases\"     }   },   \"required\": [     \"task_id\"   ],   \"title\": \"TaskEventLog\",   \"type\": \"object\" } ```   ### /dispensers/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"DispenserState\",   \"type\": \"object\" } ```   ### /ingestors/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"IngestorState\",   \"type\": \"object\" } ```   ### /fleets/{name}/state   ``` {   \"$defs\": {     \"Commission\": {       \"properties\": {         \"dispatch_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Dispatch Tasks\"         },         \"direct_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Direct Tasks\"         },         \"idle_behavior\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Idle Behavior\"         }       },       \"title\": \"Commission\",       \"type\": \"object\"     },     \"Issue\": {       \"properties\": {         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Category of the robot\'s issue\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"items\": {},               \"type\": \"array\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the issue\",           \"title\": \"Detail\"         }       },       \"title\": \"Issue\",       \"type\": \"object\"     },     \"Location2D\": {       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ],       \"title\": \"Location2D\",       \"type\": \"object\"     },     \"MutexGroups\": {       \"properties\": {         \"locked\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of mutex groups that this robot has currently locked\",           \"title\": \"Locked\"         },         \"requesting\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of the mutex groups that this robot is currently requesting but has not lockd yet\",           \"title\": \"Requesting\"         }       },       \"title\": \"MutexGroups\",       \"type\": \"object\"     },     \"RobotState\": {       \"properties\": {         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Name\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A simple token representing the status of the robot\"         },         \"task_id\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"title\": \"Task Id\"         },         \"unix_millis_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Time\"         },         \"location\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Location2D\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"battery\": {           \"anyOf\": [             {               \"maximum\": 1.0,               \"minimum\": 0.0,               \"type\": \"number\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"title\": \"Battery\"         },         \"issues\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Issue\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of issues with the robot that operators need to address\",           \"title\": \"Issues\"         },         \"commission\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Commission\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"mutex_groups\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/MutexGroups\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the mutex groups that this robot is interacting with\"         }       },       \"title\": \"RobotState\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ],       \"title\": \"Status\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/RobotState\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetState\",   \"type\": \"object\" } ```   ### /fleets/{name}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log for the overall fleet\",       \"title\": \"Log\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"items\": {               \"$ref\": \"#/$defs/LogEntry\"             },             \"type\": \"array\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetLog\",   \"type\": \"object\" } ```   ### /rios   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"type\": {       \"title\": \"Type\",       \"type\": \"string\"     },     \"data\": {       \"title\": \"Data\",       \"type\": \"object\"     }   },   \"required\": [     \"id\",     \"type\",     \"data\"   ],   \"title\": \"Rio\",   \"type\": \"object\" } ```
      * @summary Socket.io endpoint
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7124,16 +6731,12 @@ export const DefaultApiFactory = function (
     /**
      * Get the effective permissions of the current user
      * @summary Get Effective Permissions
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEffectivePermissionsPermissionsGet(
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<Array<Permission>> {
+    getEffectivePermissionsPermissionsGet(options?: any): AxiosPromise<Array<Permission>> {
       return localVarFp
-        .getEffectivePermissionsPermissionsGet(authorization, options)
+        .getEffectivePermissionsPermissionsGet(options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7148,17 +6751,14 @@ export const DefaultApiFactory = function (
     /**
      * Get the currently logged in user
      * @summary Get User
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getUserUserGet(authorization?: string | null, options?: any): AxiosPromise<User> {
-      return localVarFp
-        .getUserUserGet(authorization, options)
-        .then((request) => request(axios, basePath));
+    getUserUserGet(options?: any): AxiosPromise<User> {
+      return localVarFp.getUserUserGet(options).then((request) => request(axios, basePath));
     },
     /**
-     * # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ``` ### /alerts/requests   ``` {   \"$defs\": {     \"AlertParameter\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"value\": {           \"title\": \"Value\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"value\"       ],       \"title\": \"AlertParameter\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_alert_time\": {       \"title\": \"Unix Millis Alert Time\",       \"type\": \"integer\"     },     \"title\": {       \"title\": \"Title\",       \"type\": \"string\"     },     \"subtitle\": {       \"title\": \"Subtitle\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     },     \"display\": {       \"title\": \"Display\",       \"type\": \"boolean\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"responses_available\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Responses Available\",       \"type\": \"array\"     },     \"alert_parameters\": {       \"items\": {         \"$ref\": \"#/$defs/AlertParameter\"       },       \"title\": \"Alert Parameters\",       \"type\": \"array\"     },     \"task_id\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"title\": \"Task Id\"     }   },   \"required\": [     \"id\",     \"unix_millis_alert_time\",     \"title\",     \"subtitle\",     \"message\",     \"display\",     \"tier\",     \"responses_available\",     \"alert_parameters\",     \"task_id\"   ],   \"title\": \"AlertRequest\",   \"type\": \"object\" } ```   ### /alerts/responses   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_response_time\": {       \"title\": \"Unix Millis Response Time\",       \"type\": \"integer\"     },     \"response\": {       \"title\": \"Response\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"unix_millis_response_time\",     \"response\"   ],   \"title\": \"AlertResponse\",   \"type\": \"object\" } ```   ### /beacons   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"online\": {       \"title\": \"Online\",       \"type\": \"boolean\"     },     \"category\": {       \"title\": \"Category\",       \"type\": \"string\"     },     \"activated\": {       \"title\": \"Activated\",       \"type\": \"boolean\"     },     \"level\": {       \"title\": \"Level\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"online\",     \"category\",     \"activated\",     \"level\"   ],   \"title\": \"BeaconState\",   \"type\": \"object\" } ```   ### /building_map   ``` {   \"$defs\": {     \"AffineImage\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ],       \"title\": \"AffineImage\",       \"type\": \"object\"     },     \"Door\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"type\": \"number\"         },         \"door_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Door Type\",           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"type\": \"number\"         },         \"motion_direction\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Motion Direction\",           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ],       \"title\": \"Door\",       \"type\": \"object\"     },     \"Graph\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"vertices\": {           \"items\": {             \"$ref\": \"#/$defs/GraphNode\"           },           \"title\": \"Vertices\",           \"type\": \"array\"         },         \"edges\": {           \"items\": {             \"$ref\": \"#/$defs/GraphEdge\"           },           \"title\": \"Edges\",           \"type\": \"array\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ],       \"title\": \"Graph\",       \"type\": \"object\"     },     \"GraphEdge\": {       \"properties\": {         \"v1_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V1 Idx\",           \"type\": \"integer\"         },         \"v2_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V2 Idx\",           \"type\": \"integer\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         },         \"edge_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Edge Type\",           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ],       \"title\": \"GraphEdge\",       \"type\": \"object\"     },     \"GraphNode\": {       \"properties\": {         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ],       \"title\": \"GraphNode\",       \"type\": \"object\"     },     \"Level\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"type\": \"number\"         },         \"images\": {           \"items\": {             \"$ref\": \"#/$defs/AffineImage\"           },           \"title\": \"Images\",           \"type\": \"array\"         },         \"places\": {           \"items\": {             \"$ref\": \"#/$defs/Place\"           },           \"title\": \"Places\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"nav_graphs\": {           \"items\": {             \"$ref\": \"#/$defs/Graph\"           },           \"title\": \"Nav Graphs\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ],       \"title\": \"Level\",       \"type\": \"object\"     },     \"Lift\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"levels\": {           \"items\": {             \"type\": \"string\"           },           \"title\": \"Levels\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         },         \"ref_x\": {           \"title\": \"Ref X\",           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ],       \"title\": \"Lift\",       \"type\": \"object\"     },     \"Param\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"type\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Type\",           \"type\": \"integer\"         },         \"value_int\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Value Int\",           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ],       \"title\": \"Param\",       \"type\": \"object\"     },     \"Place\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ],       \"title\": \"Place\",       \"type\": \"object\"     }   },   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"levels\": {       \"items\": {         \"$ref\": \"#/$defs/Level\"       },       \"title\": \"Levels\",       \"type\": \"array\"     },     \"lifts\": {       \"items\": {         \"$ref\": \"#/$defs/Lift\"       },       \"title\": \"Lifts\",       \"type\": \"array\"     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"title\": \"BuildingMap\",   \"type\": \"object\" } ```   ### /building_map/fire_alarm_trigger   ``` {   \"properties\": {     \"unix_millis_time\": {       \"title\": \"Unix Millis Time\",       \"type\": \"integer\"     },     \"trigger\": {       \"title\": \"Trigger\",       \"type\": \"boolean\"     }   },   \"required\": [     \"unix_millis_time\",     \"trigger\"   ],   \"title\": \"FireAlarmTriggerState\",   \"type\": \"object\" } ```   ### /delivery_alerts   ``` {   \"$defs\": {     \"Action\": {       \"enum\": [         \"waiting\",         \"cancel\",         \"override\",         \"resume\"       ],       \"title\": \"Action\",       \"type\": \"string\"     },     \"Category\": {       \"enum\": [         \"missing\",         \"wrong\",         \"obstructed\",         \"cancelled\"       ],       \"title\": \"Category\",       \"type\": \"string\"     },     \"Tier\": {       \"enum\": [         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"category\": {       \"$ref\": \"#/$defs/Category\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"action\": {       \"$ref\": \"#/$defs/Action\"     },     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"category\",     \"tier\",     \"action\",     \"task_id\",     \"message\"   ],   \"title\": \"DeliveryAlert\",   \"type\": \"object\" } ```   ### /doors/{door_name}/state   ``` {   \"$defs\": {     \"DoorMode\": {       \"properties\": {         \"value\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Value\",           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ],       \"title\": \"DoorMode\",       \"type\": \"object\"     },     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"door_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"door_name\": {       \"title\": \"Door Name\",       \"type\": \"string\"     },     \"current_mode\": {       \"$ref\": \"#/$defs/DoorMode\"     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"title\": \"DoorState\",   \"type\": \"object\" } ```   ### /lifts/{lift_name}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"lift_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"type\": \"string\"     },     \"available_floors\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Available Floors\",       \"type\": \"array\"     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"type\": \"string\"     },     \"door_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Door State\",       \"type\": \"integer\"     },     \"motion_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Motion State\",       \"type\": \"integer\"     },     \"available_modes\": {       \"items\": {         \"type\": \"integer\"       },       \"title\": \"Available Modes\",       \"type\": \"array\"     },     \"current_mode\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Current Mode\",       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"title\": \"LiftState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/state   ``` {   \"$defs\": {     \"AssignedTo\": {       \"properties\": {         \"group\": {           \"title\": \"Group\",           \"type\": \"string\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         }       },       \"required\": [         \"group\",         \"name\"       ],       \"title\": \"AssignedTo\",       \"type\": \"object\"     },     \"Assignment\": {       \"properties\": {         \"fleet_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Fleet Name\"         },         \"expected_robot_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Expected Robot Name\"         }       },       \"title\": \"Assignment\",       \"type\": \"object\"     },     \"Booking\": {       \"properties\": {         \"id\": {           \"description\": \"The unique identifier for this task\",           \"title\": \"Id\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Earliest Start Time\"         },         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Request Time\"         },         \"priority\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Priority information about this task\",           \"title\": \"Priority\"         },         \"labels\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"title\": \"Labels\"         },         \"requester\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"(Optional) An identifier for the entity that requested this task\",           \"title\": \"Requester\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Booking\",       \"type\": \"object\"     },     \"Cancellation\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Cancellation\",       \"type\": \"object\"     },     \"Category\": {       \"description\": \"The category of this task or phase\",       \"title\": \"Category\",       \"type\": \"string\"     },     \"Detail\": {       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"items\": {},           \"type\": \"array\"         },         {           \"type\": \"string\"         }       ],       \"description\": \"Detailed information about a task, phase, or event\",       \"title\": \"Detail\"     },     \"Dispatch\": {       \"properties\": {         \"status\": {           \"$ref\": \"#/$defs/Status2\"         },         \"assignment\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Assignment\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"errors\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Error\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Errors\"         }       },       \"required\": [         \"status\"       ],       \"title\": \"Dispatch\",       \"type\": \"object\"     },     \"Error\": {       \"properties\": {         \"code\": {           \"anyOf\": [             {               \"minimum\": 0,               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A standard code for the kind of error that has occurred\",           \"title\": \"Code\"         },         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The category of the error\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Details about the error\",           \"title\": \"Detail\"         }       },       \"title\": \"Error\",       \"type\": \"object\"     },     \"EstimateMillis\": {       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"title\": \"EstimateMillis\",       \"type\": \"integer\"     },     \"EventState\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The brief name of the event\",           \"title\": \"Name\"         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the event\"         },         \"deps\": {           \"anyOf\": [             {               \"items\": {                 \"minimum\": 0,                 \"type\": \"integer\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"title\": \"Deps\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"EventState\",       \"type\": \"object\"     },     \"Id\": {       \"minimum\": 0,       \"title\": \"Id\",       \"type\": \"integer\"     },     \"Interruption\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the interruption request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"resumed_by\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/ResumedBy\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Interruption\",       \"type\": \"object\"     },     \"Killed\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Killed\",       \"type\": \"object\"     },     \"Phase\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"category\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Category\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"unix_millis_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Start Time\"         },         \"unix_millis_finish_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Finish Time\"         },         \"original_estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"final_event_id\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Id\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/EventState\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"title\": \"Events\"         },         \"skip_requests\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/SkipPhaseRequest\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about any skip requests that have been received\",           \"title\": \"Skip Requests\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Phase\",       \"type\": \"object\"     },     \"ResumedBy\": {       \"properties\": {         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The time that the resume request arrived\",           \"title\": \"Unix Millis Request Time\"         },         \"labels\": {           \"description\": \"Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"labels\"       ],       \"title\": \"ResumedBy\",       \"type\": \"object\"     },     \"SkipPhaseRequest\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"undo\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Undo\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about an undo skip request that applied to this request\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"queued\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ],       \"title\": \"Status\",       \"type\": \"string\"     },     \"Status2\": {       \"enum\": [         \"queued\",         \"selected\",         \"dispatched\",         \"failed_to_assign\",         \"canceled_in_flight\"       ],       \"title\": \"Status2\",       \"type\": \"string\"     },     \"Undo\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the undo skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Undo\",       \"type\": \"object\"     }   },   \"properties\": {     \"booking\": {       \"$ref\": \"#/$defs/Booking\"     },     \"category\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Category\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"detail\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Detail\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"unix_millis_start_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Start Time\"     },     \"unix_millis_finish_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Finish Time\"     },     \"original_estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"assigned_to\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/AssignedTo\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Which agent (robot) is the task assigned to\"     },     \"status\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Status\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"dispatch\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Dispatch\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phase\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"title\": \"Phases\"     },     \"completed\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the IDs of completed phases of this task\",       \"title\": \"Completed\"     },     \"active\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Id\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"The ID of the active phase for this task\"     },     \"pending\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the pending phases of this task\",       \"title\": \"Pending\"     },     \"interruptions\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Interruption\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"title\": \"Interruptions\"     },     \"cancellation\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Cancellation\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was cancelled, this will describe information about the request.\"     },     \"killed\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Killed\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was killed, this will describe information about the request.\"     }   },   \"required\": [     \"booking\"   ],   \"title\": \"TaskState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Phases\": {       \"additionalProperties\": false,       \"properties\": {         \"log\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/LogEntry\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Log entries related to the overall phase\",           \"title\": \"Log\"         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"items\": {                   \"$ref\": \"#/$defs/LogEntry\"                 },                 \"type\": \"array\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary whose keys (property names) are the indices of an event in the phase\",           \"title\": \"Events\"         }       },       \"title\": \"Phases\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"additionalProperties\": false,   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log entries related to the overall task\",       \"title\": \"Log\"     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phases\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"title\": \"Phases\"     }   },   \"required\": [     \"task_id\"   ],   \"title\": \"TaskEventLog\",   \"type\": \"object\" } ```   ### /dispensers/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"DispenserState\",   \"type\": \"object\" } ```   ### /ingestors/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"IngestorState\",   \"type\": \"object\" } ```   ### /fleets/{name}/state   ``` {   \"$defs\": {     \"Commission\": {       \"properties\": {         \"dispatch_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Dispatch Tasks\"         },         \"direct_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Direct Tasks\"         },         \"idle_behavior\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Idle Behavior\"         }       },       \"title\": \"Commission\",       \"type\": \"object\"     },     \"Issue\": {       \"properties\": {         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Category of the robot\'s issue\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"items\": {},               \"type\": \"array\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the issue\",           \"title\": \"Detail\"         }       },       \"title\": \"Issue\",       \"type\": \"object\"     },     \"Location2D\": {       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ],       \"title\": \"Location2D\",       \"type\": \"object\"     },     \"MutexGroups\": {       \"properties\": {         \"locked\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of mutex groups that this robot has currently locked\",           \"title\": \"Locked\"         },         \"requesting\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of the mutex groups that this robot is currently requesting but has not lockd yet\",           \"title\": \"Requesting\"         }       },       \"title\": \"MutexGroups\",       \"type\": \"object\"     },     \"RobotState\": {       \"properties\": {         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Name\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A simple token representing the status of the robot\"         },         \"task_id\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"title\": \"Task Id\"         },         \"unix_millis_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Time\"         },         \"location\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Location2D\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"battery\": {           \"anyOf\": [             {               \"maximum\": 1.0,               \"minimum\": 0.0,               \"type\": \"number\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"title\": \"Battery\"         },         \"issues\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Issue\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of issues with the robot that operators need to address\",           \"title\": \"Issues\"         },         \"commission\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Commission\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"mutex_groups\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/MutexGroups\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the mutex groups that this robot is interacting with\"         }       },       \"title\": \"RobotState\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ],       \"title\": \"Status\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/RobotState\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetState\",   \"type\": \"object\" } ```   ### /fleets/{name}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log for the overall fleet\",       \"title\": \"Log\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"items\": {               \"$ref\": \"#/$defs/LogEntry\"             },             \"type\": \"array\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetLog\",   \"type\": \"object\" } ```   ### /rios   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"type\": {       \"title\": \"Type\",       \"type\": \"string\"     },     \"data\": {       \"title\": \"Data\",       \"type\": \"object\"     }   },   \"required\": [     \"id\",     \"type\",     \"data\"   ],   \"title\": \"Rio\",   \"type\": \"object\" } ```
+     * # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ``` ### /alerts/requests   ``` {   \"$defs\": {     \"AlertParameter\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"value\": {           \"title\": \"Value\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"value\"       ],       \"title\": \"AlertParameter\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_alert_time\": {       \"title\": \"Unix Millis Alert Time\",       \"type\": \"integer\"     },     \"title\": {       \"title\": \"Title\",       \"type\": \"string\"     },     \"subtitle\": {       \"title\": \"Subtitle\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     },     \"display\": {       \"title\": \"Display\",       \"type\": \"boolean\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"responses_available\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Responses Available\",       \"type\": \"array\"     },     \"alert_parameters\": {       \"items\": {         \"$ref\": \"#/$defs/AlertParameter\"       },       \"title\": \"Alert Parameters\",       \"type\": \"array\"     },     \"task_id\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"title\": \"Task Id\"     }   },   \"required\": [     \"id\",     \"unix_millis_alert_time\",     \"title\",     \"subtitle\",     \"message\",     \"display\",     \"tier\",     \"responses_available\",     \"alert_parameters\",     \"task_id\"   ],   \"title\": \"AlertRequest\",   \"type\": \"object\" } ```   ### /alerts/responses   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_response_time\": {       \"title\": \"Unix Millis Response Time\",       \"type\": \"integer\"     },     \"response\": {       \"title\": \"Response\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"unix_millis_response_time\",     \"response\"   ],   \"title\": \"AlertResponse\",   \"type\": \"object\" } ```   ### /beacons   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"online\": {       \"title\": \"Online\",       \"type\": \"boolean\"     },     \"category\": {       \"title\": \"Category\",       \"type\": \"string\"     },     \"activated\": {       \"title\": \"Activated\",       \"type\": \"boolean\"     },     \"level\": {       \"title\": \"Level\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"online\",     \"category\",     \"activated\",     \"level\"   ],   \"title\": \"BeaconState\",   \"type\": \"object\" } ```   ### /building_map   ``` {   \"$defs\": {     \"AffineImage\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ],       \"title\": \"AffineImage\",       \"type\": \"object\"     },     \"Door\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"type\": \"number\"         },         \"door_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Door Type\",           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"type\": \"number\"         },         \"motion_direction\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Motion Direction\",           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ],       \"title\": \"Door\",       \"type\": \"object\"     },     \"Graph\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"vertices\": {           \"items\": {             \"$ref\": \"#/$defs/GraphNode\"           },           \"title\": \"Vertices\",           \"type\": \"array\"         },         \"edges\": {           \"items\": {             \"$ref\": \"#/$defs/GraphEdge\"           },           \"title\": \"Edges\",           \"type\": \"array\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ],       \"title\": \"Graph\",       \"type\": \"object\"     },     \"GraphEdge\": {       \"properties\": {         \"v1_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V1 Idx\",           \"type\": \"integer\"         },         \"v2_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V2 Idx\",           \"type\": \"integer\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         },         \"edge_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Edge Type\",           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ],       \"title\": \"GraphEdge\",       \"type\": \"object\"     },     \"GraphNode\": {       \"properties\": {         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ],       \"title\": \"GraphNode\",       \"type\": \"object\"     },     \"Level\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"type\": \"number\"         },         \"images\": {           \"items\": {             \"$ref\": \"#/$defs/AffineImage\"           },           \"title\": \"Images\",           \"type\": \"array\"         },         \"places\": {           \"items\": {             \"$ref\": \"#/$defs/Place\"           },           \"title\": \"Places\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"nav_graphs\": {           \"items\": {             \"$ref\": \"#/$defs/Graph\"           },           \"title\": \"Nav Graphs\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ],       \"title\": \"Level\",       \"type\": \"object\"     },     \"Lift\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"levels\": {           \"items\": {             \"type\": \"string\"           },           \"title\": \"Levels\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         },         \"ref_x\": {           \"title\": \"Ref X\",           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ],       \"title\": \"Lift\",       \"type\": \"object\"     },     \"Param\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"type\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Type\",           \"type\": \"integer\"         },         \"value_int\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Value Int\",           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ],       \"title\": \"Param\",       \"type\": \"object\"     },     \"Place\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ],       \"title\": \"Place\",       \"type\": \"object\"     }   },   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"levels\": {       \"items\": {         \"$ref\": \"#/$defs/Level\"       },       \"title\": \"Levels\",       \"type\": \"array\"     },     \"lifts\": {       \"items\": {         \"$ref\": \"#/$defs/Lift\"       },       \"title\": \"Lifts\",       \"type\": \"array\"     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"title\": \"BuildingMap\",   \"type\": \"object\" } ```   ### /building_map/fire_alarm_trigger   ``` {   \"properties\": {     \"unix_millis_time\": {       \"title\": \"Unix Millis Time\",       \"type\": \"integer\"     },     \"trigger\": {       \"title\": \"Trigger\",       \"type\": \"boolean\"     }   },   \"required\": [     \"unix_millis_time\",     \"trigger\"   ],   \"title\": \"FireAlarmTriggerState\",   \"type\": \"object\" } ```   ### /doors/{door_name}/state   ``` {   \"$defs\": {     \"DoorMode\": {       \"properties\": {         \"value\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Value\",           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ],       \"title\": \"DoorMode\",       \"type\": \"object\"     },     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"door_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"door_name\": {       \"title\": \"Door Name\",       \"type\": \"string\"     },     \"current_mode\": {       \"$ref\": \"#/$defs/DoorMode\"     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"title\": \"DoorState\",   \"type\": \"object\" } ```   ### /lifts/{lift_name}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"lift_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"type\": \"string\"     },     \"available_floors\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Available Floors\",       \"type\": \"array\"     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"type\": \"string\"     },     \"door_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Door State\",       \"type\": \"integer\"     },     \"motion_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Motion State\",       \"type\": \"integer\"     },     \"available_modes\": {       \"items\": {         \"type\": \"integer\"       },       \"title\": \"Available Modes\",       \"type\": \"array\"     },     \"current_mode\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Current Mode\",       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"title\": \"LiftState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/state   ``` {   \"$defs\": {     \"AssignedTo\": {       \"properties\": {         \"group\": {           \"title\": \"Group\",           \"type\": \"string\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         }       },       \"required\": [         \"group\",         \"name\"       ],       \"title\": \"AssignedTo\",       \"type\": \"object\"     },     \"Assignment\": {       \"properties\": {         \"fleet_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Fleet Name\"         },         \"expected_robot_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Expected Robot Name\"         }       },       \"title\": \"Assignment\",       \"type\": \"object\"     },     \"Booking\": {       \"properties\": {         \"id\": {           \"description\": \"The unique identifier for this task\",           \"title\": \"Id\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Earliest Start Time\"         },         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Request Time\"         },         \"priority\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Priority information about this task\",           \"title\": \"Priority\"         },         \"labels\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"title\": \"Labels\"         },         \"requester\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"(Optional) An identifier for the entity that requested this task\",           \"title\": \"Requester\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Booking\",       \"type\": \"object\"     },     \"Cancellation\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Cancellation\",       \"type\": \"object\"     },     \"Category\": {       \"description\": \"The category of this task or phase\",       \"title\": \"Category\",       \"type\": \"string\"     },     \"Detail\": {       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"items\": {},           \"type\": \"array\"         },         {           \"type\": \"string\"         }       ],       \"description\": \"Detailed information about a task, phase, or event\",       \"title\": \"Detail\"     },     \"Dispatch\": {       \"properties\": {         \"status\": {           \"$ref\": \"#/$defs/Status2\"         },         \"assignment\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Assignment\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"errors\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Error\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Errors\"         }       },       \"required\": [         \"status\"       ],       \"title\": \"Dispatch\",       \"type\": \"object\"     },     \"Error\": {       \"properties\": {         \"code\": {           \"anyOf\": [             {               \"minimum\": 0,               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A standard code for the kind of error that has occurred\",           \"title\": \"Code\"         },         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The category of the error\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Details about the error\",           \"title\": \"Detail\"         }       },       \"title\": \"Error\",       \"type\": \"object\"     },     \"EstimateMillis\": {       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"title\": \"EstimateMillis\",       \"type\": \"integer\"     },     \"EventState\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The brief name of the event\",           \"title\": \"Name\"         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the event\"         },         \"deps\": {           \"anyOf\": [             {               \"items\": {                 \"minimum\": 0,                 \"type\": \"integer\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"title\": \"Deps\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"EventState\",       \"type\": \"object\"     },     \"Id\": {       \"minimum\": 0,       \"title\": \"Id\",       \"type\": \"integer\"     },     \"Interruption\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the interruption request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"resumed_by\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/ResumedBy\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Interruption\",       \"type\": \"object\"     },     \"Killed\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Killed\",       \"type\": \"object\"     },     \"Phase\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"category\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Category\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"unix_millis_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Start Time\"         },         \"unix_millis_finish_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Finish Time\"         },         \"original_estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"final_event_id\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Id\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/EventState\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"title\": \"Events\"         },         \"skip_requests\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/SkipPhaseRequest\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about any skip requests that have been received\",           \"title\": \"Skip Requests\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Phase\",       \"type\": \"object\"     },     \"ResumedBy\": {       \"properties\": {         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The time that the resume request arrived\",           \"title\": \"Unix Millis Request Time\"         },         \"labels\": {           \"description\": \"Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"labels\"       ],       \"title\": \"ResumedBy\",       \"type\": \"object\"     },     \"SkipPhaseRequest\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"undo\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Undo\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about an undo skip request that applied to this request\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"queued\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ],       \"title\": \"Status\",       \"type\": \"string\"     },     \"Status2\": {       \"enum\": [         \"queued\",         \"selected\",         \"dispatched\",         \"failed_to_assign\",         \"canceled_in_flight\"       ],       \"title\": \"Status2\",       \"type\": \"string\"     },     \"Undo\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the undo skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Undo\",       \"type\": \"object\"     }   },   \"properties\": {     \"booking\": {       \"$ref\": \"#/$defs/Booking\"     },     \"category\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Category\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"detail\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Detail\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"unix_millis_start_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Start Time\"     },     \"unix_millis_finish_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Finish Time\"     },     \"original_estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"assigned_to\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/AssignedTo\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Which agent (robot) is the task assigned to\"     },     \"status\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Status\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"dispatch\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Dispatch\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phase\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"title\": \"Phases\"     },     \"completed\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the IDs of completed phases of this task\",       \"title\": \"Completed\"     },     \"active\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Id\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"The ID of the active phase for this task\"     },     \"pending\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the pending phases of this task\",       \"title\": \"Pending\"     },     \"interruptions\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Interruption\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"title\": \"Interruptions\"     },     \"cancellation\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Cancellation\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was cancelled, this will describe information about the request.\"     },     \"killed\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Killed\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was killed, this will describe information about the request.\"     }   },   \"required\": [     \"booking\"   ],   \"title\": \"TaskState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Phases\": {       \"additionalProperties\": false,       \"properties\": {         \"log\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/LogEntry\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Log entries related to the overall phase\",           \"title\": \"Log\"         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"items\": {                   \"$ref\": \"#/$defs/LogEntry\"                 },                 \"type\": \"array\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary whose keys (property names) are the indices of an event in the phase\",           \"title\": \"Events\"         }       },       \"title\": \"Phases\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"additionalProperties\": false,   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log entries related to the overall task\",       \"title\": \"Log\"     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phases\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"title\": \"Phases\"     }   },   \"required\": [     \"task_id\"   ],   \"title\": \"TaskEventLog\",   \"type\": \"object\" } ```   ### /dispensers/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"DispenserState\",   \"type\": \"object\" } ```   ### /ingestors/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"IngestorState\",   \"type\": \"object\" } ```   ### /fleets/{name}/state   ``` {   \"$defs\": {     \"Commission\": {       \"properties\": {         \"dispatch_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Dispatch Tasks\"         },         \"direct_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Direct Tasks\"         },         \"idle_behavior\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Idle Behavior\"         }       },       \"title\": \"Commission\",       \"type\": \"object\"     },     \"Issue\": {       \"properties\": {         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Category of the robot\'s issue\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"items\": {},               \"type\": \"array\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the issue\",           \"title\": \"Detail\"         }       },       \"title\": \"Issue\",       \"type\": \"object\"     },     \"Location2D\": {       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ],       \"title\": \"Location2D\",       \"type\": \"object\"     },     \"MutexGroups\": {       \"properties\": {         \"locked\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of mutex groups that this robot has currently locked\",           \"title\": \"Locked\"         },         \"requesting\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of the mutex groups that this robot is currently requesting but has not lockd yet\",           \"title\": \"Requesting\"         }       },       \"title\": \"MutexGroups\",       \"type\": \"object\"     },     \"RobotState\": {       \"properties\": {         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Name\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A simple token representing the status of the robot\"         },         \"task_id\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"title\": \"Task Id\"         },         \"unix_millis_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Time\"         },         \"location\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Location2D\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"battery\": {           \"anyOf\": [             {               \"maximum\": 1.0,               \"minimum\": 0.0,               \"type\": \"number\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"title\": \"Battery\"         },         \"issues\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Issue\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of issues with the robot that operators need to address\",           \"title\": \"Issues\"         },         \"commission\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Commission\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"mutex_groups\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/MutexGroups\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the mutex groups that this robot is interacting with\"         }       },       \"title\": \"RobotState\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ],       \"title\": \"Status\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/RobotState\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetState\",   \"type\": \"object\" } ```   ### /fleets/{name}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log for the overall fleet\",       \"title\": \"Log\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"items\": {               \"$ref\": \"#/$defs/LogEntry\"             },             \"type\": \"array\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetLog\",   \"type\": \"object\" } ```   ### /rios   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"type\": {       \"title\": \"Type\",       \"type\": \"string\"     },     \"data\": {       \"title\": \"Data\",       \"type\": \"object\"     }   },   \"required\": [     \"id\",     \"type\",     \"data\"   ],   \"title\": \"Rio\",   \"type\": \"object\" } ```
      * @summary Socket.io endpoint
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7179,17 +6779,13 @@ export class DefaultApi extends BaseAPI {
   /**
    * Get the effective permissions of the current user
    * @summary Get Effective Permissions
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DefaultApi
    */
-  public getEffectivePermissionsPermissionsGet(
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getEffectivePermissionsPermissionsGet(options?: RawAxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
-      .getEffectivePermissionsPermissionsGet(authorization, options)
+      .getEffectivePermissionsPermissionsGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -7209,19 +6805,18 @@ export class DefaultApi extends BaseAPI {
   /**
    * Get the currently logged in user
    * @summary Get User
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DefaultApi
    */
-  public getUserUserGet(authorization?: string | null, options?: RawAxiosRequestConfig) {
+  public getUserUserGet(options?: RawAxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
-      .getUserUserGet(authorization, options)
+      .getUserUserGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
-   * # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ``` ### /alerts/requests   ``` {   \"$defs\": {     \"AlertParameter\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"value\": {           \"title\": \"Value\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"value\"       ],       \"title\": \"AlertParameter\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_alert_time\": {       \"title\": \"Unix Millis Alert Time\",       \"type\": \"integer\"     },     \"title\": {       \"title\": \"Title\",       \"type\": \"string\"     },     \"subtitle\": {       \"title\": \"Subtitle\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     },     \"display\": {       \"title\": \"Display\",       \"type\": \"boolean\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"responses_available\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Responses Available\",       \"type\": \"array\"     },     \"alert_parameters\": {       \"items\": {         \"$ref\": \"#/$defs/AlertParameter\"       },       \"title\": \"Alert Parameters\",       \"type\": \"array\"     },     \"task_id\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"title\": \"Task Id\"     }   },   \"required\": [     \"id\",     \"unix_millis_alert_time\",     \"title\",     \"subtitle\",     \"message\",     \"display\",     \"tier\",     \"responses_available\",     \"alert_parameters\",     \"task_id\"   ],   \"title\": \"AlertRequest\",   \"type\": \"object\" } ```   ### /alerts/responses   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_response_time\": {       \"title\": \"Unix Millis Response Time\",       \"type\": \"integer\"     },     \"response\": {       \"title\": \"Response\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"unix_millis_response_time\",     \"response\"   ],   \"title\": \"AlertResponse\",   \"type\": \"object\" } ```   ### /beacons   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"online\": {       \"title\": \"Online\",       \"type\": \"boolean\"     },     \"category\": {       \"title\": \"Category\",       \"type\": \"string\"     },     \"activated\": {       \"title\": \"Activated\",       \"type\": \"boolean\"     },     \"level\": {       \"title\": \"Level\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"online\",     \"category\",     \"activated\",     \"level\"   ],   \"title\": \"BeaconState\",   \"type\": \"object\" } ```   ### /building_map   ``` {   \"$defs\": {     \"AffineImage\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ],       \"title\": \"AffineImage\",       \"type\": \"object\"     },     \"Door\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"type\": \"number\"         },         \"door_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Door Type\",           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"type\": \"number\"         },         \"motion_direction\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Motion Direction\",           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ],       \"title\": \"Door\",       \"type\": \"object\"     },     \"Graph\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"vertices\": {           \"items\": {             \"$ref\": \"#/$defs/GraphNode\"           },           \"title\": \"Vertices\",           \"type\": \"array\"         },         \"edges\": {           \"items\": {             \"$ref\": \"#/$defs/GraphEdge\"           },           \"title\": \"Edges\",           \"type\": \"array\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ],       \"title\": \"Graph\",       \"type\": \"object\"     },     \"GraphEdge\": {       \"properties\": {         \"v1_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V1 Idx\",           \"type\": \"integer\"         },         \"v2_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V2 Idx\",           \"type\": \"integer\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         },         \"edge_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Edge Type\",           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ],       \"title\": \"GraphEdge\",       \"type\": \"object\"     },     \"GraphNode\": {       \"properties\": {         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ],       \"title\": \"GraphNode\",       \"type\": \"object\"     },     \"Level\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"type\": \"number\"         },         \"images\": {           \"items\": {             \"$ref\": \"#/$defs/AffineImage\"           },           \"title\": \"Images\",           \"type\": \"array\"         },         \"places\": {           \"items\": {             \"$ref\": \"#/$defs/Place\"           },           \"title\": \"Places\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"nav_graphs\": {           \"items\": {             \"$ref\": \"#/$defs/Graph\"           },           \"title\": \"Nav Graphs\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ],       \"title\": \"Level\",       \"type\": \"object\"     },     \"Lift\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"levels\": {           \"items\": {             \"type\": \"string\"           },           \"title\": \"Levels\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         },         \"ref_x\": {           \"title\": \"Ref X\",           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ],       \"title\": \"Lift\",       \"type\": \"object\"     },     \"Param\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"type\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Type\",           \"type\": \"integer\"         },         \"value_int\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Value Int\",           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ],       \"title\": \"Param\",       \"type\": \"object\"     },     \"Place\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ],       \"title\": \"Place\",       \"type\": \"object\"     }   },   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"levels\": {       \"items\": {         \"$ref\": \"#/$defs/Level\"       },       \"title\": \"Levels\",       \"type\": \"array\"     },     \"lifts\": {       \"items\": {         \"$ref\": \"#/$defs/Lift\"       },       \"title\": \"Lifts\",       \"type\": \"array\"     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"title\": \"BuildingMap\",   \"type\": \"object\" } ```   ### /building_map/fire_alarm_trigger   ``` {   \"properties\": {     \"unix_millis_time\": {       \"title\": \"Unix Millis Time\",       \"type\": \"integer\"     },     \"trigger\": {       \"title\": \"Trigger\",       \"type\": \"boolean\"     }   },   \"required\": [     \"unix_millis_time\",     \"trigger\"   ],   \"title\": \"FireAlarmTriggerState\",   \"type\": \"object\" } ```   ### /delivery_alerts   ``` {   \"$defs\": {     \"Action\": {       \"enum\": [         \"waiting\",         \"cancel\",         \"override\",         \"resume\"       ],       \"title\": \"Action\",       \"type\": \"string\"     },     \"Category\": {       \"enum\": [         \"missing\",         \"wrong\",         \"obstructed\",         \"cancelled\"       ],       \"title\": \"Category\",       \"type\": \"string\"     },     \"Tier\": {       \"enum\": [         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"category\": {       \"$ref\": \"#/$defs/Category\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"action\": {       \"$ref\": \"#/$defs/Action\"     },     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"category\",     \"tier\",     \"action\",     \"task_id\",     \"message\"   ],   \"title\": \"DeliveryAlert\",   \"type\": \"object\" } ```   ### /doors/{door_name}/state   ``` {   \"$defs\": {     \"DoorMode\": {       \"properties\": {         \"value\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Value\",           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ],       \"title\": \"DoorMode\",       \"type\": \"object\"     },     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"door_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"door_name\": {       \"title\": \"Door Name\",       \"type\": \"string\"     },     \"current_mode\": {       \"$ref\": \"#/$defs/DoorMode\"     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"title\": \"DoorState\",   \"type\": \"object\" } ```   ### /lifts/{lift_name}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"lift_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"type\": \"string\"     },     \"available_floors\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Available Floors\",       \"type\": \"array\"     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"type\": \"string\"     },     \"door_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Door State\",       \"type\": \"integer\"     },     \"motion_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Motion State\",       \"type\": \"integer\"     },     \"available_modes\": {       \"items\": {         \"type\": \"integer\"       },       \"title\": \"Available Modes\",       \"type\": \"array\"     },     \"current_mode\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Current Mode\",       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"title\": \"LiftState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/state   ``` {   \"$defs\": {     \"AssignedTo\": {       \"properties\": {         \"group\": {           \"title\": \"Group\",           \"type\": \"string\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         }       },       \"required\": [         \"group\",         \"name\"       ],       \"title\": \"AssignedTo\",       \"type\": \"object\"     },     \"Assignment\": {       \"properties\": {         \"fleet_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Fleet Name\"         },         \"expected_robot_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Expected Robot Name\"         }       },       \"title\": \"Assignment\",       \"type\": \"object\"     },     \"Booking\": {       \"properties\": {         \"id\": {           \"description\": \"The unique identifier for this task\",           \"title\": \"Id\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Earliest Start Time\"         },         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Request Time\"         },         \"priority\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Priority information about this task\",           \"title\": \"Priority\"         },         \"labels\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"title\": \"Labels\"         },         \"requester\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"(Optional) An identifier for the entity that requested this task\",           \"title\": \"Requester\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Booking\",       \"type\": \"object\"     },     \"Cancellation\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Cancellation\",       \"type\": \"object\"     },     \"Category\": {       \"description\": \"The category of this task or phase\",       \"title\": \"Category\",       \"type\": \"string\"     },     \"Detail\": {       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"items\": {},           \"type\": \"array\"         },         {           \"type\": \"string\"         }       ],       \"description\": \"Detailed information about a task, phase, or event\",       \"title\": \"Detail\"     },     \"Dispatch\": {       \"properties\": {         \"status\": {           \"$ref\": \"#/$defs/Status2\"         },         \"assignment\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Assignment\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"errors\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Error\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Errors\"         }       },       \"required\": [         \"status\"       ],       \"title\": \"Dispatch\",       \"type\": \"object\"     },     \"Error\": {       \"properties\": {         \"code\": {           \"anyOf\": [             {               \"minimum\": 0,               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A standard code for the kind of error that has occurred\",           \"title\": \"Code\"         },         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The category of the error\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Details about the error\",           \"title\": \"Detail\"         }       },       \"title\": \"Error\",       \"type\": \"object\"     },     \"EstimateMillis\": {       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"title\": \"EstimateMillis\",       \"type\": \"integer\"     },     \"EventState\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The brief name of the event\",           \"title\": \"Name\"         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the event\"         },         \"deps\": {           \"anyOf\": [             {               \"items\": {                 \"minimum\": 0,                 \"type\": \"integer\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"title\": \"Deps\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"EventState\",       \"type\": \"object\"     },     \"Id\": {       \"minimum\": 0,       \"title\": \"Id\",       \"type\": \"integer\"     },     \"Interruption\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the interruption request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"resumed_by\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/ResumedBy\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Interruption\",       \"type\": \"object\"     },     \"Killed\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Killed\",       \"type\": \"object\"     },     \"Phase\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"category\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Category\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"unix_millis_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Start Time\"         },         \"unix_millis_finish_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Finish Time\"         },         \"original_estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"final_event_id\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Id\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/EventState\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"title\": \"Events\"         },         \"skip_requests\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/SkipPhaseRequest\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about any skip requests that have been received\",           \"title\": \"Skip Requests\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Phase\",       \"type\": \"object\"     },     \"ResumedBy\": {       \"properties\": {         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The time that the resume request arrived\",           \"title\": \"Unix Millis Request Time\"         },         \"labels\": {           \"description\": \"Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"labels\"       ],       \"title\": \"ResumedBy\",       \"type\": \"object\"     },     \"SkipPhaseRequest\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"undo\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Undo\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about an undo skip request that applied to this request\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"queued\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ],       \"title\": \"Status\",       \"type\": \"string\"     },     \"Status2\": {       \"enum\": [         \"queued\",         \"selected\",         \"dispatched\",         \"failed_to_assign\",         \"canceled_in_flight\"       ],       \"title\": \"Status2\",       \"type\": \"string\"     },     \"Undo\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the undo skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Undo\",       \"type\": \"object\"     }   },   \"properties\": {     \"booking\": {       \"$ref\": \"#/$defs/Booking\"     },     \"category\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Category\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"detail\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Detail\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"unix_millis_start_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Start Time\"     },     \"unix_millis_finish_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Finish Time\"     },     \"original_estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"assigned_to\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/AssignedTo\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Which agent (robot) is the task assigned to\"     },     \"status\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Status\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"dispatch\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Dispatch\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phase\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"title\": \"Phases\"     },     \"completed\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the IDs of completed phases of this task\",       \"title\": \"Completed\"     },     \"active\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Id\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"The ID of the active phase for this task\"     },     \"pending\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the pending phases of this task\",       \"title\": \"Pending\"     },     \"interruptions\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Interruption\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"title\": \"Interruptions\"     },     \"cancellation\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Cancellation\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was cancelled, this will describe information about the request.\"     },     \"killed\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Killed\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was killed, this will describe information about the request.\"     }   },   \"required\": [     \"booking\"   ],   \"title\": \"TaskState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Phases\": {       \"additionalProperties\": false,       \"properties\": {         \"log\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/LogEntry\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Log entries related to the overall phase\",           \"title\": \"Log\"         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"items\": {                   \"$ref\": \"#/$defs/LogEntry\"                 },                 \"type\": \"array\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary whose keys (property names) are the indices of an event in the phase\",           \"title\": \"Events\"         }       },       \"title\": \"Phases\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"additionalProperties\": false,   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log entries related to the overall task\",       \"title\": \"Log\"     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phases\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"title\": \"Phases\"     }   },   \"required\": [     \"task_id\"   ],   \"title\": \"TaskEventLog\",   \"type\": \"object\" } ```   ### /dispensers/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"DispenserState\",   \"type\": \"object\" } ```   ### /ingestors/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"IngestorState\",   \"type\": \"object\" } ```   ### /fleets/{name}/state   ``` {   \"$defs\": {     \"Commission\": {       \"properties\": {         \"dispatch_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Dispatch Tasks\"         },         \"direct_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Direct Tasks\"         },         \"idle_behavior\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Idle Behavior\"         }       },       \"title\": \"Commission\",       \"type\": \"object\"     },     \"Issue\": {       \"properties\": {         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Category of the robot\'s issue\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"items\": {},               \"type\": \"array\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the issue\",           \"title\": \"Detail\"         }       },       \"title\": \"Issue\",       \"type\": \"object\"     },     \"Location2D\": {       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ],       \"title\": \"Location2D\",       \"type\": \"object\"     },     \"MutexGroups\": {       \"properties\": {         \"locked\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of mutex groups that this robot has currently locked\",           \"title\": \"Locked\"         },         \"requesting\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of the mutex groups that this robot is currently requesting but has not lockd yet\",           \"title\": \"Requesting\"         }       },       \"title\": \"MutexGroups\",       \"type\": \"object\"     },     \"RobotState\": {       \"properties\": {         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Name\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A simple token representing the status of the robot\"         },         \"task_id\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"title\": \"Task Id\"         },         \"unix_millis_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Time\"         },         \"location\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Location2D\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"battery\": {           \"anyOf\": [             {               \"maximum\": 1.0,               \"minimum\": 0.0,               \"type\": \"number\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"title\": \"Battery\"         },         \"issues\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Issue\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of issues with the robot that operators need to address\",           \"title\": \"Issues\"         },         \"commission\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Commission\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"mutex_groups\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/MutexGroups\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the mutex groups that this robot is interacting with\"         }       },       \"title\": \"RobotState\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ],       \"title\": \"Status\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/RobotState\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetState\",   \"type\": \"object\" } ```   ### /fleets/{name}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log for the overall fleet\",       \"title\": \"Log\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"items\": {               \"$ref\": \"#/$defs/LogEntry\"             },             \"type\": \"array\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetLog\",   \"type\": \"object\" } ```   ### /rios   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"type\": {       \"title\": \"Type\",       \"type\": \"string\"     },     \"data\": {       \"title\": \"Data\",       \"type\": \"object\"     }   },   \"required\": [     \"id\",     \"type\",     \"data\"   ],   \"title\": \"Rio\",   \"type\": \"object\" } ```
+   * # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ``` ### /alerts/requests   ``` {   \"$defs\": {     \"AlertParameter\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"value\": {           \"title\": \"Value\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"value\"       ],       \"title\": \"AlertParameter\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_alert_time\": {       \"title\": \"Unix Millis Alert Time\",       \"type\": \"integer\"     },     \"title\": {       \"title\": \"Title\",       \"type\": \"string\"     },     \"subtitle\": {       \"title\": \"Subtitle\",       \"type\": \"string\"     },     \"message\": {       \"title\": \"Message\",       \"type\": \"string\"     },     \"display\": {       \"title\": \"Display\",       \"type\": \"boolean\"     },     \"tier\": {       \"$ref\": \"#/$defs/Tier\"     },     \"responses_available\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Responses Available\",       \"type\": \"array\"     },     \"alert_parameters\": {       \"items\": {         \"$ref\": \"#/$defs/AlertParameter\"       },       \"title\": \"Alert Parameters\",       \"type\": \"array\"     },     \"task_id\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"title\": \"Task Id\"     }   },   \"required\": [     \"id\",     \"unix_millis_alert_time\",     \"title\",     \"subtitle\",     \"message\",     \"display\",     \"tier\",     \"responses_available\",     \"alert_parameters\",     \"task_id\"   ],   \"title\": \"AlertRequest\",   \"type\": \"object\" } ```   ### /alerts/responses   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"unix_millis_response_time\": {       \"title\": \"Unix Millis Response Time\",       \"type\": \"integer\"     },     \"response\": {       \"title\": \"Response\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"unix_millis_response_time\",     \"response\"   ],   \"title\": \"AlertResponse\",   \"type\": \"object\" } ```   ### /beacons   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"online\": {       \"title\": \"Online\",       \"type\": \"boolean\"     },     \"category\": {       \"title\": \"Category\",       \"type\": \"string\"     },     \"activated\": {       \"title\": \"Activated\",       \"type\": \"boolean\"     },     \"level\": {       \"title\": \"Level\",       \"type\": \"string\"     }   },   \"required\": [     \"id\",     \"online\",     \"category\",     \"activated\",     \"level\"   ],   \"title\": \"BeaconState\",   \"type\": \"object\" } ```   ### /building_map   ``` {   \"$defs\": {     \"AffineImage\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ],       \"title\": \"AffineImage\",       \"type\": \"object\"     },     \"Door\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"type\": \"number\"         },         \"door_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Door Type\",           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"type\": \"number\"         },         \"motion_direction\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Motion Direction\",           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ],       \"title\": \"Door\",       \"type\": \"object\"     },     \"Graph\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"vertices\": {           \"items\": {             \"$ref\": \"#/$defs/GraphNode\"           },           \"title\": \"Vertices\",           \"type\": \"array\"         },         \"edges\": {           \"items\": {             \"$ref\": \"#/$defs/GraphEdge\"           },           \"title\": \"Edges\",           \"type\": \"array\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ],       \"title\": \"Graph\",       \"type\": \"object\"     },     \"GraphEdge\": {       \"properties\": {         \"v1_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V1 Idx\",           \"type\": \"integer\"         },         \"v2_idx\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"V2 Idx\",           \"type\": \"integer\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         },         \"edge_type\": {           \"maximum\": 255,           \"minimum\": 0,           \"title\": \"Edge Type\",           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ],       \"title\": \"GraphEdge\",       \"type\": \"object\"     },     \"GraphNode\": {       \"properties\": {         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"params\": {           \"items\": {             \"$ref\": \"#/$defs/Param\"           },           \"title\": \"Params\",           \"type\": \"array\"         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ],       \"title\": \"GraphNode\",       \"type\": \"object\"     },     \"Level\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"type\": \"number\"         },         \"images\": {           \"items\": {             \"$ref\": \"#/$defs/AffineImage\"           },           \"title\": \"Images\",           \"type\": \"array\"         },         \"places\": {           \"items\": {             \"$ref\": \"#/$defs/Place\"           },           \"title\": \"Places\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"nav_graphs\": {           \"items\": {             \"$ref\": \"#/$defs/Graph\"           },           \"title\": \"Nav Graphs\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ],       \"title\": \"Level\",       \"type\": \"object\"     },     \"Lift\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"levels\": {           \"items\": {             \"type\": \"string\"           },           \"title\": \"Levels\",           \"type\": \"array\"         },         \"doors\": {           \"items\": {             \"$ref\": \"#/$defs/Door\"           },           \"title\": \"Doors\",           \"type\": \"array\"         },         \"wall_graph\": {           \"$ref\": \"#/$defs/Graph\"         },         \"ref_x\": {           \"title\": \"Ref X\",           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ],       \"title\": \"Lift\",       \"type\": \"object\"     },     \"Param\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"type\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Type\",           \"type\": \"integer\"         },         \"value_int\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Value Int\",           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ],       \"title\": \"Param\",       \"type\": \"object\"     },     \"Place\": {       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ],       \"title\": \"Place\",       \"type\": \"object\"     }   },   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"levels\": {       \"items\": {         \"$ref\": \"#/$defs/Level\"       },       \"title\": \"Levels\",       \"type\": \"array\"     },     \"lifts\": {       \"items\": {         \"$ref\": \"#/$defs/Lift\"       },       \"title\": \"Lifts\",       \"type\": \"array\"     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"title\": \"BuildingMap\",   \"type\": \"object\" } ```   ### /building_map/fire_alarm_trigger   ``` {   \"properties\": {     \"unix_millis_time\": {       \"title\": \"Unix Millis Time\",       \"type\": \"integer\"     },     \"trigger\": {       \"title\": \"Trigger\",       \"type\": \"boolean\"     }   },   \"required\": [     \"unix_millis_time\",     \"trigger\"   ],   \"title\": \"FireAlarmTriggerState\",   \"type\": \"object\" } ```   ### /doors/{door_name}/state   ``` {   \"$defs\": {     \"DoorMode\": {       \"properties\": {         \"value\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Value\",           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ],       \"title\": \"DoorMode\",       \"type\": \"object\"     },     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"door_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"door_name\": {       \"title\": \"Door Name\",       \"type\": \"string\"     },     \"current_mode\": {       \"$ref\": \"#/$defs/DoorMode\"     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"title\": \"DoorState\",   \"type\": \"object\" } ```   ### /lifts/{lift_name}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"lift_time\": {       \"$ref\": \"#/$defs/Time\"     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"type\": \"string\"     },     \"available_floors\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Available Floors\",       \"type\": \"array\"     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"type\": \"string\"     },     \"door_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Door State\",       \"type\": \"integer\"     },     \"motion_state\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Motion State\",       \"type\": \"integer\"     },     \"available_modes\": {       \"items\": {         \"type\": \"integer\"       },       \"title\": \"Available Modes\",       \"type\": \"array\"     },     \"current_mode\": {       \"maximum\": 255,       \"minimum\": 0,       \"title\": \"Current Mode\",       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"title\": \"LiftState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/state   ``` {   \"$defs\": {     \"AssignedTo\": {       \"properties\": {         \"group\": {           \"title\": \"Group\",           \"type\": \"string\"         },         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         }       },       \"required\": [         \"group\",         \"name\"       ],       \"title\": \"AssignedTo\",       \"type\": \"object\"     },     \"Assignment\": {       \"properties\": {         \"fleet_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Fleet Name\"         },         \"expected_robot_name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Expected Robot Name\"         }       },       \"title\": \"Assignment\",       \"type\": \"object\"     },     \"Booking\": {       \"properties\": {         \"id\": {           \"description\": \"The unique identifier for this task\",           \"title\": \"Id\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Earliest Start Time\"         },         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Request Time\"         },         \"priority\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Priority information about this task\",           \"title\": \"Priority\"         },         \"labels\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about how and why this task was booked, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"title\": \"Labels\"         },         \"requester\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"(Optional) An identifier for the entity that requested this task\",           \"title\": \"Requester\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Booking\",       \"type\": \"object\"     },     \"Cancellation\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the cancel request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Cancellation\",       \"type\": \"object\"     },     \"Category\": {       \"description\": \"The category of this task or phase\",       \"title\": \"Category\",       \"type\": \"string\"     },     \"Detail\": {       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"items\": {},           \"type\": \"array\"         },         {           \"type\": \"string\"         }       ],       \"description\": \"Detailed information about a task, phase, or event\",       \"title\": \"Detail\"     },     \"Dispatch\": {       \"properties\": {         \"status\": {           \"$ref\": \"#/$defs/Status2\"         },         \"assignment\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Assignment\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"errors\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Error\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Errors\"         }       },       \"required\": [         \"status\"       ],       \"title\": \"Dispatch\",       \"type\": \"object\"     },     \"Error\": {       \"properties\": {         \"code\": {           \"anyOf\": [             {               \"minimum\": 0,               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A standard code for the kind of error that has occurred\",           \"title\": \"Code\"         },         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The category of the error\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Details about the error\",           \"title\": \"Detail\"         }       },       \"title\": \"Error\",       \"type\": \"object\"     },     \"EstimateMillis\": {       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"title\": \"EstimateMillis\",       \"type\": \"integer\"     },     \"EventState\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The brief name of the event\",           \"title\": \"Name\"         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the event\"         },         \"deps\": {           \"anyOf\": [             {               \"items\": {                 \"minimum\": 0,                 \"type\": \"integer\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"title\": \"Deps\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"EventState\",       \"type\": \"object\"     },     \"Id\": {       \"minimum\": 0,       \"title\": \"Id\",       \"type\": \"integer\"     },     \"Interruption\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the interruption request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"resumed_by\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/ResumedBy\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Interruption\",       \"type\": \"object\"     },     \"Killed\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the cancellation request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the kill request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Killed\",       \"type\": \"object\"     },     \"Phase\": {       \"properties\": {         \"id\": {           \"$ref\": \"#/$defs/Id\"         },         \"category\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Category\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"detail\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Detail\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"unix_millis_start_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Start Time\"         },         \"unix_millis_finish_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Finish Time\"         },         \"original_estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"estimate_millis\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/EstimateMillis\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"final_event_id\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Id\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/EventState\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"title\": \"Events\"         },         \"skip_requests\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"$ref\": \"#/$defs/SkipPhaseRequest\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about any skip requests that have been received\",           \"title\": \"Skip Requests\"         }       },       \"required\": [         \"id\"       ],       \"title\": \"Phase\",       \"type\": \"object\"     },     \"ResumedBy\": {       \"properties\": {         \"unix_millis_request_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The time that the resume request arrived\",           \"title\": \"Unix Millis Request Time\"         },         \"labels\": {           \"description\": \"Labels to describe the resume request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"labels\"       ],       \"title\": \"ResumedBy\",       \"type\": \"object\"     },     \"SkipPhaseRequest\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the purpose of the skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         },         \"undo\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Undo\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about an undo skip request that applied to this request\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"queued\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ],       \"title\": \"Status\",       \"type\": \"string\"     },     \"Status2\": {       \"enum\": [         \"queued\",         \"selected\",         \"dispatched\",         \"failed_to_assign\",         \"canceled_in_flight\"       ],       \"title\": \"Status2\",       \"type\": \"string\"     },     \"Undo\": {       \"properties\": {         \"unix_millis_request_time\": {           \"description\": \"The time that the undo skip request arrived\",           \"title\": \"Unix Millis Request Time\",           \"type\": \"integer\"         },         \"labels\": {           \"description\": \"Labels to describe the undo skip request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.\",           \"items\": {             \"type\": \"string\"           },           \"title\": \"Labels\",           \"type\": \"array\"         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ],       \"title\": \"Undo\",       \"type\": \"object\"     }   },   \"properties\": {     \"booking\": {       \"$ref\": \"#/$defs/Booking\"     },     \"category\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Category\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"detail\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Detail\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"unix_millis_start_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Start Time\"     },     \"unix_millis_finish_time\": {       \"anyOf\": [         {           \"type\": \"integer\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Unix Millis Finish Time\"     },     \"original_estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"estimate_millis\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/EstimateMillis\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"assigned_to\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/AssignedTo\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Which agent (robot) is the task assigned to\"     },     \"status\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Status\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"dispatch\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Dispatch\"         },         {           \"type\": \"null\"         }       ],       \"default\": null     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phase\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"title\": \"Phases\"     },     \"completed\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the IDs of completed phases of this task\",       \"title\": \"Completed\"     },     \"active\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Id\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"The ID of the active phase for this task\"     },     \"pending\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/Id\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"An array of the pending phases of this task\",       \"title\": \"Pending\"     },     \"interruptions\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Interruption\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"title\": \"Interruptions\"     },     \"cancellation\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Cancellation\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was cancelled, this will describe information about the request.\"     },     \"killed\": {       \"anyOf\": [         {           \"$ref\": \"#/$defs/Killed\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"If the task was killed, this will describe information about the request.\"     }   },   \"required\": [     \"booking\"   ],   \"title\": \"TaskState\",   \"type\": \"object\" } ```   ### /tasks/{task_id}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Phases\": {       \"additionalProperties\": false,       \"properties\": {         \"log\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/LogEntry\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Log entries related to the overall phase\",           \"title\": \"Log\"         },         \"events\": {           \"anyOf\": [             {               \"additionalProperties\": {                 \"items\": {                   \"$ref\": \"#/$defs/LogEntry\"                 },                 \"type\": \"array\"               },               \"type\": \"object\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A dictionary whose keys (property names) are the indices of an event in the phase\",           \"title\": \"Events\"         }       },       \"title\": \"Phases\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"additionalProperties\": false,   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log entries related to the overall task\",       \"title\": \"Log\"     },     \"phases\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/Phases\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"title\": \"Phases\"     }   },   \"required\": [     \"task_id\"   ],   \"title\": \"TaskEventLog\",   \"type\": \"object\" } ```   ### /dispensers/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"DispenserState\",   \"type\": \"object\" } ```   ### /ingestors/{guid}/state   ``` {   \"$defs\": {     \"Time\": {       \"properties\": {         \"sec\": {           \"maximum\": 2147483647,           \"minimum\": -2147483648,           \"title\": \"Sec\",           \"type\": \"integer\"         },         \"nanosec\": {           \"maximum\": 4294967295,           \"minimum\": 0,           \"title\": \"Nanosec\",           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ],       \"title\": \"Time\",       \"type\": \"object\"     }   },   \"properties\": {     \"time\": {       \"$ref\": \"#/$defs/Time\"     },     \"guid\": {       \"title\": \"Guid\",       \"type\": \"string\"     },     \"mode\": {       \"maximum\": 2147483647,       \"minimum\": -2147483648,       \"title\": \"Mode\",       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"items\": {         \"type\": \"string\"       },       \"title\": \"Request Guid Queue\",       \"type\": \"array\"     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"title\": \"IngestorState\",   \"type\": \"object\" } ```   ### /fleets/{name}/state   ``` {   \"$defs\": {     \"Commission\": {       \"properties\": {         \"dispatch_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Dispatch Tasks\"         },         \"direct_tasks\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Direct Tasks\"         },         \"idle_behavior\": {           \"anyOf\": [             {               \"type\": \"boolean\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot\'s current value.\",           \"title\": \"Idle Behavior\"         }       },       \"title\": \"Commission\",       \"type\": \"object\"     },     \"Issue\": {       \"properties\": {         \"category\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Category of the robot\'s issue\",           \"title\": \"Category\"         },         \"detail\": {           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"items\": {},               \"type\": \"array\"             },             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Detailed information about the issue\",           \"title\": \"Detail\"         }       },       \"title\": \"Issue\",       \"type\": \"object\"     },     \"Location2D\": {       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ],       \"title\": \"Location2D\",       \"type\": \"object\"     },     \"MutexGroups\": {       \"properties\": {         \"locked\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of mutex groups that this robot has currently locked\",           \"title\": \"Locked\"         },         \"requesting\": {           \"anyOf\": [             {               \"items\": {                 \"type\": \"string\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of the mutex groups that this robot is currently requesting but has not lockd yet\",           \"title\": \"Requesting\"         }       },       \"title\": \"MutexGroups\",       \"type\": \"object\"     },     \"RobotState\": {       \"properties\": {         \"name\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Name\"         },         \"status\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Status\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A simple token representing the status of the robot\"         },         \"task_id\": {           \"anyOf\": [             {               \"type\": \"string\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"title\": \"Task Id\"         },         \"unix_millis_time\": {           \"anyOf\": [             {               \"type\": \"integer\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"title\": \"Unix Millis Time\"         },         \"location\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Location2D\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"battery\": {           \"anyOf\": [             {               \"maximum\": 1.0,               \"minimum\": 0.0,               \"type\": \"number\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"title\": \"Battery\"         },         \"issues\": {           \"anyOf\": [             {               \"items\": {                 \"$ref\": \"#/$defs/Issue\"               },               \"type\": \"array\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"A list of issues with the robot that operators need to address\",           \"title\": \"Issues\"         },         \"commission\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/Commission\"             },             {               \"type\": \"null\"             }           ],           \"default\": null         },         \"mutex_groups\": {           \"anyOf\": [             {               \"$ref\": \"#/$defs/MutexGroups\"             },             {               \"type\": \"null\"             }           ],           \"default\": null,           \"description\": \"Information about the mutex groups that this robot is interacting with\"         }       },       \"title\": \"RobotState\",       \"type\": \"object\"     },     \"Status\": {       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ],       \"title\": \"Status\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"$ref\": \"#/$defs/RobotState\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetState\",   \"type\": \"object\" } ```   ### /fleets/{name}/log   ``` {   \"$defs\": {     \"LogEntry\": {       \"properties\": {         \"seq\": {           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"title\": \"Seq\",           \"type\": \"integer\"         },         \"tier\": {           \"allOf\": [             {               \"$ref\": \"#/$defs/Tier\"             }           ],           \"description\": \"The importance level of the log entry\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"description\": \"The text of the log entry\",           \"title\": \"Text\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ],       \"title\": \"LogEntry\",       \"type\": \"object\"     },     \"Tier\": {       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ],       \"title\": \"Tier\",       \"type\": \"string\"     }   },   \"properties\": {     \"name\": {       \"anyOf\": [         {           \"type\": \"string\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"title\": \"Name\"     },     \"log\": {       \"anyOf\": [         {           \"items\": {             \"$ref\": \"#/$defs/LogEntry\"           },           \"type\": \"array\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Log for the overall fleet\",       \"title\": \"Log\"     },     \"robots\": {       \"anyOf\": [         {           \"additionalProperties\": {             \"items\": {               \"$ref\": \"#/$defs/LogEntry\"             },             \"type\": \"array\"           },           \"type\": \"object\"         },         {           \"type\": \"null\"         }       ],       \"default\": null,       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"title\": \"Robots\"     }   },   \"title\": \"FleetLog\",   \"type\": \"object\" } ```   ### /rios   ``` {   \"properties\": {     \"id\": {       \"title\": \"Id\",       \"type\": \"string\"     },     \"type\": {       \"title\": \"Type\",       \"type\": \"string\"     },     \"data\": {       \"title\": \"Data\",       \"type\": \"object\"     }   },   \"required\": [     \"id\",     \"type\",     \"data\"   ],   \"title\": \"Rio\",   \"type\": \"object\" } ```
    * @summary Socket.io endpoint
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -7230,279 +6825,6 @@ export class DefaultApi extends BaseAPI {
   public lambdaSocketIoGet(options?: RawAxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
       .lambdaSocketIoGet(options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-}
-
-/**
- * DeliveryAlertsApi - axios parameter creator
- * @export
- */
-export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Configuration) {
-  return {
-    /**
-     *
-     * @summary Respond To Delivery Alert
-     * @param {string} deliveryAlertId
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertTier} tier
-     * @param {string} taskId
-     * @param {Action} action
-     * @param {string} message
-     * @param {string | null} [authorization]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost: async (
-      deliveryAlertId: string,
-      category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
-      tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
-      taskId: string,
-      action: Action,
-      message: string,
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'deliveryAlertId' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'deliveryAlertId',
-        deliveryAlertId,
-      );
-      // verify required parameter 'category' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'category',
-        category,
-      );
-      // verify required parameter 'tier' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'tier',
-        tier,
-      );
-      // verify required parameter 'taskId' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'taskId',
-        taskId,
-      );
-      // verify required parameter 'action' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'action',
-        action,
-      );
-      // verify required parameter 'message' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'message',
-        message,
-      );
-      const localVarPath = `/delivery_alerts/{delivery_alert_id}/response`.replace(
-        `{${'delivery_alert_id'}}`,
-        encodeURIComponent(String(deliveryAlertId)),
-      );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      if (category !== undefined) {
-        localVarQueryParameter['category'] = category;
-      }
-
-      if (tier !== undefined) {
-        localVarQueryParameter['tier'] = tier;
-      }
-
-      if (taskId !== undefined) {
-        localVarQueryParameter['task_id'] = taskId;
-      }
-
-      if (action !== undefined) {
-        localVarQueryParameter['action'] = action;
-      }
-
-      if (message !== undefined) {
-        localVarQueryParameter['message'] = message;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-  };
-};
-
-/**
- * DeliveryAlertsApi - functional programming interface
- * @export
- */
-export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
-  const localVarAxiosParamCreator = DeliveryAlertsApiAxiosParamCreator(configuration);
-  return {
-    /**
-     *
-     * @summary Respond To Delivery Alert
-     * @param {string} deliveryAlertId
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertTier} tier
-     * @param {string} taskId
-     * @param {Action} action
-     * @param {string} message
-     * @param {string | null} [authorization]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
-      deliveryAlertId: string,
-      category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
-      tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
-      taskId: string,
-      action: Action,
-      message: string,
-      authorization?: string | null,
-      options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeliveryAlert>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
-          deliveryAlertId,
-          category,
-          tier,
-          taskId,
-          action,
-          message,
-          authorization,
-          options,
-        );
-      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-      const localVarOperationServerBasePath =
-        operationServerMap[
-          'DeliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost'
-        ]?.[localVarOperationServerIndex]?.url;
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration,
-        )(axios, localVarOperationServerBasePath || basePath);
-    },
-  };
-};
-
-/**
- * DeliveryAlertsApi - factory interface
- * @export
- */
-export const DeliveryAlertsApiFactory = function (
-  configuration?: Configuration,
-  basePath?: string,
-  axios?: AxiosInstance,
-) {
-  const localVarFp = DeliveryAlertsApiFp(configuration);
-  return {
-    /**
-     *
-     * @summary Respond To Delivery Alert
-     * @param {string} deliveryAlertId
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertTier} tier
-     * @param {string} taskId
-     * @param {Action} action
-     * @param {string} message
-     * @param {string | null} [authorization]
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
-      deliveryAlertId: string,
-      category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
-      tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
-      taskId: string,
-      action: Action,
-      message: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<DeliveryAlert> {
-      return localVarFp
-        .respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
-          deliveryAlertId,
-          category,
-          tier,
-          taskId,
-          action,
-          message,
-          authorization,
-          options,
-        )
-        .then((request) => request(axios, basePath));
-    },
-  };
-};
-
-/**
- * DeliveryAlertsApi - object-oriented interface
- * @export
- * @class DeliveryAlertsApi
- * @extends {BaseAPI}
- */
-export class DeliveryAlertsApi extends BaseAPI {
-  /**
-   *
-   * @summary Respond To Delivery Alert
-   * @param {string} deliveryAlertId
-   * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
-   * @param {ApiServerModelsDeliveryAlertsDeliveryAlertTier} tier
-   * @param {string} taskId
-   * @param {Action} action
-   * @param {string} message
-   * @param {string | null} [authorization]
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof DeliveryAlertsApi
-   */
-  public respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
-    deliveryAlertId: string,
-    category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
-    tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
-    taskId: string,
-    action: Action,
-    message: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
-    return DeliveryAlertsApiFp(this.configuration)
-      .respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
-        deliveryAlertId,
-        category,
-        tier,
-        taskId,
-        action,
-        message,
-        authorization,
-        options,
-      )
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -7517,13 +6839,11 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
      * Available in socket.io
      * @summary Get Dispenser State
      * @param {string} guid
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getDispenserStateDispensersGuidStateGet: async (
       guid: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'guid' is not null or undefined
@@ -7543,9 +6863,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -7563,12 +6881,10 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
     /**
      *
      * @summary Get Dispensers
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getDispensersDispensersGet: async (
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/dispensers`;
@@ -7583,9 +6899,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -7614,21 +6928,15 @@ export const DispensersApiFp = function (configuration?: Configuration) {
      * Available in socket.io
      * @summary Get Dispenser State
      * @param {string} guid
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getDispenserStateDispensersGuidStateGet(
       guid: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DispenserState>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getDispenserStateDispensersGuidStateGet(
-          guid,
-          authorization,
-          options,
-        );
+        await localVarAxiosParamCreator.getDispenserStateDispensersGuidStateGet(guid, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['DispensersApi.getDispenserStateDispensersGuidStateGet']?.[
@@ -7645,18 +6953,13 @@ export const DispensersApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Dispensers
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getDispensersDispensersGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Dispenser>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getDispensersDispensersGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getDispensersDispensersGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['DispensersApi.getDispensersDispensersGet']?.[
@@ -7688,32 +6991,26 @@ export const DispensersApiFactory = function (
      * Available in socket.io
      * @summary Get Dispenser State
      * @param {string} guid
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getDispenserStateDispensersGuidStateGet(
       guid: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<DispenserState> {
       return localVarFp
-        .getDispenserStateDispensersGuidStateGet(guid, authorization, options)
+        .getDispenserStateDispensersGuidStateGet(guid, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Dispensers
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getDispensersDispensersGet(
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<Array<Dispenser>> {
+    getDispensersDispensersGet(options?: any): AxiosPromise<Array<Dispenser>> {
       return localVarFp
-        .getDispensersDispensersGet(authorization, options)
+        .getDispensersDispensersGet(options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -7730,35 +7027,26 @@ export class DispensersApi extends BaseAPI {
    * Available in socket.io
    * @summary Get Dispenser State
    * @param {string} guid
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DispensersApi
    */
-  public getDispenserStateDispensersGuidStateGet(
-    guid: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getDispenserStateDispensersGuidStateGet(guid: string, options?: RawAxiosRequestConfig) {
     return DispensersApiFp(this.configuration)
-      .getDispenserStateDispensersGuidStateGet(guid, authorization, options)
+      .getDispenserStateDispensersGuidStateGet(guid, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Dispensers
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DispensersApi
    */
-  public getDispensersDispensersGet(
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getDispensersDispensersGet(options?: RawAxiosRequestConfig) {
     return DispensersApiFp(this.configuration)
-      .getDispensersDispensersGet(authorization, options)
+      .getDispensersDispensersGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -7773,13 +7061,11 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
      * Available in socket.io
      * @summary Get Door State
      * @param {string} doorName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getDoorStateDoorsDoorNameStateGet: async (
       doorName: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'doorName' is not null or undefined
@@ -7799,9 +7085,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -7819,14 +7103,10 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Get Doors
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getDoorsDoorsGet: async (
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    getDoorsDoorsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/doors`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7839,9 +7119,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -7861,14 +7139,12 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Post Door Request
      * @param {string} doorName
      * @param {DoorRequest} doorRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postDoorRequestDoorsDoorNameRequestPost: async (
       doorName: string,
       doorRequest: DoorRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'doorName' is not null or undefined
@@ -7890,9 +7166,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -7928,18 +7202,15 @@ export const DoorsApiFp = function (configuration?: Configuration) {
      * Available in socket.io
      * @summary Get Door State
      * @param {string} doorName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getDoorStateDoorsDoorNameStateGet(
       doorName: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DoorState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getDoorStateDoorsDoorNameStateGet(
         doorName,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -7958,18 +7229,13 @@ export const DoorsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Doors
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getDoorsDoorsGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Door>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getDoorsDoorsGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getDoorsDoorsGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['DoorsApi.getDoorsDoorsGet']?.[localVarOperationServerIndex]?.url;
@@ -7986,21 +7252,18 @@ export const DoorsApiFp = function (configuration?: Configuration) {
      * @summary Post Door Request
      * @param {string} doorName
      * @param {DoorRequest} doorRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postDoorRequestDoorsDoorNameRequestPost(
       doorName: string,
       doorRequest: DoorRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postDoorRequestDoorsDoorNameRequestPost(
           doorName,
           doorRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -8034,48 +7297,38 @@ export const DoorsApiFactory = function (
      * Available in socket.io
      * @summary Get Door State
      * @param {string} doorName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getDoorStateDoorsDoorNameStateGet(
-      doorName: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<DoorState> {
+    getDoorStateDoorsDoorNameStateGet(doorName: string, options?: any): AxiosPromise<DoorState> {
       return localVarFp
-        .getDoorStateDoorsDoorNameStateGet(doorName, authorization, options)
+        .getDoorStateDoorsDoorNameStateGet(doorName, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Doors
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getDoorsDoorsGet(authorization?: string | null, options?: any): AxiosPromise<Array<Door>> {
-      return localVarFp
-        .getDoorsDoorsGet(authorization, options)
-        .then((request) => request(axios, basePath));
+    getDoorsDoorsGet(options?: any): AxiosPromise<Array<Door>> {
+      return localVarFp.getDoorsDoorsGet(options).then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Door Request
      * @param {string} doorName
      * @param {DoorRequest} doorRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postDoorRequestDoorsDoorNameRequestPost(
       doorName: string,
       doorRequest: DoorRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .postDoorRequestDoorsDoorNameRequestPost(doorName, doorRequest, authorization, options)
+        .postDoorRequestDoorsDoorNameRequestPost(doorName, doorRequest, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -8092,32 +7345,26 @@ export class DoorsApi extends BaseAPI {
    * Available in socket.io
    * @summary Get Door State
    * @param {string} doorName
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DoorsApi
    */
-  public getDoorStateDoorsDoorNameStateGet(
-    doorName: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getDoorStateDoorsDoorNameStateGet(doorName: string, options?: RawAxiosRequestConfig) {
     return DoorsApiFp(this.configuration)
-      .getDoorStateDoorsDoorNameStateGet(doorName, authorization, options)
+      .getDoorStateDoorsDoorNameStateGet(doorName, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Doors
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DoorsApi
    */
-  public getDoorsDoorsGet(authorization?: string | null, options?: RawAxiosRequestConfig) {
+  public getDoorsDoorsGet(options?: RawAxiosRequestConfig) {
     return DoorsApiFp(this.configuration)
-      .getDoorsDoorsGet(authorization, options)
+      .getDoorsDoorsGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -8126,7 +7373,6 @@ export class DoorsApi extends BaseAPI {
    * @summary Post Door Request
    * @param {string} doorName
    * @param {DoorRequest} doorRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof DoorsApi
@@ -8134,11 +7380,10 @@ export class DoorsApi extends BaseAPI {
   public postDoorRequestDoorsDoorNameRequestPost(
     doorName: string,
     doorRequest: DoorRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return DoorsApiFp(this.configuration)
-      .postDoorRequestDoorsDoorNameRequestPost(doorName, doorRequest, authorization, options)
+      .postDoorRequestDoorsDoorNameRequestPost(doorName, doorRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -8156,7 +7401,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @param {string} robotName
      * @param {boolean} reassignTasks
      * @param {boolean} allowIdleBehavior
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -8165,7 +7409,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       robotName: string,
       reassignTasks: boolean,
       allowIdleBehavior: boolean,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
@@ -8199,6 +7442,8 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (robotName !== undefined) {
         localVarQueryParameter['robot_name'] = robotName;
       }
@@ -8209,10 +7454,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
 
       if (allowIdleBehavior !== undefined) {
         localVarQueryParameter['allow_idle_behavior'] = allowIdleBehavior;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8233,14 +7474,12 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @summary Get Fleet Log
      * @param {string} name
      * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getFleetLogFleetsNameLogGet: async (
       name: string,
       between?: string | null,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
@@ -8260,12 +7499,10 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (between !== undefined) {
         localVarQueryParameter['between'] = between;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8285,13 +7522,11 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * Available in socket.io
      * @summary Get Fleet State
      * @param {string} name
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getFleetStateFleetsNameStateGet: async (
       name: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
@@ -8311,9 +7546,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -8331,14 +7564,10 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      *
      * @summary Get Fleets
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFleetsFleetsGet: async (
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    getFleetsFleetsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/fleets`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -8351,9 +7580,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -8373,14 +7600,12 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     recommissionRobotFleetsNameRecommissionPost: async (
       name: string,
       robotName: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
@@ -8402,12 +7627,10 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (robotName !== undefined) {
         localVarQueryParameter['robot_name'] = robotName;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8429,7 +7652,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @param {string} name
      * @param {string} robotName
      * @param {string} mutexGroup
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -8437,7 +7659,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       name: string,
       robotName: string,
       mutexGroup: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
@@ -8461,16 +7682,14 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (robotName !== undefined) {
         localVarQueryParameter['robot_name'] = robotName;
       }
 
       if (mutexGroup !== undefined) {
         localVarQueryParameter['mutex_group'] = mutexGroup;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8503,7 +7722,6 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @param {string} robotName
      * @param {boolean} reassignTasks
      * @param {boolean} allowIdleBehavior
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -8512,7 +7730,6 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       robotName: string,
       reassignTasks: boolean,
       allowIdleBehavior: boolean,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotCommissionResponse>
@@ -8523,7 +7740,6 @@ export const FleetsApiFp = function (configuration?: Configuration) {
           robotName,
           reassignTasks,
           allowIdleBehavior,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -8544,20 +7760,17 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @summary Get Fleet Log
      * @param {string} name
      * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getFleetLogFleetsNameLogGet(
       name: string,
       between?: string | null,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FleetLog>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetLogFleetsNameLogGet(
         name,
         between,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -8576,18 +7789,15 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * Available in socket.io
      * @summary Get Fleet State
      * @param {string} name
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getFleetStateFleetsNameStateGet(
       name: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FleetState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetStateFleetsNameStateGet(
         name,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -8606,18 +7816,13 @@ export const FleetsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Fleets
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getFleetsFleetsGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FleetState>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetsFleetsGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetsFleetsGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['FleetsApi.getFleetsFleetsGet']?.[localVarOperationServerIndex]?.url;
@@ -8634,14 +7839,12 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async recommissionRobotFleetsNameRecommissionPost(
       name: string,
       robotName: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotCommissionResponse>
@@ -8650,7 +7853,6 @@ export const FleetsApiFp = function (configuration?: Configuration) {
         await localVarAxiosParamCreator.recommissionRobotFleetsNameRecommissionPost(
           name,
           robotName,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -8672,7 +7874,6 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @param {string} name
      * @param {string} robotName
      * @param {string} mutexGroup
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -8680,7 +7881,6 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       name: string,
       robotName: string,
       mutexGroup: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
@@ -8688,7 +7888,6 @@ export const FleetsApiFp = function (configuration?: Configuration) {
           name,
           robotName,
           mutexGroup,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -8725,7 +7924,6 @@ export const FleetsApiFactory = function (
      * @param {string} robotName
      * @param {boolean} reassignTasks
      * @param {boolean} allowIdleBehavior
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -8734,7 +7932,6 @@ export const FleetsApiFactory = function (
       robotName: string,
       reassignTasks: boolean,
       allowIdleBehavior: boolean,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<RobotCommissionResponse> {
       return localVarFp
@@ -8743,7 +7940,6 @@ export const FleetsApiFactory = function (
           robotName,
           reassignTasks,
           allowIdleBehavior,
-          authorization,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -8753,69 +7949,54 @@ export const FleetsApiFactory = function (
      * @summary Get Fleet Log
      * @param {string} name
      * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getFleetLogFleetsNameLogGet(
       name: string,
       between?: string | null,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<FleetLog> {
       return localVarFp
-        .getFleetLogFleetsNameLogGet(name, between, authorization, options)
+        .getFleetLogFleetsNameLogGet(name, between, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Available in socket.io
      * @summary Get Fleet State
      * @param {string} name
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFleetStateFleetsNameStateGet(
-      name: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<FleetState> {
+    getFleetStateFleetsNameStateGet(name: string, options?: any): AxiosPromise<FleetState> {
       return localVarFp
-        .getFleetStateFleetsNameStateGet(name, authorization, options)
+        .getFleetStateFleetsNameStateGet(name, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Fleets
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFleetsFleetsGet(
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<Array<FleetState>> {
-      return localVarFp
-        .getFleetsFleetsGet(authorization, options)
-        .then((request) => request(axios, basePath));
+    getFleetsFleetsGet(options?: any): AxiosPromise<Array<FleetState>> {
+      return localVarFp.getFleetsFleetsGet(options).then((request) => request(axios, basePath));
     },
     /**
      * Recommissions a robot, allowing it to accept new dispatch tasks and direct tasks, as well as resume idle behaviors (formerly known as finishing tasks).
      * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     recommissionRobotFleetsNameRecommissionPost(
       name: string,
       robotName: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<RobotCommissionResponse> {
       return localVarFp
-        .recommissionRobotFleetsNameRecommissionPost(name, robotName, authorization, options)
+        .recommissionRobotFleetsNameRecommissionPost(name, robotName, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -8824,7 +8005,6 @@ export const FleetsApiFactory = function (
      * @param {string} name
      * @param {string} robotName
      * @param {string} mutexGroup
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -8832,17 +8012,10 @@ export const FleetsApiFactory = function (
       name: string,
       robotName: string,
       mutexGroup: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .unlockMutexGroupFleetsNameUnlockMutexGroupPost(
-          name,
-          robotName,
-          mutexGroup,
-          authorization,
-          options,
-        )
+        .unlockMutexGroupFleetsNameUnlockMutexGroupPost(name, robotName, mutexGroup, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -8862,7 +8035,6 @@ export class FleetsApi extends BaseAPI {
    * @param {string} robotName
    * @param {boolean} reassignTasks
    * @param {boolean} allowIdleBehavior
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
@@ -8872,7 +8044,6 @@ export class FleetsApi extends BaseAPI {
     robotName: string,
     reassignTasks: boolean,
     allowIdleBehavior: boolean,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
@@ -8881,7 +8052,6 @@ export class FleetsApi extends BaseAPI {
         robotName,
         reassignTasks,
         allowIdleBehavior,
-        authorization,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -8892,7 +8062,6 @@ export class FleetsApi extends BaseAPI {
    * @summary Get Fleet Log
    * @param {string} name
    * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
@@ -8900,11 +8069,10 @@ export class FleetsApi extends BaseAPI {
   public getFleetLogFleetsNameLogGet(
     name: string,
     between?: string | null,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
-      .getFleetLogFleetsNameLogGet(name, between, authorization, options)
+      .getFleetLogFleetsNameLogGet(name, between, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -8912,32 +8080,26 @@ export class FleetsApi extends BaseAPI {
    * Available in socket.io
    * @summary Get Fleet State
    * @param {string} name
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public getFleetStateFleetsNameStateGet(
-    name: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getFleetStateFleetsNameStateGet(name: string, options?: RawAxiosRequestConfig) {
     return FleetsApiFp(this.configuration)
-      .getFleetStateFleetsNameStateGet(name, authorization, options)
+      .getFleetStateFleetsNameStateGet(name, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Fleets
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public getFleetsFleetsGet(authorization?: string | null, options?: RawAxiosRequestConfig) {
+  public getFleetsFleetsGet(options?: RawAxiosRequestConfig) {
     return FleetsApiFp(this.configuration)
-      .getFleetsFleetsGet(authorization, options)
+      .getFleetsFleetsGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -8946,7 +8108,6 @@ export class FleetsApi extends BaseAPI {
    * @summary Recommission Robot
    * @param {string} name
    * @param {string} robotName
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
@@ -8954,11 +8115,10 @@ export class FleetsApi extends BaseAPI {
   public recommissionRobotFleetsNameRecommissionPost(
     name: string,
     robotName: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
-      .recommissionRobotFleetsNameRecommissionPost(name, robotName, authorization, options)
+      .recommissionRobotFleetsNameRecommissionPost(name, robotName, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -8968,7 +8128,6 @@ export class FleetsApi extends BaseAPI {
    * @param {string} name
    * @param {string} robotName
    * @param {string} mutexGroup
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
@@ -8977,17 +8136,10 @@ export class FleetsApi extends BaseAPI {
     name: string,
     robotName: string,
     mutexGroup: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
-      .unlockMutexGroupFleetsNameUnlockMutexGroupPost(
-        name,
-        robotName,
-        mutexGroup,
-        authorization,
-        options,
-      )
+      .unlockMutexGroupFleetsNameUnlockMutexGroupPost(name, robotName, mutexGroup, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -9002,13 +8154,11 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
      * Available in socket.io
      * @summary Get Ingestor State
      * @param {string} guid
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getIngestorStateIngestorsGuidStateGet: async (
       guid: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'guid' is not null or undefined
@@ -9028,9 +8178,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -9048,14 +8196,10 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
     /**
      *
      * @summary Get Ingestors
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getIngestorsIngestorsGet: async (
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    getIngestorsIngestorsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/ingestors`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9068,9 +8212,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -9099,21 +8241,15 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
      * Available in socket.io
      * @summary Get Ingestor State
      * @param {string} guid
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getIngestorStateIngestorsGuidStateGet(
       guid: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IngestorState>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getIngestorStateIngestorsGuidStateGet(
-          guid,
-          authorization,
-          options,
-        );
+        await localVarAxiosParamCreator.getIngestorStateIngestorsGuidStateGet(guid, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['IngestorsApi.getIngestorStateIngestorsGuidStateGet']?.[
@@ -9130,18 +8266,13 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Ingestors
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getIngestorsIngestorsGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Ingestor>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getIngestorsIngestorsGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getIngestorsIngestorsGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['IngestorsApi.getIngestorsIngestorsGet']?.[localVarOperationServerIndex]
@@ -9172,32 +8303,26 @@ export const IngestorsApiFactory = function (
      * Available in socket.io
      * @summary Get Ingestor State
      * @param {string} guid
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getIngestorStateIngestorsGuidStateGet(
       guid: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<IngestorState> {
       return localVarFp
-        .getIngestorStateIngestorsGuidStateGet(guid, authorization, options)
+        .getIngestorStateIngestorsGuidStateGet(guid, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Ingestors
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getIngestorsIngestorsGet(
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<Array<Ingestor>> {
+    getIngestorsIngestorsGet(options?: any): AxiosPromise<Array<Ingestor>> {
       return localVarFp
-        .getIngestorsIngestorsGet(authorization, options)
+        .getIngestorsIngestorsGet(options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -9214,32 +8339,26 @@ export class IngestorsApi extends BaseAPI {
    * Available in socket.io
    * @summary Get Ingestor State
    * @param {string} guid
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof IngestorsApi
    */
-  public getIngestorStateIngestorsGuidStateGet(
-    guid: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getIngestorStateIngestorsGuidStateGet(guid: string, options?: RawAxiosRequestConfig) {
     return IngestorsApiFp(this.configuration)
-      .getIngestorStateIngestorsGuidStateGet(guid, authorization, options)
+      .getIngestorStateIngestorsGuidStateGet(guid, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Ingestors
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof IngestorsApi
    */
-  public getIngestorsIngestorsGet(authorization?: string | null, options?: RawAxiosRequestConfig) {
+  public getIngestorsIngestorsGet(options?: RawAxiosRequestConfig) {
     return IngestorsApiFp(this.configuration)
-      .getIngestorsIngestorsGet(authorization, options)
+      .getIngestorsIngestorsGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -9254,13 +8373,11 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
      * Available in socket.io
      * @summary Get Lift State
      * @param {string} liftName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getLiftStateLiftsLiftNameStateGet: async (
       liftName: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'liftName' is not null or undefined
@@ -9280,9 +8397,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -9300,14 +8415,10 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Get Lifts
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getLiftsLiftsGet: async (
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    getLiftsLiftsGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/lifts`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9320,9 +8431,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -9342,14 +8451,12 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Post Lift Request
      * @param {string} liftName
      * @param {LiftRequest} liftRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postLiftRequestLiftsLiftNameRequestPost: async (
       liftName: string,
       liftRequest: LiftRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'liftName' is not null or undefined
@@ -9371,9 +8478,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -9409,18 +8514,15 @@ export const LiftsApiFp = function (configuration?: Configuration) {
      * Available in socket.io
      * @summary Get Lift State
      * @param {string} liftName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getLiftStateLiftsLiftNameStateGet(
       liftName: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LiftState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getLiftStateLiftsLiftNameStateGet(
         liftName,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -9439,18 +8541,13 @@ export const LiftsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Lifts
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getLiftsLiftsGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Lift>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getLiftsLiftsGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getLiftsLiftsGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['LiftsApi.getLiftsLiftsGet']?.[localVarOperationServerIndex]?.url;
@@ -9467,21 +8564,18 @@ export const LiftsApiFp = function (configuration?: Configuration) {
      * @summary Post Lift Request
      * @param {string} liftName
      * @param {LiftRequest} liftRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postLiftRequestLiftsLiftNameRequestPost(
       liftName: string,
       liftRequest: LiftRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postLiftRequestLiftsLiftNameRequestPost(
           liftName,
           liftRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -9515,48 +8609,38 @@ export const LiftsApiFactory = function (
      * Available in socket.io
      * @summary Get Lift State
      * @param {string} liftName
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getLiftStateLiftsLiftNameStateGet(
-      liftName: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<LiftState> {
+    getLiftStateLiftsLiftNameStateGet(liftName: string, options?: any): AxiosPromise<LiftState> {
       return localVarFp
-        .getLiftStateLiftsLiftNameStateGet(liftName, authorization, options)
+        .getLiftStateLiftsLiftNameStateGet(liftName, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Lifts
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getLiftsLiftsGet(authorization?: string | null, options?: any): AxiosPromise<Array<Lift>> {
-      return localVarFp
-        .getLiftsLiftsGet(authorization, options)
-        .then((request) => request(axios, basePath));
+    getLiftsLiftsGet(options?: any): AxiosPromise<Array<Lift>> {
+      return localVarFp.getLiftsLiftsGet(options).then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Lift Request
      * @param {string} liftName
      * @param {LiftRequest} liftRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postLiftRequestLiftsLiftNameRequestPost(
       liftName: string,
       liftRequest: LiftRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .postLiftRequestLiftsLiftNameRequestPost(liftName, liftRequest, authorization, options)
+        .postLiftRequestLiftsLiftNameRequestPost(liftName, liftRequest, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -9573,32 +8657,26 @@ export class LiftsApi extends BaseAPI {
    * Available in socket.io
    * @summary Get Lift State
    * @param {string} liftName
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof LiftsApi
    */
-  public getLiftStateLiftsLiftNameStateGet(
-    liftName: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getLiftStateLiftsLiftNameStateGet(liftName: string, options?: RawAxiosRequestConfig) {
     return LiftsApiFp(this.configuration)
-      .getLiftStateLiftsLiftNameStateGet(liftName, authorization, options)
+      .getLiftStateLiftsLiftNameStateGet(liftName, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Lifts
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof LiftsApi
    */
-  public getLiftsLiftsGet(authorization?: string | null, options?: RawAxiosRequestConfig) {
+  public getLiftsLiftsGet(options?: RawAxiosRequestConfig) {
     return LiftsApiFp(this.configuration)
-      .getLiftsLiftsGet(authorization, options)
+      .getLiftsLiftsGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -9607,7 +8685,6 @@ export class LiftsApi extends BaseAPI {
    * @summary Post Lift Request
    * @param {string} liftName
    * @param {LiftRequest} liftRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof LiftsApi
@@ -9615,11 +8692,10 @@ export class LiftsApi extends BaseAPI {
   public postLiftRequestLiftsLiftNameRequestPost(
     liftName: string,
     liftRequest: LiftRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return LiftsApiFp(this.configuration)
-      .postLiftRequestLiftsLiftNameRequestPost(liftName, liftRequest, authorization, options)
+      .postLiftRequestLiftsLiftNameRequestPost(liftName, liftRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -9634,15 +8710,10 @@ export const RIOsApiAxiosParamCreator = function (configuration?: Configuration)
      *
      * @summary Put Rio
      * @param {Rio} rio
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    putRioRiosPut: async (
-      rio: Rio,
-      authorization?: string | null,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    putRioRiosPut: async (rio: Rio, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'rio' is not null or undefined
       assertParamExists('putRioRiosPut', 'rio', rio);
       const localVarPath = `/rios`;
@@ -9657,9 +8728,7 @@ export const RIOsApiAxiosParamCreator = function (configuration?: Configuration)
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -9686,14 +8755,12 @@ export const RIOsApiAxiosParamCreator = function (configuration?: Configuration)
      * @summary Query Rios
      * @param {string | null} [id] comma separated list of ids
      * @param {string | null} [type] comma separated list of types
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     queryRiosRiosGet: async (
       id?: string | null,
       type?: string | null,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/rios`;
@@ -9708,16 +8775,14 @@ export const RIOsApiAxiosParamCreator = function (configuration?: Configuration)
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (id !== undefined) {
         localVarQueryParameter['id'] = id;
       }
 
       if (type !== undefined) {
         localVarQueryParameter['type'] = type;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -9747,20 +8812,14 @@ export const RIOsApiFp = function (configuration?: Configuration) {
      *
      * @summary Put Rio
      * @param {Rio} rio
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async putRioRiosPut(
       rio: Rio,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.putRioRiosPut(
-        rio,
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.putRioRiosPut(rio, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['RIOsApi.putRioRiosPut']?.[localVarOperationServerIndex]?.url;
@@ -9777,22 +8836,15 @@ export const RIOsApiFp = function (configuration?: Configuration) {
      * @summary Query Rios
      * @param {string | null} [id] comma separated list of ids
      * @param {string | null} [type] comma separated list of types
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async queryRiosRiosGet(
       id?: string | null,
       type?: string | null,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Rio>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.queryRiosRiosGet(
-        id,
-        type,
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.queryRiosRiosGet(id, type, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['RIOsApi.queryRiosRiosGet']?.[localVarOperationServerIndex]?.url;
@@ -9822,32 +8874,27 @@ export const RIOsApiFactory = function (
      *
      * @summary Put Rio
      * @param {Rio} rio
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    putRioRiosPut(rio: Rio, authorization?: string | null, options?: any): AxiosPromise<any> {
-      return localVarFp
-        .putRioRiosPut(rio, authorization, options)
-        .then((request) => request(axios, basePath));
+    putRioRiosPut(rio: Rio, options?: any): AxiosPromise<any> {
+      return localVarFp.putRioRiosPut(rio, options).then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Query Rios
      * @param {string | null} [id] comma separated list of ids
      * @param {string | null} [type] comma separated list of types
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     queryRiosRiosGet(
       id?: string | null,
       type?: string | null,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<Array<Rio>> {
       return localVarFp
-        .queryRiosRiosGet(id, type, authorization, options)
+        .queryRiosRiosGet(id, type, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -9864,14 +8911,13 @@ export class RIOsApi extends BaseAPI {
    *
    * @summary Put Rio
    * @param {Rio} rio
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof RIOsApi
    */
-  public putRioRiosPut(rio: Rio, authorization?: string | null, options?: RawAxiosRequestConfig) {
+  public putRioRiosPut(rio: Rio, options?: RawAxiosRequestConfig) {
     return RIOsApiFp(this.configuration)
-      .putRioRiosPut(rio, authorization, options)
+      .putRioRiosPut(rio, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -9880,7 +8926,6 @@ export class RIOsApi extends BaseAPI {
    * @summary Query Rios
    * @param {string | null} [id] comma separated list of ids
    * @param {string | null} [type] comma separated list of types
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof RIOsApi
@@ -9888,11 +8933,10 @@ export class RIOsApi extends BaseAPI {
   public queryRiosRiosGet(
     id?: string | null,
     type?: string | null,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return RIOsApiFp(this.configuration)
-      .queryRiosRiosGet(id, type, authorization, options)
+      .queryRiosRiosGet(id, type, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -9908,14 +8952,12 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Add Except Date
      * @param {number} taskId
      * @param {AddExceptDateRequest} addExceptDateRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     addExceptDateScheduledTasksTaskIdExceptDatePost: async (
       taskId: number,
       addExceptDateRequest: AddExceptDateRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -9941,9 +8983,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -9969,13 +9009,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Del Scheduled Tasks
      * @param {number} taskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     delScheduledTasksScheduledTasksTaskIdDelete: async (
       taskId: number,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -9995,9 +9033,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -10016,13 +9052,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Delete Favorite Task
      * @param {string} favoriteTaskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete: async (
       favoriteTaskId: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'favoriteTaskId' is not null or undefined
@@ -10046,9 +9080,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -10066,12 +9098,10 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Get Favorites Tasks
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getFavoritesTasksFavoriteTasksGet: async (
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/favorite_tasks`;
@@ -10086,9 +9116,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -10107,13 +9135,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Get Scheduled Task
      * @param {number} taskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getScheduledTaskScheduledTasksTaskIdGet: async (
       taskId: number,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -10133,9 +9159,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -10158,7 +9182,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -10168,7 +9191,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'startBefore' is not null or undefined
@@ -10186,6 +9208,8 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication OpenIdConnect required
 
       if (startBefore !== undefined) {
         localVarQueryParameter['start_before'] =
@@ -10209,10 +9233,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['order_by'] = orderBy;
       }
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
-
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -10230,13 +9250,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Get Task Booking Label
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getTaskBookingLabelTasksTaskIdBookingLabelGet: async (
       taskId: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -10256,9 +9274,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -10278,14 +9294,12 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Get Task Log
      * @param {string} taskId task_id
      * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getTaskLogTasksTaskIdLogGet: async (
       taskId: string,
       between?: string | null,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -10305,12 +9319,10 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (between !== undefined) {
         localVarQueryParameter['between'] = between;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -10330,13 +9342,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getTaskRequestTasksTaskIdRequestGet: async (
       taskId: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -10356,9 +9366,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -10377,13 +9385,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * Available in socket.io
      * @summary Get Task State
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getTaskStateTasksTaskIdStateGet: async (
       taskId: string,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -10403,9 +9409,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -10424,13 +9428,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Activity Discovery
      * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postActivityDiscoveryTasksActivityDiscoveryPost: async (
       activityDiscoveryRequest: ActivityDiscoveryRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'activityDiscoveryRequest' is not null or undefined
@@ -10451,9 +9453,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10479,13 +9479,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Cancel Task
      * @param {CancelTaskRequest} cancelTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postCancelTaskTasksCancelTaskPost: async (
       cancelTaskRequest: CancelTaskRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'cancelTaskRequest' is not null or undefined
@@ -10506,9 +9504,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10534,13 +9530,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Dispatch Task
      * @param {DispatchTaskRequest} dispatchTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postDispatchTaskTasksDispatchTaskPost: async (
       dispatchTaskRequest: DispatchTaskRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'dispatchTaskRequest' is not null or undefined
@@ -10561,9 +9555,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10589,13 +9581,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Favorite Task
      * @param {TaskFavorite} taskFavorite
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFavoriteTaskFavoriteTasksPost: async (
       taskFavorite: TaskFavorite,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskFavorite' is not null or undefined
@@ -10612,9 +9602,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10640,13 +9628,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Interrupt Task
      * @param {TaskInterruptionRequest} taskInterruptionRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postInterruptTaskTasksInterruptTaskPost: async (
       taskInterruptionRequest: TaskInterruptionRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskInterruptionRequest' is not null or undefined
@@ -10667,9 +9653,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10695,13 +9679,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Kill Task
      * @param {TaskKillRequest} taskKillRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postKillTaskTasksKillTaskPost: async (
       taskKillRequest: TaskKillRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskKillRequest' is not null or undefined
@@ -10718,9 +9700,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10746,13 +9726,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Resume Task
      * @param {TaskResumeRequest} taskResumeRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postResumeTaskTasksResumeTaskPost: async (
       taskResumeRequest: TaskResumeRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskResumeRequest' is not null or undefined
@@ -10773,9 +9751,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10801,13 +9777,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Rewind Task
      * @param {TaskRewindRequest} taskRewindRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postRewindTaskTasksRewindTaskPost: async (
       taskRewindRequest: TaskRewindRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskRewindRequest' is not null or undefined
@@ -10828,9 +9802,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10856,13 +9828,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Robot Task
      * @param {RobotTaskRequest} robotTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postRobotTaskTasksRobotTaskPost: async (
       robotTaskRequest: RobotTaskRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'robotTaskRequest' is not null or undefined
@@ -10879,9 +9849,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10907,13 +9875,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * Create a scheduled task. Below are some examples of how the schedules are represented. For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).  | every | to | period | at | description | | - | - | - | - | - | | 10 | - | minutes | - | Every 10 minutes | | - | - | hour | - | Every hour | | - | - | day | 10:30 | Every day at 10:30am | | - | - | monday | - | Every monday | | - | - | wednesday | 13:15 | Every wednesday at 01:15pm | | - | - | minute | :17 | Every 17th sec of a mintue | | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
      * @summary Post Scheduled Task
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postScheduledTaskScheduledTasksPost: async (
       postScheduledTaskRequest: PostScheduledTaskRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'postScheduledTaskRequest' is not null or undefined
@@ -10934,9 +9900,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -10962,13 +9926,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Skip Phase
      * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postSkipPhaseTasksSkipPhasePost: async (
       taskPhaseSkipRequest: TaskPhaseSkipRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskPhaseSkipRequest' is not null or undefined
@@ -10989,9 +9951,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -11017,13 +9977,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Task Discovery
      * @param {TaskDiscoveryRequest} taskDiscoveryRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postTaskDiscoveryTasksTaskDiscoveryPost: async (
       taskDiscoveryRequest: TaskDiscoveryRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskDiscoveryRequest' is not null or undefined
@@ -11044,9 +10002,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -11072,13 +10028,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Post Undo Skip Phase
      * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postUndoSkipPhaseTasksUndoSkipPhasePost: async (
       undoPhaseSkipRequest: UndoPhaseSkipRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'undoPhaseSkipRequest' is not null or undefined
@@ -11099,9 +10053,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -11127,13 +10079,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Query Task Requests
      * @param {string | null} [taskIds] comma separated list of task ids
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     queryTaskRequestsTasksRequestsGet: async (
       taskIds?: string | null,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/tasks/requests`;
@@ -11148,12 +10098,10 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      // authentication OpenIdConnect required
+
       if (taskIds !== undefined) {
         localVarQueryParameter['task_ids'] = taskIds;
-      }
-
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -11184,7 +10132,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -11201,7 +10148,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/tasks`;
@@ -11215,6 +10161,8 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      // authentication OpenIdConnect required
 
       if (taskId !== undefined) {
         localVarQueryParameter['task_id'] = taskId;
@@ -11264,10 +10212,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['order_by'] = orderBy;
       }
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
-
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -11286,14 +10230,12 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateScheduleTaskScheduledTasksTaskIdUpdatePost: async (
       taskId: number,
       postScheduledTaskRequest: PostScheduledTaskRequest,
-      authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -11319,9 +10261,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (authorization != null) {
-        localVarHeaderParameter['authorization'] = String(authorization);
-      }
+      // authentication OpenIdConnect required
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -11358,21 +10298,18 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @summary Add Except Date
      * @param {number} taskId
      * @param {AddExceptDateRequest} addExceptDateRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async addExceptDateScheduledTasksTaskIdExceptDatePost(
       taskId: number,
       addExceptDateRequest: AddExceptDateRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.addExceptDateScheduledTasksTaskIdExceptDatePost(
           taskId,
           addExceptDateRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11392,19 +10329,16 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Del Scheduled Tasks
      * @param {number} taskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async delScheduledTasksScheduledTasksTaskIdDelete(
       taskId: number,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.delScheduledTasksScheduledTasksTaskIdDelete(
           taskId,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11424,19 +10358,16 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Delete Favorite Task
      * @param {string} favoriteTaskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
       favoriteTaskId: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
           favoriteTaskId,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11455,18 +10386,14 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Favorites Tasks
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getFavoritesTasksFavoriteTasksGet(
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavorite>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(
-        authorization,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['TasksApi.getFavoritesTasksFavoriteTasksGet']?.[
@@ -11484,21 +10411,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Get Scheduled Task
      * @param {number} taskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getScheduledTaskScheduledTasksTaskIdGet(
       taskId: number,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ScheduledTask>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getScheduledTaskScheduledTasksTaskIdGet(
-          taskId,
-          authorization,
-          options,
-        );
+        await localVarAxiosParamCreator.getScheduledTaskScheduledTasksTaskIdGet(taskId, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['TasksApi.getScheduledTaskScheduledTasksTaskIdGet']?.[
@@ -11520,7 +10441,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -11530,7 +10450,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ScheduledTask>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getScheduledTasksScheduledTasksGet(
@@ -11539,7 +10458,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
         limit,
         offset,
         orderBy,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11559,13 +10477,11 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Get Task Booking Label
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getTaskBookingLabelTasksTaskIdBookingLabelGet(
       taskId: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<{ [key: string]: string }>
@@ -11573,7 +10489,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getTaskBookingLabelTasksTaskIdBookingLabelGet(
           taskId,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11594,20 +10509,17 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @summary Get Task Log
      * @param {string} taskId task_id
      * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getTaskLogTasksTaskIdLogGet(
       taskId: string,
       between?: string | null,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskEventLog>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskLogTasksTaskIdLogGet(
         taskId,
         between,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11626,18 +10538,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getTaskRequestTasksTaskIdRequestGet(
       taskId: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskRequest>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskRequestTasksTaskIdRequestGet(
         taskId,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11657,18 +10566,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * Available in socket.io
      * @summary Get Task State
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getTaskStateTasksTaskIdStateGet(
       taskId: string,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskStateOutput>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskStateTasksTaskIdStateGet(
         taskId,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11688,19 +10594,16 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Activity Discovery
      * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postActivityDiscoveryTasksActivityDiscoveryPost(
       activityDiscoveryRequest: ActivityDiscoveryRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActivityDiscovery>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postActivityDiscoveryTasksActivityDiscoveryPost(
           activityDiscoveryRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11720,18 +10623,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Cancel Task
      * @param {CancelTaskRequest} cancelTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postCancelTaskTasksCancelTaskPost(
       cancelTaskRequest: CancelTaskRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskCancelResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postCancelTaskTasksCancelTaskPost(
         cancelTaskRequest,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11751,13 +10651,11 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Dispatch Task
      * @param {DispatchTaskRequest} dispatchTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postDispatchTaskTasksDispatchTaskPost(
       dispatchTaskRequest: DispatchTaskRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDispatchResponseOutput>
@@ -11765,7 +10663,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postDispatchTaskTasksDispatchTaskPost(
           dispatchTaskRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11785,18 +10682,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Favorite Task
      * @param {TaskFavorite} taskFavorite
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postFavoriteTaskFavoriteTasksPost(
       taskFavorite: TaskFavorite,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postFavoriteTaskFavoriteTasksPost(
         taskFavorite,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11816,13 +10710,11 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Interrupt Task
      * @param {TaskInterruptionRequest} taskInterruptionRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postInterruptTaskTasksInterruptTaskPost(
       taskInterruptionRequest: TaskInterruptionRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskInterruptionResponse>
@@ -11830,7 +10722,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postInterruptTaskTasksInterruptTaskPost(
           taskInterruptionRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11850,18 +10741,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Kill Task
      * @param {TaskKillRequest} taskKillRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postKillTaskTasksKillTaskPost(
       taskKillRequest: TaskKillRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskKillResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postKillTaskTasksKillTaskPost(
         taskKillRequest,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11880,18 +10768,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Resume Task
      * @param {TaskResumeRequest} taskResumeRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postResumeTaskTasksResumeTaskPost(
       taskResumeRequest: TaskResumeRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskResumeResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postResumeTaskTasksResumeTaskPost(
         taskResumeRequest,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11911,18 +10796,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Rewind Task
      * @param {TaskRewindRequest} taskRewindRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postRewindTaskTasksRewindTaskPost(
       taskRewindRequest: TaskRewindRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskRewindResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postRewindTaskTasksRewindTaskPost(
         taskRewindRequest,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11942,20 +10824,17 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Robot Task
      * @param {RobotTaskRequest} robotTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postRobotTaskTasksRobotTaskPost(
       robotTaskRequest: RobotTaskRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotTaskResponseOutput>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postRobotTaskTasksRobotTaskPost(
         robotTaskRequest,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -11975,18 +10854,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * Create a scheduled task. Below are some examples of how the schedules are represented. For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).  | every | to | period | at | description | | - | - | - | - | - | | 10 | - | minutes | - | Every 10 minutes | | - | - | hour | - | Every hour | | - | - | day | 10:30 | Every day at 10:30am | | - | - | monday | - | Every monday | | - | - | wednesday | 13:15 | Every wednesday at 01:15pm | | - | - | minute | :17 | Every 17th sec of a mintue | | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
      * @summary Post Scheduled Task
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postScheduledTaskScheduledTasksPost(
       postScheduledTaskRequest: PostScheduledTaskRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ScheduledTask>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postScheduledTaskScheduledTasksPost(
         postScheduledTaskRequest,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -12006,18 +10882,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Skip Phase
      * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postSkipPhaseTasksSkipPhasePost(
       taskPhaseSkipRequest: TaskPhaseSkipRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SkipPhaseResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postSkipPhaseTasksSkipPhasePost(
         taskPhaseSkipRequest,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -12037,19 +10910,16 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Task Discovery
      * @param {TaskDiscoveryRequest} taskDiscoveryRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postTaskDiscoveryTasksTaskDiscoveryPost(
       taskDiscoveryRequest: TaskDiscoveryRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDiscovery>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postTaskDiscoveryTasksTaskDiscoveryPost(
           taskDiscoveryRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -12069,19 +10939,16 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Post Undo Skip Phase
      * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postUndoSkipPhaseTasksUndoSkipPhasePost(
       undoPhaseSkipRequest: UndoPhaseSkipRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UndoPhaseSkipResponse>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postUndoSkipPhaseTasksUndoSkipPhasePost(
           undoPhaseSkipRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -12101,18 +10968,15 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Query Task Requests
      * @param {string | null} [taskIds] comma separated list of task ids
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async queryTaskRequestsTasksRequestsGet(
       taskIds?: string | null,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskRequest>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskRequestsTasksRequestsGet(
         taskIds,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -12143,7 +11007,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -12160,7 +11023,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskStateOutput>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskStatesTasksGet(
@@ -12176,7 +11038,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
         limit,
         offset,
         orderBy,
-        authorization,
         options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -12195,21 +11056,18 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async updateScheduleTaskScheduledTasksTaskIdUpdatePost(
       taskId: number,
       postScheduledTaskRequest: PostScheduledTaskRequest,
-      authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ScheduledTask>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
           taskId,
           postScheduledTaskRequest,
-          authorization,
           options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -12244,89 +11102,69 @@ export const TasksApiFactory = function (
      * @summary Add Except Date
      * @param {number} taskId
      * @param {AddExceptDateRequest} addExceptDateRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     addExceptDateScheduledTasksTaskIdExceptDatePost(
       taskId: number,
       addExceptDateRequest: AddExceptDateRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .addExceptDateScheduledTasksTaskIdExceptDatePost(
-          taskId,
-          addExceptDateRequest,
-          authorization,
-          options,
-        )
+        .addExceptDateScheduledTasksTaskIdExceptDatePost(taskId, addExceptDateRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Del Scheduled Tasks
      * @param {number} taskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    delScheduledTasksScheduledTasksTaskIdDelete(
-      taskId: number,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<any> {
+    delScheduledTasksScheduledTasksTaskIdDelete(taskId: number, options?: any): AxiosPromise<any> {
       return localVarFp
-        .delScheduledTasksScheduledTasksTaskIdDelete(taskId, authorization, options)
+        .delScheduledTasksScheduledTasksTaskIdDelete(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Delete Favorite Task
      * @param {string} favoriteTaskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
       favoriteTaskId: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, authorization, options)
+        .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Favorites Tasks
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFavoritesTasksFavoriteTasksGet(
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<Array<TaskFavorite>> {
+    getFavoritesTasksFavoriteTasksGet(options?: any): AxiosPromise<Array<TaskFavorite>> {
       return localVarFp
-        .getFavoritesTasksFavoriteTasksGet(authorization, options)
+        .getFavoritesTasksFavoriteTasksGet(options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Scheduled Task
      * @param {number} taskId
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getScheduledTaskScheduledTasksTaskIdGet(
       taskId: number,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<ScheduledTask> {
       return localVarFp
-        .getScheduledTaskScheduledTasksTaskIdGet(taskId, authorization, options)
+        .getScheduledTaskScheduledTasksTaskIdGet(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -12337,7 +11175,6 @@ export const TasksApiFactory = function (
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -12347,7 +11184,6 @@ export const TasksApiFactory = function (
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<Array<ScheduledTask>> {
       return localVarFp
@@ -12357,7 +11193,6 @@ export const TasksApiFactory = function (
           limit,
           offset,
           orderBy,
-          authorization,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -12366,17 +11201,15 @@ export const TasksApiFactory = function (
      *
      * @summary Get Task Booking Label
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getTaskBookingLabelTasksTaskIdBookingLabelGet(
       taskId: string,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<{ [key: string]: string }> {
       return localVarFp
-        .getTaskBookingLabelTasksTaskIdBookingLabelGet(taskId, authorization, options)
+        .getTaskBookingLabelTasksTaskIdBookingLabelGet(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -12384,294 +11217,250 @@ export const TasksApiFactory = function (
      * @summary Get Task Log
      * @param {string} taskId task_id
      * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getTaskLogTasksTaskIdLogGet(
       taskId: string,
       between?: string | null,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskEventLog> {
       return localVarFp
-        .getTaskLogTasksTaskIdLogGet(taskId, between, authorization, options)
+        .getTaskLogTasksTaskIdLogGet(taskId, between, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTaskRequestTasksTaskIdRequestGet(
-      taskId: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<TaskRequest> {
+    getTaskRequestTasksTaskIdRequestGet(taskId: string, options?: any): AxiosPromise<TaskRequest> {
       return localVarFp
-        .getTaskRequestTasksTaskIdRequestGet(taskId, authorization, options)
+        .getTaskRequestTasksTaskIdRequestGet(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Available in socket.io
      * @summary Get Task State
      * @param {string} taskId task_id
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTaskStateTasksTaskIdStateGet(
-      taskId: string,
-      authorization?: string | null,
-      options?: any,
-    ): AxiosPromise<TaskStateOutput> {
+    getTaskStateTasksTaskIdStateGet(taskId: string, options?: any): AxiosPromise<TaskStateOutput> {
       return localVarFp
-        .getTaskStateTasksTaskIdStateGet(taskId, authorization, options)
+        .getTaskStateTasksTaskIdStateGet(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Activity Discovery
      * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postActivityDiscoveryTasksActivityDiscoveryPost(
       activityDiscoveryRequest: ActivityDiscoveryRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<ActivityDiscovery> {
       return localVarFp
-        .postActivityDiscoveryTasksActivityDiscoveryPost(
-          activityDiscoveryRequest,
-          authorization,
-          options,
-        )
+        .postActivityDiscoveryTasksActivityDiscoveryPost(activityDiscoveryRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Cancel Task
      * @param {CancelTaskRequest} cancelTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postCancelTaskTasksCancelTaskPost(
       cancelTaskRequest: CancelTaskRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskCancelResponse> {
       return localVarFp
-        .postCancelTaskTasksCancelTaskPost(cancelTaskRequest, authorization, options)
+        .postCancelTaskTasksCancelTaskPost(cancelTaskRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Dispatch Task
      * @param {DispatchTaskRequest} dispatchTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postDispatchTaskTasksDispatchTaskPost(
       dispatchTaskRequest: DispatchTaskRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskDispatchResponseOutput> {
       return localVarFp
-        .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, authorization, options)
+        .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Favorite Task
      * @param {TaskFavorite} taskFavorite
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFavoriteTaskFavoriteTasksPost(
       taskFavorite: TaskFavorite,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .postFavoriteTaskFavoriteTasksPost(taskFavorite, authorization, options)
+        .postFavoriteTaskFavoriteTasksPost(taskFavorite, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Interrupt Task
      * @param {TaskInterruptionRequest} taskInterruptionRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postInterruptTaskTasksInterruptTaskPost(
       taskInterruptionRequest: TaskInterruptionRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskInterruptionResponse> {
       return localVarFp
-        .postInterruptTaskTasksInterruptTaskPost(taskInterruptionRequest, authorization, options)
+        .postInterruptTaskTasksInterruptTaskPost(taskInterruptionRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Kill Task
      * @param {TaskKillRequest} taskKillRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postKillTaskTasksKillTaskPost(
       taskKillRequest: TaskKillRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskKillResponse> {
       return localVarFp
-        .postKillTaskTasksKillTaskPost(taskKillRequest, authorization, options)
+        .postKillTaskTasksKillTaskPost(taskKillRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Resume Task
      * @param {TaskResumeRequest} taskResumeRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postResumeTaskTasksResumeTaskPost(
       taskResumeRequest: TaskResumeRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskResumeResponse> {
       return localVarFp
-        .postResumeTaskTasksResumeTaskPost(taskResumeRequest, authorization, options)
+        .postResumeTaskTasksResumeTaskPost(taskResumeRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Rewind Task
      * @param {TaskRewindRequest} taskRewindRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postRewindTaskTasksRewindTaskPost(
       taskRewindRequest: TaskRewindRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskRewindResponse> {
       return localVarFp
-        .postRewindTaskTasksRewindTaskPost(taskRewindRequest, authorization, options)
+        .postRewindTaskTasksRewindTaskPost(taskRewindRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Robot Task
      * @param {RobotTaskRequest} robotTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postRobotTaskTasksRobotTaskPost(
       robotTaskRequest: RobotTaskRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<RobotTaskResponseOutput> {
       return localVarFp
-        .postRobotTaskTasksRobotTaskPost(robotTaskRequest, authorization, options)
+        .postRobotTaskTasksRobotTaskPost(robotTaskRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Create a scheduled task. Below are some examples of how the schedules are represented. For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).  | every | to | period | at | description | | - | - | - | - | - | | 10 | - | minutes | - | Every 10 minutes | | - | - | hour | - | Every hour | | - | - | day | 10:30 | Every day at 10:30am | | - | - | monday | - | Every monday | | - | - | wednesday | 13:15 | Every wednesday at 01:15pm | | - | - | minute | :17 | Every 17th sec of a mintue | | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
      * @summary Post Scheduled Task
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postScheduledTaskScheduledTasksPost(
       postScheduledTaskRequest: PostScheduledTaskRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<ScheduledTask> {
       return localVarFp
-        .postScheduledTaskScheduledTasksPost(postScheduledTaskRequest, authorization, options)
+        .postScheduledTaskScheduledTasksPost(postScheduledTaskRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Skip Phase
      * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postSkipPhaseTasksSkipPhasePost(
       taskPhaseSkipRequest: TaskPhaseSkipRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<SkipPhaseResponse> {
       return localVarFp
-        .postSkipPhaseTasksSkipPhasePost(taskPhaseSkipRequest, authorization, options)
+        .postSkipPhaseTasksSkipPhasePost(taskPhaseSkipRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Task Discovery
      * @param {TaskDiscoveryRequest} taskDiscoveryRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postTaskDiscoveryTasksTaskDiscoveryPost(
       taskDiscoveryRequest: TaskDiscoveryRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskDiscovery> {
       return localVarFp
-        .postTaskDiscoveryTasksTaskDiscoveryPost(taskDiscoveryRequest, authorization, options)
+        .postTaskDiscoveryTasksTaskDiscoveryPost(taskDiscoveryRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Post Undo Skip Phase
      * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postUndoSkipPhaseTasksUndoSkipPhasePost(
       undoPhaseSkipRequest: UndoPhaseSkipRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<UndoPhaseSkipResponse> {
       return localVarFp
-        .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, authorization, options)
+        .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Query Task Requests
      * @param {string | null} [taskIds] comma separated list of task ids
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     queryTaskRequestsTasksRequestsGet(
       taskIds?: string | null,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<Array<TaskRequest>> {
       return localVarFp
-        .queryTaskRequestsTasksRequestsGet(taskIds, authorization, options)
+        .queryTaskRequestsTasksRequestsGet(taskIds, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -12689,7 +11478,6 @@ export const TasksApiFactory = function (
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -12706,7 +11494,6 @@ export const TasksApiFactory = function (
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<Array<TaskStateOutput>> {
       return localVarFp
@@ -12723,7 +11510,6 @@ export const TasksApiFactory = function (
           limit,
           offset,
           orderBy,
-          authorization,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -12733,23 +11519,16 @@ export const TasksApiFactory = function (
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
-     * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateScheduleTaskScheduledTasksTaskIdUpdatePost(
       taskId: number,
       postScheduledTaskRequest: PostScheduledTaskRequest,
-      authorization?: string | null,
       options?: any,
     ): AxiosPromise<ScheduledTask> {
       return localVarFp
-        .updateScheduleTaskScheduledTasksTaskIdUpdatePost(
-          taskId,
-          postScheduledTaskRequest,
-          authorization,
-          options,
-        )
+        .updateScheduleTaskScheduledTasksTaskIdUpdatePost(taskId, postScheduledTaskRequest, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -12767,7 +11546,6 @@ export class TasksApi extends BaseAPI {
    * @summary Add Except Date
    * @param {number} taskId
    * @param {AddExceptDateRequest} addExceptDateRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
@@ -12775,16 +11553,10 @@ export class TasksApi extends BaseAPI {
   public addExceptDateScheduledTasksTaskIdExceptDatePost(
     taskId: number,
     addExceptDateRequest: AddExceptDateRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .addExceptDateScheduledTasksTaskIdExceptDatePost(
-        taskId,
-        addExceptDateRequest,
-        authorization,
-        options,
-      )
+      .addExceptDateScheduledTasksTaskIdExceptDatePost(taskId, addExceptDateRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12792,18 +11564,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Del Scheduled Tasks
    * @param {number} taskId
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public delScheduledTasksScheduledTasksTaskIdDelete(
     taskId: number,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .delScheduledTasksScheduledTasksTaskIdDelete(taskId, authorization, options)
+      .delScheduledTasksScheduledTasksTaskIdDelete(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12811,35 +11581,29 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Delete Favorite Task
    * @param {string} favoriteTaskId
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
     favoriteTaskId: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, authorization, options)
+      .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Favorites Tasks
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getFavoritesTasksFavoriteTasksGet(
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getFavoritesTasksFavoriteTasksGet(options?: RawAxiosRequestConfig) {
     return TasksApiFp(this.configuration)
-      .getFavoritesTasksFavoriteTasksGet(authorization, options)
+      .getFavoritesTasksFavoriteTasksGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12847,18 +11611,13 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Get Scheduled Task
    * @param {number} taskId
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getScheduledTaskScheduledTasksTaskIdGet(
-    taskId: number,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getScheduledTaskScheduledTasksTaskIdGet(taskId: number, options?: RawAxiosRequestConfig) {
     return TasksApiFp(this.configuration)
-      .getScheduledTaskScheduledTasksTaskIdGet(taskId, authorization, options)
+      .getScheduledTaskScheduledTasksTaskIdGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12870,7 +11629,6 @@ export class TasksApi extends BaseAPI {
    * @param {number | null} [limit] defaults to 100
    * @param {number | null} [offset] defaults to 0
    * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
@@ -12881,19 +11639,10 @@ export class TasksApi extends BaseAPI {
     limit?: number | null,
     offset?: number | null,
     orderBy?: string | null,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .getScheduledTasksScheduledTasksGet(
-        startBefore,
-        untilAfter,
-        limit,
-        offset,
-        orderBy,
-        authorization,
-        options,
-      )
+      .getScheduledTasksScheduledTasksGet(startBefore, untilAfter, limit, offset, orderBy, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12901,18 +11650,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Get Task Booking Label
    * @param {string} taskId task_id
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public getTaskBookingLabelTasksTaskIdBookingLabelGet(
     taskId: string,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .getTaskBookingLabelTasksTaskIdBookingLabelGet(taskId, authorization, options)
+      .getTaskBookingLabelTasksTaskIdBookingLabelGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12921,7 +11668,6 @@ export class TasksApi extends BaseAPI {
    * @summary Get Task Log
    * @param {string} taskId task_id
    * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
@@ -12929,11 +11675,10 @@ export class TasksApi extends BaseAPI {
   public getTaskLogTasksTaskIdLogGet(
     taskId: string,
     between?: string | null,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .getTaskLogTasksTaskIdLogGet(taskId, between, authorization, options)
+      .getTaskLogTasksTaskIdLogGet(taskId, between, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12941,18 +11686,13 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Get Task Request
    * @param {string} taskId task_id
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getTaskRequestTasksTaskIdRequestGet(
-    taskId: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getTaskRequestTasksTaskIdRequestGet(taskId: string, options?: RawAxiosRequestConfig) {
     return TasksApiFp(this.configuration)
-      .getTaskRequestTasksTaskIdRequestGet(taskId, authorization, options)
+      .getTaskRequestTasksTaskIdRequestGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12960,18 +11700,13 @@ export class TasksApi extends BaseAPI {
    * Available in socket.io
    * @summary Get Task State
    * @param {string} taskId task_id
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getTaskStateTasksTaskIdStateGet(
-    taskId: string,
-    authorization?: string | null,
-    options?: RawAxiosRequestConfig,
-  ) {
+  public getTaskStateTasksTaskIdStateGet(taskId: string, options?: RawAxiosRequestConfig) {
     return TasksApiFp(this.configuration)
-      .getTaskStateTasksTaskIdStateGet(taskId, authorization, options)
+      .getTaskStateTasksTaskIdStateGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -12979,22 +11714,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Activity Discovery
    * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postActivityDiscoveryTasksActivityDiscoveryPost(
     activityDiscoveryRequest: ActivityDiscoveryRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postActivityDiscoveryTasksActivityDiscoveryPost(
-        activityDiscoveryRequest,
-        authorization,
-        options,
-      )
+      .postActivityDiscoveryTasksActivityDiscoveryPost(activityDiscoveryRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13002,18 +11731,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Cancel Task
    * @param {CancelTaskRequest} cancelTaskRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postCancelTaskTasksCancelTaskPost(
     cancelTaskRequest: CancelTaskRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postCancelTaskTasksCancelTaskPost(cancelTaskRequest, authorization, options)
+      .postCancelTaskTasksCancelTaskPost(cancelTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13021,18 +11748,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Dispatch Task
    * @param {DispatchTaskRequest} dispatchTaskRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postDispatchTaskTasksDispatchTaskPost(
     dispatchTaskRequest: DispatchTaskRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, authorization, options)
+      .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13040,18 +11765,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Favorite Task
    * @param {TaskFavorite} taskFavorite
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postFavoriteTaskFavoriteTasksPost(
     taskFavorite: TaskFavorite,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postFavoriteTaskFavoriteTasksPost(taskFavorite, authorization, options)
+      .postFavoriteTaskFavoriteTasksPost(taskFavorite, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13059,18 +11782,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Interrupt Task
    * @param {TaskInterruptionRequest} taskInterruptionRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postInterruptTaskTasksInterruptTaskPost(
     taskInterruptionRequest: TaskInterruptionRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postInterruptTaskTasksInterruptTaskPost(taskInterruptionRequest, authorization, options)
+      .postInterruptTaskTasksInterruptTaskPost(taskInterruptionRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13078,18 +11799,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Kill Task
    * @param {TaskKillRequest} taskKillRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postKillTaskTasksKillTaskPost(
     taskKillRequest: TaskKillRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postKillTaskTasksKillTaskPost(taskKillRequest, authorization, options)
+      .postKillTaskTasksKillTaskPost(taskKillRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13097,18 +11816,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Resume Task
    * @param {TaskResumeRequest} taskResumeRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postResumeTaskTasksResumeTaskPost(
     taskResumeRequest: TaskResumeRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postResumeTaskTasksResumeTaskPost(taskResumeRequest, authorization, options)
+      .postResumeTaskTasksResumeTaskPost(taskResumeRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13116,18 +11833,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Rewind Task
    * @param {TaskRewindRequest} taskRewindRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postRewindTaskTasksRewindTaskPost(
     taskRewindRequest: TaskRewindRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postRewindTaskTasksRewindTaskPost(taskRewindRequest, authorization, options)
+      .postRewindTaskTasksRewindTaskPost(taskRewindRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13135,18 +11850,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Robot Task
    * @param {RobotTaskRequest} robotTaskRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postRobotTaskTasksRobotTaskPost(
     robotTaskRequest: RobotTaskRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postRobotTaskTasksRobotTaskPost(robotTaskRequest, authorization, options)
+      .postRobotTaskTasksRobotTaskPost(robotTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13154,18 +11867,16 @@ export class TasksApi extends BaseAPI {
    * Create a scheduled task. Below are some examples of how the schedules are represented. For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).  | every | to | period | at | description | | - | - | - | - | - | | 10 | - | minutes | - | Every 10 minutes | | - | - | hour | - | Every hour | | - | - | day | 10:30 | Every day at 10:30am | | - | - | monday | - | Every monday | | - | - | wednesday | 13:15 | Every wednesday at 01:15pm | | - | - | minute | :17 | Every 17th sec of a mintue | | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
    * @summary Post Scheduled Task
    * @param {PostScheduledTaskRequest} postScheduledTaskRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postScheduledTaskScheduledTasksPost(
     postScheduledTaskRequest: PostScheduledTaskRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postScheduledTaskScheduledTasksPost(postScheduledTaskRequest, authorization, options)
+      .postScheduledTaskScheduledTasksPost(postScheduledTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13173,18 +11884,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Skip Phase
    * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postSkipPhaseTasksSkipPhasePost(
     taskPhaseSkipRequest: TaskPhaseSkipRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postSkipPhaseTasksSkipPhasePost(taskPhaseSkipRequest, authorization, options)
+      .postSkipPhaseTasksSkipPhasePost(taskPhaseSkipRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13192,18 +11901,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Task Discovery
    * @param {TaskDiscoveryRequest} taskDiscoveryRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postTaskDiscoveryTasksTaskDiscoveryPost(
     taskDiscoveryRequest: TaskDiscoveryRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postTaskDiscoveryTasksTaskDiscoveryPost(taskDiscoveryRequest, authorization, options)
+      .postTaskDiscoveryTasksTaskDiscoveryPost(taskDiscoveryRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13211,18 +11918,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Post Undo Skip Phase
    * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postUndoSkipPhaseTasksUndoSkipPhasePost(
     undoPhaseSkipRequest: UndoPhaseSkipRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, authorization, options)
+      .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13230,18 +11935,16 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Query Task Requests
    * @param {string | null} [taskIds] comma separated list of task ids
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public queryTaskRequestsTasksRequestsGet(
     taskIds?: string | null,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .queryTaskRequestsTasksRequestsGet(taskIds, authorization, options)
+      .queryTaskRequestsTasksRequestsGet(taskIds, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -13260,7 +11963,6 @@ export class TasksApi extends BaseAPI {
    * @param {number | null} [limit] defaults to 100
    * @param {number | null} [offset] defaults to 0
    * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
@@ -13278,7 +11980,6 @@ export class TasksApi extends BaseAPI {
     limit?: number | null,
     offset?: number | null,
     orderBy?: string | null,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
@@ -13295,7 +11996,6 @@ export class TasksApi extends BaseAPI {
         limit,
         offset,
         orderBy,
-        authorization,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
@@ -13306,7 +12006,6 @@ export class TasksApi extends BaseAPI {
    * @summary Update Schedule Task
    * @param {number} taskId
    * @param {PostScheduledTaskRequest} postScheduledTaskRequest
-   * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
@@ -13314,16 +12013,10 @@ export class TasksApi extends BaseAPI {
   public updateScheduleTaskScheduledTasksTaskIdUpdatePost(
     taskId: number,
     postScheduledTaskRequest: PostScheduledTaskRequest,
-    authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .updateScheduleTaskScheduledTasksTaskIdUpdatePost(
-        taskId,
-        postScheduledTaskRequest,
-        authorization,
-        options,
-      )
+      .updateScheduleTaskScheduledTasksTaskIdUpdatePost(taskId, postScheduledTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
