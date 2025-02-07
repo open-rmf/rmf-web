@@ -124,7 +124,13 @@ class FastIORouter(APIRouter):
                     )
                 )
 
-    def sub(self, path: str, *, response_model: type[pydantic.BaseModel] | None = None):
+    def sub(
+        self,
+        path: str,
+        *,
+        response_model: type[pydantic.BaseModel] | None = None,
+        **kwargs,
+    ):
         """
         Registers a socket.io endpoint which handles subscriptions.
         """
