@@ -100,21 +100,9 @@ class DeliveryAlert(BaseModel):
                 case _:
                     raise ValueError()
 
-    id: str = Field(
-        deprecated=True, deprecation_message="Use Alerts instead, see #948."
-    )
-    category: Category = Field(
-        deprecated=True, deprecation_message="Use Alerts instead, see #948."
-    )
-    tier: Tier = Field(
-        deprecated=True, deprecation_message="Use Alerts instead, see #948."
-    )
-    action: Action = Field(
-        deprecated=True, deprecation_message="Use Alerts instead, see #948."
-    )
-    task_id: str = Field(
-        deprecated=True, deprecation_message="Use Alerts instead, see #948."
-    )
-    message: str = Field(
-        deprecated=True, deprecation_message="Use Alerts instead, see #948."
-    )
+    id: str = Field(deprecated=True)
+    category: Category = Field(deprecated=True)
+    tier: Tier = Field(deprecated=True)
+    action: Action = Field(deprecated=True)
+    task_id: str = Field(deprecated=True)
+    message: str = Field(deprecated=True)
