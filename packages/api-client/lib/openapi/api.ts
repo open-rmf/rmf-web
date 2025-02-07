@@ -6842,7 +6842,7 @@ export class DefaultApi extends BaseAPI {
 export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
+     * This route is deprecated, please use the /alerts routes instead
      * @summary Respond To Delivery Alert
      * @param {string} deliveryAlertId
      * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
@@ -6960,7 +6960,7 @@ export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = DeliveryAlertsApiAxiosParamCreator(configuration);
   return {
     /**
-     *
+     * This route is deprecated, please use the /alerts routes instead
      * @summary Respond To Delivery Alert
      * @param {string} deliveryAlertId
      * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
@@ -7019,7 +7019,7 @@ export const DeliveryAlertsApiFactory = function (
   const localVarFp = DeliveryAlertsApiFp(configuration);
   return {
     /**
-     *
+     * This route is deprecated, please use the /alerts routes instead
      * @summary Respond To Delivery Alert
      * @param {string} deliveryAlertId
      * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
@@ -7063,7 +7063,7 @@ export const DeliveryAlertsApiFactory = function (
  */
 export class DeliveryAlertsApi extends BaseAPI {
   /**
-   *
+   * This route is deprecated, please use the /alerts routes instead
    * @summary Respond To Delivery Alert
    * @param {string} deliveryAlertId
    * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category

@@ -443,6 +443,7 @@ export default {
       post: {
         tags: ['DeliveryAlerts'],
         summary: 'Respond To Delivery Alert',
+        description: 'This route is deprecated, please use the /alerts routes instead',
         operationId: 'respond_to_delivery_alert_delivery_alerts__delivery_alert_id__response_post',
         deprecated: true,
         security: [{ OpenIdConnect: [] }],
