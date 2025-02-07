@@ -192,6 +192,7 @@ app.include_router(
     routes.delivery_alerts_router,
     prefix="/delivery_alerts",
     dependencies=[Depends(user_dep)],
+    deprecated=True,
 )
 app.include_router(
     routes.doors_router, prefix="/doors", dependencies=[Depends(user_dep)]

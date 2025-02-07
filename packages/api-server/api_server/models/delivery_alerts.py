@@ -1,6 +1,7 @@
 from enum import Enum
+from typing import Annotated
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
 from rmf_fleet_msgs.msg import DeliveryAlertCategory as RmfDeliveryAlertCateogry
 from rmf_fleet_msgs.msg import DeliveryAlertTier as RmfDeliveryAlertTier
@@ -100,9 +101,9 @@ class DeliveryAlert(BaseModel):
                 case _:
                     raise ValueError()
 
-    id: str
-    category: Category
-    tier: Tier
-    action: Action
-    task_id: str
-    message: str
+    id: Annotated[str, Field(deprecated=True)]
+    category: Annotated[Category, Field(deprecated=True)]
+    tier: Annotated[Tier, Field(deprecated=True)]
+    action: Annotated[Action, Field(deprecated=True)]
+    task_id: Annotated[str, Field(deprecated=True)]
+    message: Annotated[str, Field(deprecated=True)]
