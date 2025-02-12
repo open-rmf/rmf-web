@@ -28,7 +28,6 @@ RUN curl -fsSL https://get.pnpm.io/install.sh | bash -
 ENV PNPM_HOME /root/.local/share/pnpm
 ENV PATH "$PNPM_HOME:$PATH"
 
-# nodejs seems to have changed the official mirror, the default in pnpm is very slow now
-RUN pnpm config -g set 'node-mirror:release' https://nodejs.org/dist && pnpm env use --global lts
+RUN pnpm env use --global lts
 
 RUN apt update && apt install -y python3-venv
