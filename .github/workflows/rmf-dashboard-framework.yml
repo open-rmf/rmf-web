@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/rmf-dashboard-framework.yml'
+      - '.github/minimal-rmf'
       - 'packages/rmf-dashboard-framework/**'
       - 'packages/rmf-models/**'
       - 'packages/api-client/**'

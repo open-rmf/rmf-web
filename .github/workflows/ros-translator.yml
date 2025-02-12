@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/ros-translator.yml'
+      - '.github/minimal-rmf'
       - 'packages/ros-translator/**'
   push:
     branches:
