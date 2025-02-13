@@ -26,10 +26,19 @@ jobs:
         working-directory: packages/api-client
     steps:
       - uses: actions/checkout@v4
-      - name: bootstrap
-        uses: ./.github/actions/bootstrap
-        with:
-          package: api-client
+      - name: install myself
+        run: pnpm install -w --no-frozen-lockfile --filter api-client...
+        shell: bash
+      - name: build myself
+        run: pnpm run --filter api-client... build
+        shell: bash
+      - name: get changes
+        run: cat ../../pnpm-lock.yaml
+        shell: bash
+      # - name: bootstrap
+      #   uses: ./.github/actions/bootstrap
+      #   with:
+      #     package: api-client
       - name: lint
         run: pnpm run lint
       - name: test
