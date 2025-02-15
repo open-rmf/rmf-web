@@ -36,6 +36,7 @@ export class KeycloakAuthenticator
   }
 
   private _getUser(): string {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (this._inst.idTokenParsed as any).preferred_username;
   }
 

@@ -11,11 +11,6 @@ inputs:
 runs:
   using: composite
   steps:
-    # This is a temporary fix for the issue regarding the weird hash of
-    # patchedDependencies
-    # - name: Fix patch
-    #   run : sed 's/7de2f0a9a40358b4ac231c4e50a83c068e7c2ae8597b7eab93350c067b61a9af/72hazlorpk2kzn3denlucgiftu/g' -i pnpm-lock.yaml
-    #   shell: bash
     - name: Install dependencies
       run: pnpm install -w --filter ${{ inputs.package }}...
       shell: bash
