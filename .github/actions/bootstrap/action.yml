@@ -16,21 +16,21 @@ runs:
     # - name: Fix patch
     #   run : sed 's/7de2f0a9a40358b4ac231c4e50a83c068e7c2ae8597b7eab93350c067b61a9af/72hazlorpk2kzn3denlucgiftu/g' -i pnpm-lock.yaml
     #   shell: bash
-    # - name: Debug pnpm store
-    #   run: pnpm config get store-dir
-    #   shell: bash
-    # - name: Set up pnpm store
-    #   run: pnpm config set store-dir ~/.pnpm-store
-    #   shell: bash
-    # - name: Debug pnpm store 2
-    #   run: pnpm config get store-dir
-    #   shell: bash
-    # - name: update
-    #   run: apt update && apt upgrade -y
-    #   shell: bash
-    # - name: Clean pnpm store
-    #   run: pnpm store prune
-    #   shell: bash
+    - name: check sha256sum version
+      run: sha256sum --version
+      shell: bash
+    - name: Check pnpm Version
+      run: pnpm --version
+      shell: bash
+    - name: update
+      run: pnpm self-update
+      shell: bash
+    - name: Check pnpm Version again
+      run: pnpm --version
+      shell: bash
+    - name: check sum
+      run: sha256sum patches/@react-three__fiber.patch
+      shell: bash
     - name: Install dependencies
       run: pnpm install -w --filter ${{ inputs.package }}...
       shell: bash
