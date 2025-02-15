@@ -16,21 +16,6 @@ runs:
     # - name: Fix patch
     #   run : sed 's/7de2f0a9a40358b4ac231c4e50a83c068e7c2ae8597b7eab93350c067b61a9af/72hazlorpk2kzn3denlucgiftu/g' -i pnpm-lock.yaml
     #   shell: bash
-    - name: check sha256sum version
-      run: sha256sum --version
-      shell: bash
-    - name: Check pnpm Version
-      run: pnpm --version
-      shell: bash
-    - name: update
-      run: pnpm self-update
-      shell: bash
-    - name: Check pnpm Version again
-      run: pnpm --version
-      shell: bash
-    - name: check sum
-      run: sha256sum patches/@react-three__fiber.patch
-      shell: bash
     - name: Install dependencies
       run: pnpm install -w --filter ${{ inputs.package }}...
       shell: bash
