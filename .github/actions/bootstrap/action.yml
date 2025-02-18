@@ -12,7 +12,7 @@ runs:
   using: composite
   steps:
     - name: Install dependencies
-      run: pnpm install -w --no-frozen-lockfile --filter ${{ inputs.package }}...
+      run: pnpm install -w --filter ${{ inputs.package }}...
       shell: bash
     - name: Build
       if: '!${{ inputs.skip-build }}'
