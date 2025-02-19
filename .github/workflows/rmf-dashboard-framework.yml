@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/rmf-dashboard-framework.yml'
+      - '.github/minimal-rmf'
       - 'packages/rmf-dashboard-framework/**'
       - 'packages/rmf-models/**'
       - 'packages/api-client/**'
@@ -18,8 +19,12 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ros_distribution: [jazzy, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}

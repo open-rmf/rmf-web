@@ -5,6 +5,7 @@ on:
   push:
     branches: ["main"]
     paths:
+      - '.github/minimal-rmf'
       - "packages/api-server/**"
 
   # Allows you to run this workflow manually from the Actions tab
