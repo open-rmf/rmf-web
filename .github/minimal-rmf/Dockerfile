@@ -1,7 +1,7 @@
-ARG BASE_IMAGE=docker.io/ros:jazzy-ros-base
+ARG ROS_DISTRO=jazzy
+ARG BASE_IMAGE=docker.io/ros:$ROS_DISTRO-ros-base
 FROM $BASE_IMAGE
 ARG BRANCH=main
-ARG ROS_DISTRO=jazzy
 
 ### build minimal rmf
 

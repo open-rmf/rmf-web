@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/ros-translator.yml'
-      - '.github/minimal-rmf'
+      - '.github/minimal-rmf/**'
       - 'packages/ros-translator/**'
   push:
     branches:
@@ -37,4 +37,4 @@ jobs:
         with:
           package: ros-translator
       - name: test
-        run: . /opt/ros/jazzy/setup.bash && pnpm test
+        run: . /opt/ros/${{ matrix.ros_distribution }}/setup.bash && pnpm test

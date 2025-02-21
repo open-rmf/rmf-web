@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/api-client.yml'
-      - '.github/minimal-rmf'
+      - '.github/minimal-rmf/**'
       - 'packages/api-client/**'
   push:
     branches:

@@ -1,7 +1,7 @@
 ## What's new
 
 <!-- NOTE: Pull request title should be "<package>: <summary>", if the PR affects multiple
-  packages, use the main package that it affects. If the PR does not target any specific 
+  packages, use the main package that it affects. If the PR does not target any specific
   packages, use general tags like "ci" or "versioning". -->
 
 <!-- uncomment the next line if this PR fixes an issue -->
@@ -23,7 +23,6 @@
 
 ## Self-checks
 
-- [ ] I have prototyped this new feature (if necessary) on Figma 
 - [ ] I'm familiar with and follow this [Typescript guideline](https://basarat.gitbook.io/typescript/styleguide)
 - [ ] I added unit-tests for new components
 - [ ] I tried testing edge cases
