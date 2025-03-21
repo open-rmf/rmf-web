@@ -74,7 +74,7 @@
     "@vitest/coverage-v8": "^3.0.5",
     "api-server": "file:../api-server",
     "concurrently": "^8.2.2",
-    "eslint": "^8.57.0",
+    "eslint": "^9.20.0",
     "history": "^5.3.0",
     "jsdom": "^24.1.1",
     "storybook": "^8.3.3",
