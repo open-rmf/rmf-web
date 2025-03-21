@@ -92,7 +92,7 @@ pnpm install -w --filter <package>...
 
 ### Launching for development
 
-Source Open-RMF and launch the demo dashboard in development mode,
+Source Open-RMF and launch the API server,
 
 ```bash
 # For binary installation
@@ -101,11 +101,19 @@ source /opt/ros/jazzy/setup.bash
 # For source build
 source /path/to/workspace/install/setup.bash
 
-cd packages/rmf-dashboard-framework
+# Start the API server, this will need to be restarted for any changes to be reflected
+cd packages/api-server
 pnpm start
 ```
 
-This starts up the API server (by default at port 8000) which sets up endpoints to communicate with an Open-RMF deployment, as well as begin compilation of the demo dashboard. Once completed, it can be viewed at [localhost:5173](http://localhost:5173).
+Start the dashboard in dev, this monitors for changes in the dashboard package and performs rebuilds. A browser refresh is sometimes required after automated builds to reflect new changes.
+
+```bash
+cd packages/rmf-dashboard-framework
+pnpm start:example examples/demo
+```
+
+Once completed, the demo dashboard can be viewed at [localhost:5173](http://localhost:5173).
 
 If presented with a login screen, use `user=admin password=admin`.
 
@@ -113,20 +121,6 @@ Ensure that the fleet adapters in the Open-RMF deployment is configured to use t
 
 ```bash
 ros2 launch rmf_demos_gz office.launch.xml server_uri:="http://localhost:8000/_internal"
-```
-
-### Launching for development separately
-
-When developing individual components, it may be useful to start the dashboard and api-server separately,
-
-```bash
-# Start the dashboard in dev, this monitors for changes in the dashboard package and performs rebuilds. A browser refresh is required after all automated builds.
-cd packages/rmf-dashboard-framework
-pnpm start:example examples/demo
-
-# Start the API server, this will need to be restarted for any changes to be reflected
-cd packages/api-server
-pnpm start
 ```
 
 # Contribution guide
