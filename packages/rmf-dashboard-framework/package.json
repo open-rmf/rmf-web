@@ -36,7 +36,7 @@
     "@types/shallowequal": "^1.1.1",
     "@types/three": "^0.166.0",
     "api-client": "workspace:*",
-    "axios": "1.7.4",
+    "axios": "1.8.4",
     "clsx": "^1.1.1",
     "crc": "^3.8.0",
     "date-fns": "^2.30.0",
