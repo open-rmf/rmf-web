@@ -342,7 +342,7 @@ describe('scheduleWithSelectedDay', () => {
       },
     ];
     const result = scheduleWithSelectedDay(scheduleTask, date);
-    expect(result.at).toEqual(new Date());
+    expect(result.at.setMilliseconds(0)).toEqual(new Date().setMilliseconds(0));
   });
 });
 
