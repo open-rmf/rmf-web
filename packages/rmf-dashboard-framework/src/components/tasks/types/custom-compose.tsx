@@ -30,7 +30,7 @@ export const isCustomTaskDescriptionValid = (taskDescription: string): boolean =
 
   try {
     JSON.parse(taskDescription);
-  } catch (e) {
+  } catch (_e) {
     return false;
   }
 

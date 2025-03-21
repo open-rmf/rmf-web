@@ -183,7 +183,7 @@ export function makeDeliveryPickupTaskShortDescription(
     return `[${
       taskDisplayName ?? DeliveryPickupTaskDefinition.taskDisplayName
     }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
-  } catch (e) {
+  } catch (_e) {
     try {
       const descriptionString = JSON.stringify(desc);
       console.error(descriptionString);
@@ -222,7 +222,7 @@ export function makeDeliveryCustomTaskShortDescription(
       default:
         return `[Unknown] type "${desc.category}"`;
     }
-  } catch (e) {
+  } catch (_e) {
     try {
       const descriptionString = JSON.stringify(desc);
       console.error(descriptionString);
