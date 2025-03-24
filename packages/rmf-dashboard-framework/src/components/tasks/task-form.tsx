@@ -331,9 +331,9 @@ export function TaskForm({
     ComposeCleanTaskDefinition,
     CustomComposeTaskDefinition,
   ],
-  /* eslint-disable @typescript-eslint/no-unused-vars */
+
   cleaningZones = [],
-  /* eslint-disable @typescript-eslint/no-unused-vars */
+
   patrolWaypoints = [],
   pickupZones = [],
   cartIds = [],

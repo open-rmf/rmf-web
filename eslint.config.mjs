@@ -21,10 +21,20 @@ export default tseslint.config(
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/ban-types': ['error', { types: { '{}': false }, extendDefaults: true }],
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'error',
+      '@typescript-eslint/no-wrapper-object-types': 'error',
       '@typescript-eslint/no-loss-of-precision': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          "caughtErrorsIgnorePattern": "^_",
+          'argsIgnorePattern': '^_'
+        }
+      ],
       ...reactHooks.configs.recommended.rules,
+
     },
   },
   ...compat.config(storybook.configs.recommended),

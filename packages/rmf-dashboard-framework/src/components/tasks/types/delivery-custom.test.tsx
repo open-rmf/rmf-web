@@ -142,7 +142,7 @@ describe('Custom deliveries', () => {
         ]
       }
       `) as DeliveryPickupTaskDescription;
-    } catch (e) {
+    } catch (_e) {
       deliveryPickupTaskDescription = null;
     }
     expect(deliveryPickupTaskDescription).not.toEqual(null);
@@ -342,7 +342,7 @@ describe('Custom deliveries', () => {
         ]
       }
       `) as DeliveryCustomTaskDescription;
-    } catch (e) {
+    } catch (_e) {
       deliveryCustomTaskDescription = null;
     }
     expect(deliveryCustomTaskDescription).not.toEqual(null);
@@ -461,7 +461,7 @@ describe('Custom deliveries', () => {
         ]
       }
       `) as DeliveryCustomTaskDescription;
-    } catch (e) {
+    } catch (_e) {
       deliveryCustomTaskDescription = null;
     }
     expect(deliveryCustomTaskDescription).not.toEqual(null);

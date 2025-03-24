@@ -1,1 +1,3 @@
-module.exports = {};
+module.exports = {
+  ignorePatterns: ['/lib/openapi/', '/lib/models/'],
+};
