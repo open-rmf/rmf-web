@@ -44,4 +44,4 @@ RUN rm -rf \
 
 ENV RMF_API_SERVER_CONFIG /ws/packages/api-server/sqlite_local_config.py
 WORKDIR /ws/packages/api-server
-# ENTRYPOINT ["bash", "-c", ". /opt/ros/$ROS_DISTRO/setup.bash && mkdir -p run/cache && ../../.venv/bin/pipenv run python -m api_server"]
+ENTRYPOINT ["bash", "-c", ". /opt/ros/$ROS_DISTRO/setup.bash && mkdir -p run/cache && ../../.venv/bin/pipenv run python -m api_server"]

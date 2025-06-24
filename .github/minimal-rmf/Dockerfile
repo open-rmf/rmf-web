@@ -1,5 +1,5 @@
 ARG ROS_DISTRO=jazzy
-ARG BASE_IMAGE=docker.io/ros:$ROS_DISTRO-ros-core-noble
+ARG BASE_IMAGE=docker.io/ros:$ROS_DISTRO-ros-core
 FROM $BASE_IMAGE
 
 ### install minimal message dependencies
