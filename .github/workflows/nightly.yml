@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, kilted, rolling]
         include:
           - image_context: .github/minimal-rmf
           # Only jazzy requires specific source builds, all other distributions
@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, kilted, rolling]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
@@ -88,7 +88,7 @@ jobs:
             BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
           tags: |
             ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
-            ${{ matrix.ros_distribution == 'jazzy' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
+            ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
           context: .github/api-server
   # dashboard-e2e:
   #   strategy:
