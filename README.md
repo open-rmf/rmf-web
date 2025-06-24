@@ -39,10 +39,9 @@ docker run \
   --network host -it --rm \
   -e ROS_DOMAIN_ID=<ROS_DOMAIN_ID> \
   -e RMW_IMPLEMENTATION=<RMW_IMPLEMENTATION> \
-  ghcr.io/open-rmf/rmf-web/api-server:latest
+  ghcr.io/open-rmf/rmf-web/api-server:jazzy
 
-# The latest tag would be the same as jazzy
-# For ROS 2 Rolling, use ghcr.io/open-rmf/rmf-web/api-server:rolling-nightly
+# Use the appropriate tag for different ROS 2 distributions
 ```
 
 > **Note**
@@ -142,6 +141,8 @@ ros2 launch rmf_demos_gz office.launch.xml server_uri:="http://localhost:8000/_i
 - [rmf-dashboard-framework](packages/api-server/README.md) allows you to easily build a dashboard.
 
 # Troubleshooting
+
+- Alert related messages were introduced after Open-RMF Jazzy releases, hence it is not available with Open-RMF Jazzy binaries, and have to be built from source to be used by the API server. See https://github.com/open-rmf/rmf-web/issues/1041 for more information, as well as how the [Jazzy API server base image is built](.github/minimal-rmf-jazzy/Dockerfile). ROS 2 distributions after Jazzy can just use the released binaries.
 
 - If a feature is missing or is not working, it could be only available in an Open-RMF source build, and not in the binaries. Try building Open-RMF from source and source that new workspace before launching the API server. `rmf-web` may use in-development features of Open-RMF.
 
