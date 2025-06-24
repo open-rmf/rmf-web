@@ -43,6 +43,8 @@ jobs:
           pnpm run lint
           pnpm run test:cov -v
           ../../.venv/bin/python -m coverage xml
+      - name: dependencies for codecov
+        run: apt update && apt install git -y
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
