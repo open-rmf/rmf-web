@@ -39,7 +39,7 @@ jobs:
           package: api-server
       - name: tests
         run: |
-          . /opt/rmf/setup.bash
+          . /opt/ros/${{ matrix.ros_distribution }}/setup.bash
           pnpm run lint
           pnpm run test:cov -v
           ../../.venv/bin/python -m coverage xml
