@@ -44,7 +44,7 @@ jobs:
       - name: unit test
         run: pnpm run test:coverage
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           flags: rmf-dashboard-framework
           fail_ci_if_error: true
