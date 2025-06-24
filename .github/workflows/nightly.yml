@@ -1,5 +1,6 @@
 name: Nightly
 on:
+  pull_request:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
@@ -14,6 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         ros_distribution: [jazzy, rolling]
+        include:
+          - image_context: .github/minimal-rmf
+          # Only jazzy requires specific source builds, all other distributions
+          # have the dependencies released
+          - ros_distribution: jazzy
+            image_context: .github/minimal-rmf-jazzy
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
@@ -31,7 +38,7 @@ jobs:
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
           tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
-          context: .github/minimal-rmf
+          context: ${{ matrix.image_context }}
   build-dashboard-image:
     needs: build-minimal-rmf-docker-images
     name: Push Dashboard docker image to GitHub Packages
