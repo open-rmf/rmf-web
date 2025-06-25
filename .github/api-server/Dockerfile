@@ -15,6 +15,18 @@ RUN mkdir -p /ws \
 RUN cd /ws \
   && pnpm install --filter api-server...
 
+# these steps are required only for Jazzy as the Alert related messages are not released
+RUN if [ "$ROS_DISTRO" = "jazzy" ]; then \
+      apt update && apt install -y ros-dev-tools \
+      && mkdir -p /rmf && cd /rmf \
+      && curl -sL https://github.com/open-rmf/rmf_internal_msgs/archive/jazzy-alert-msgs.tar.gz -o jazzy-alert-msgs.tar.gz \
+      && mkdir -p /rmf/src/alert_msgs && tar zxf jazzy-alert-msgs.tar.gz -C /rmf/src/alert_msgs --strip-components=1 && rm jazzy-alert-msgs.tar.gz \
+      && cd /rmf \
+      && . /opt/ros/$ROS_DISTRO/setup.sh \
+      && colcon build --merge-install --install-base /opt/ros/$ROS_DISTRO --cmake-args -DCMAKE_BUILD_TYPE=Release \
+      && rm -rf /rmf; \
+    fi
+
 # cleanup
 RUN rm -rf /var/lib/apt/lists
 

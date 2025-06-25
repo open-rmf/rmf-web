@@ -29,8 +29,14 @@ from rmf_fleet_msgs.msg import MutexGroupManualRelease as RmfMutexGroupManualRel
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rmf_task_msgs.msg import Alert as RmfAlert
-from rmf_task_msgs.msg import AlertResponse as RmfAlertResponse
+
+if os.getenv("ROS_DISTRO") == "jazzy":
+    from rmf_alert_msgs.msg import Alert as RmfAlert
+    from rmf_alert_msgs.msg import AlertResponse as RmfAlertResponse
+else:
+    from rmf_task_msgs.msg import Alert as RmfAlert
+    from rmf_task_msgs.msg import AlertResponse as RmfAlertResponse
+
 from rosidl_runtime_py.convert import message_to_ordereddict
 from std_msgs.msg import Bool as BoolMsg
 from tortoise.exceptions import IntegrityError
