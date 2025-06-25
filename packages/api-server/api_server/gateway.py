@@ -62,20 +62,19 @@ from .models import (
 )
 from .repositories import CachedFilesRepository
 
+# This conditional import is necessary for Alert related messages as they were
+# not released in to ROS 2 Jazzy. Once we stop supporting Jazzy, we can remove
+# this conditional import and use the Alert messages from rmf_task_msgs directly.
+# fmt: off
+# isort: off
+# pylint: disable=import-error,no-name-in-module
 if os.getenv("ROS_DISTRO") == "jazzy":
-    from rmf_alert_msgs.msg import (
-        Alert as RmfAlert,  # pyright: ignore[reportMissingImports,reportAttributeAccessIssue] pylint: disable=import-error,no-name-in-module
-    )
-    from rmf_alert_msgs.msg import (
-        AlertResponse as RmfAlertResponse,  # pyright: ignore[reportMissingImports,reportAttributeAccessIssue] pylint: disable=import-error,no-name-in-module
-    )
+    from rmf_alert_msgs.msg import Alert as RmfAlert, AlertResponse as RmfAlertResponse  # pyright: ignore[reportMissingImports,reportAttributeAccessIssue]
 else:
-    from rmf_task_msgs.msg import (
-        Alert as RmfAlert,  # pyright: ignore[reportMissingImports,reportAttributeAccessIssue] pylint: disable=import-error,no-name-in-module
-    )
-    from rmf_task_msgs.msg import (
-        AlertResponse as RmfAlertResponse,  # pyright: ignore[reportMissingImports,reportAttributeAccessIssue] pylint: disable=import-error,no-name-in-module
-    )
+    from rmf_task_msgs.msg import Alert as RmfAlert, AlertResponse as RmfAlertResponse  # pyright: ignore[reportMissingImports,reportAttributeAccessIssue]
+# pylint: enable=import-error,no-name-in-module
+# isort: on
+# fmt: on
 
 
 class RmfGateway:
