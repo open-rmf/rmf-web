@@ -16,9 +16,7 @@ RUN cd /ws \
   && pnpm install --filter api-server...
 
 # cleanup
-RUN rm -rf \
-    /var/lib/apt/lists \
-    /dist
+RUN rm -rf /var/lib/apt/lists
 
 ### Set up minimal image
 FROM docker.io/library/ros:$ROS_DISTRO-ros-core
@@ -38,9 +36,7 @@ RUN mkdir /ws
 COPY --from=base /ws /ws
 
 # cleanup
-RUN rm -rf \
-    /var/lib/apt/lists \
-    /dist
+RUN rm -rf /var/lib/apt/lists
 
 ENV RMF_API_SERVER_CONFIG /ws/packages/api-server/sqlite_local_config.py
 WORKDIR /ws/packages/api-server

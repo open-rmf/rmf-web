@@ -18,6 +18,4 @@ RUN pnpm env use --global lts
 RUN apt update && apt install -y python3-venv
 
 # cleanup
-RUN rm -rf \
-    /var/lib/apt/lists \
-    /dist
+RUN rm -rf /var/lib/apt/lists
