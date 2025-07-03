@@ -1,8 +1,9 @@
-name: Nightly
+name: Tmp push
 on:
-  schedule:
-    # 2am SGT
-    - cron: '0 18 * * *'
+  pull_request:
+  # schedule:
+  #   # 2am SGT
+  #   - cron: '0 18 * * *'
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -30,30 +31,30 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+          tags: ghcr.io/${{ github.repository }}/tmp-minimal-rmf:${{ matrix.ros_distribution }}-nightly
           context: .github/minimal-rmf
-  build-dashboard-image:
-    needs: build-minimal-rmf-docker-images
-    name: Push Dashboard docker image to GitHub Packages
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to docker
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push demo-dashboard
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:rolling
-          tags: ghcr.io/${{ github.repository }}/demo-dashboard:latest
-          context: .github/demo-dashboard
+  # build-dashboard-image:
+  #   needs: build-minimal-rmf-docker-images
+  #   name: Push Dashboard docker image to GitHub Packages
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+  #     - name: Login to docker
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Build and push demo-dashboard
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         push: true
+  #         build-args: |
+  #           BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:rolling
+  #         tags: ghcr.io/${{ github.repository }}/demo-dashboard:latest
+  #         context: .github/demo-dashboard
   build-api-server-image:
     needs: build-minimal-rmf-docker-images
     name: Push API server docker image to GitHub Packages
@@ -78,10 +79,9 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/tmp-minimal-rmf:${{ matrix.ros_distribution }}-nightly
           tags: |
-            ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
-            ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
+            ghcr.io/${{ github.repository }}/tmp-api-server:${{ matrix.ros_distribution }}-nightly
           context: .github/api-server
   # dashboard-e2e:
   #   strategy:
