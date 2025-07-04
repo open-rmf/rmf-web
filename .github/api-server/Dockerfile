@@ -13,7 +13,7 @@ RUN mkdir -p /ws \
 
 # install deps
 RUN cd /ws \
-  && pnpm install --filter api-server...
+  && pnpm install -w --filter api-server...
 
 # cleanup
 RUN rm -rf /var/lib/apt/lists
