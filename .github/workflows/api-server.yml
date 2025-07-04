@@ -23,7 +23,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, kilted, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/tmp-minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
