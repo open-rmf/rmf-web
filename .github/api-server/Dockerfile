@@ -15,6 +15,9 @@ RUN mkdir -p /ws \
 RUN cd /ws \
   && pnpm install -w --filter api-server...
 
+RUN cd /ws \
+  && pnpm run --filter api-server... build
+
 # cleanup
 RUN rm -rf /var/lib/apt/lists
 
