@@ -80,6 +80,7 @@ jobs:
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
             BASE_IMAGE=ghcr.io/${{ github.repository }}/tmp-minimal-rmf:${{ matrix.ros_distribution }}-nightly
+            BRANCH=prep-for-kilted
           tags: |
             ghcr.io/${{ github.repository }}/tmp-api-server:${{ matrix.ros_distribution }}-nightly
           context: .github/api-server
