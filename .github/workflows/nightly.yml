@@ -1,9 +1,8 @@
-name: Tmp push
+name: Nightly
 on:
-  pull_request:
-  # schedule:
-  #   # 2am SGT
-  #   - cron: '0 18 * * *'
+  schedule:
+    # 2am SGT
+    - cron: '0 18 * * *'
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
