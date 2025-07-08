@@ -31,9 +31,7 @@ from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from rosidl_runtime_py.convert import message_to_ordereddict
 from std_msgs.msg import Bool as BoolMsg
-from tortoise.exceptions import IntegrityError
 
-from api_server.exceptions import AlreadyExistsError, InvalidInputError, NotFoundError
 from api_server.fast_io.singleton_dep import singleton_dep
 from api_server.models.user import User
 from api_server.repositories.alerts import AlertRepository
@@ -48,8 +46,6 @@ from api_server.rmf_io.events import (
 from api_server.ros import get_ros_node
 
 from .models import (
-    AlertParameter,
-    AlertRequest,
     BeaconState,
     BuildingMap,
     DeliveryAlert,

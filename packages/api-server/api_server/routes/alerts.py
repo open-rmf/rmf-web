@@ -5,7 +5,6 @@ from tortoise.exceptions import IntegrityError
 
 from api_server.exceptions import AlreadyExistsError, InvalidInputError, NotFoundError
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.gateway import RmfGateway, get_rmf_gateway
 from api_server.models import AlertRequest, AlertResponse, Pagination
 from api_server.repositories import AlertRepository
 from api_server.rmf_io import AlertEvents, get_alert_events
@@ -69,7 +68,6 @@ async def respond_to_alert(
     response: str,
     repo: Annotated[AlertRepository, Depends(AlertRepository)],
     alert_events: Annotated[AlertEvents, Depends(get_alert_events)],
-    rmf_gateway: Annotated[RmfGateway, Depends(get_rmf_gateway)],
 ):
     """
     Responds to an existing alert. The response must be one of the available
