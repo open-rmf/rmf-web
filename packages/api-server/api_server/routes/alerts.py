@@ -87,7 +87,6 @@ async def respond_to_alert(
         raise HTTPException(400, str(e)) from e
 
     alert_events.alert_responses.on_next(alert_response_model)
-    rmf_gateway.respond_to_alert(alert_id, response)
     return alert_response_model
 
 

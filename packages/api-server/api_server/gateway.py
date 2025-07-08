@@ -29,8 +29,6 @@ from rmf_fleet_msgs.msg import MutexGroupManualRelease as RmfMutexGroupManualRel
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rmf_task_msgs.msg import Alert as RmfAlert
-from rmf_task_msgs.msg import AlertResponse as RmfAlertResponse
 from rosidl_runtime_py.convert import message_to_ordereddict
 from std_msgs.msg import Bool as BoolMsg
 from tortoise.exceptions import IntegrityError
@@ -104,17 +102,6 @@ class RmfGateway:
         self._delivery_alert_response = self._ros_node.create_publisher(
             RmfDeliveryAlert,
             "delivery_alert_response",
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
-                depth=10,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
-        )
-
-        self._alert_response = self._ros_node.create_publisher(
-            RmfAlertResponse,
-            "alert_response",
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
@@ -323,124 +310,6 @@ class RmfGateway:
         )
         self._subscriptions.append(delivery_alert_request_sub)
 
-        def convert_alert(msg):
-            alert = cast(RmfAlert, msg)
-            tier = AlertRequest.Tier.Info
-            if alert.tier == RmfAlert.TIER_WARNING:
-                tier = AlertRequest.Tier.Warning
-            elif alert.tier == RmfAlert.TIER_ERROR:
-                tier = AlertRequest.Tier.Error
-
-            parameters = []
-            for p in alert.alert_parameters:
-                parameters.append(AlertParameter(name=p.name, value=p.value))
-
-            responses_available = cast(list[str], alert.responses_available)
-            return AlertRequest(
-                id=alert.id,
-                unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
-                title=alert.title,
-                subtitle=alert.subtitle,
-                message=alert.message,
-                display=alert.display,
-                tier=tier,
-                responses_available=responses_available,
-                alert_parameters=parameters,
-                task_id=alert.task_id if len(alert.task_id) > 0 else None,
-            )
-
-        def handle_alert(alert: AlertRequest):
-            async def create_alert(alert: AlertRequest):
-                try:
-                    created_alert = await self._alert_repo.create_new_alert(alert)
-                except IntegrityError as e:
-                    logging.error("%s, %s", str(e), alert)
-                    return
-                except AlreadyExistsError as e:
-                    logging.error("%s, %s", str(e), alert)
-                    return
-                if not created_alert:
-                    logging.error("Failed to create alert: %s", alert)
-                    return
-
-                self._alert_events.alert_requests.on_next(created_alert)
-                logging.debug("%s", alert)
-
-            logging.info(f"Received alert: {alert}")
-            self._loop.create_task(create_alert(alert))
-
-        alert_sub = self._ros_node.create_subscription(
-            RmfAlert,
-            "alert",
-            lambda msg: handle_alert(convert_alert(msg)),
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
-                depth=10,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
-        )
-        self._subscriptions.append(alert_sub)
-
-        # FIXME(ac): Due to also subscribing to alert responses, this callback
-        # gets triggered as well even if the response is called through REST,
-        # which publishes a ROS 2 message and gets picked up by this subscriber.
-        # This causes alert_repo.create_response to be called twice in total,
-        # resulting in a conflict of responses for the same alert ID. This does
-        # not cause any issues, just that an error log is produced.
-        def handle_alert_response(msg):
-            msg = cast(RmfAlertResponse, msg)
-
-            async def create_response(alert_id: str, response: str):
-                try:
-                    created_response = await self._alert_repo.create_response(
-                        msg.id, msg.response
-                    )
-                except IntegrityError as e:
-                    logging.error(
-                        "%s, id: %s, response: %s", str(e), alert_id, response
-                    )
-                    return
-                except AlreadyExistsError as e:
-                    logging.error(
-                        "%s, id: %s, response: %s", str(e), alert_id, response
-                    )
-                    return
-                except NotFoundError as e:
-                    logging.error(
-                        "%s, id: %s, response: %s", str(e), alert_id, response
-                    )
-                    return
-                except InvalidInputError as e:
-                    logging.error(
-                        "%s, id: %s, response: %s", str(e), alert_id, response
-                    )
-                    return
-                if not created_response:
-                    logging.error(
-                        f"Failed to create alert response [{msg.response}] for alert id [{msg.id}]"
-                    )
-                    return
-
-                self._alert_events.alert_responses.on_next(created_response)
-                logging.debug("%s", created_response)
-
-            logging.info(f"Received response [{msg.response}] for alert id [{msg.id}]")
-            self._loop.create_task(create_response(msg.id, msg.response))
-
-        alert_response_sub = self._ros_node.create_subscription(
-            RmfAlertResponse,
-            "alert_response",
-            handle_alert_response,
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
-                depth=10,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
-        )
-        self._subscriptions.append(alert_response_sub)
-
         def handle_fire_alarm_trigger(msg):
             msg = cast(BoolMsg, msg)
             if msg.data:
@@ -520,12 +389,6 @@ class RmfGateway:
         msg.action = RmfDeliveryAlertAction(value=action)
         msg.message = message
         self._delivery_alert_response.publish(msg)
-
-    def respond_to_alert(self, alert_id: str, response: str):
-        msg = RmfAlertResponse()
-        msg.id = alert_id
-        msg.response = response
-        self._alert_response.publish(msg)
 
     def manual_release_mutex_groups(
         self,
