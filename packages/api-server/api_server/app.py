@@ -38,6 +38,11 @@ from .repositories import TaskRepository
 from .rmf_io import RmfEvents
 from .types import is_coroutine
 
+if os.getenv("ROS_DISTRO") == "jazzy":
+    from .stub_alerts_gateway import get_alerts_gateway
+else:
+    from .alerts_gateway import get_alerts_gateway
+
 
 async def on_sio_connect(_sid: str, _environ: dict, auth: dict | None = None):
     token = None
@@ -91,6 +96,7 @@ async def lifespan(_app: FastIO):
     await stack.enter_async_context(get_cached_file_repo)
     await stack.enter_async_context(ros.get_ros_node)
     await stack.enter_async_context(gateway.get_rmf_gateway)
+    await stack.enter_async_context(get_alerts_gateway)
     await stack.enter_async_context(get_tasks_service)
 
     # shutdown event is not called when the app crashes, this can cause the app to be
