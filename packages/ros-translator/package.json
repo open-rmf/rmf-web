@@ -1,6 +1,6 @@
 {
   "name": "ros-translator",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Translates ros interface definitions to other formats",
   "main": "index.js",

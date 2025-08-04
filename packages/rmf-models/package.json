@@ -1,6 +1,6 @@
 {
   "name": "rmf-models",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "RMF models generated from ROS messages",
   "type": "module",
   "main": "dist/index.js",
