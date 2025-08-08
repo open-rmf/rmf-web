@@ -37,6 +37,10 @@ jobs:
     needs: build-minimal-rmf-docker-images
     name: Push Dashboard docker image to GitHub Packages
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ros_distribution: [jazzy, rolling]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
@@ -52,8 +56,9 @@ jobs:
         with:
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:rolling
-          tags: ghcr.io/${{ github.repository }}/demo-dashboard:latest
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+            ROS_DISTRO=${{ matrix.ros_distribution }}
+          tags: ghcr.io/${{ github.repository }}/demo-dashboard:${{ matrix.ros_distribution }}-nightly
           context: .github/demo-dashboard
   build-api-server-image:
     needs: build-minimal-rmf-docker-images
