@@ -15,33 +15,32 @@ RUN mkdir -p /ws \
 RUN cd /ws \
   && pnpm install --filter api-server...
 
+# prepack
+RUN cd /ws/packages/api-server \
+  && pnpm run prepack
+
 # cleanup
-RUN rm -rf \
-    /var/lib/apt/lists \
-    /dist
+RUN rm -rf /var/lib/apt/lists
 
 ### Set up minimal image
 FROM docker.io/library/ros:$ROS_DISTRO-ros-core
 
 ARG ROS_DISTRO
 
-RUN apt update && apt install -y ros-$ROS_DISTRO-rmw-cyclonedds-cpp
+RUN apt update && apt install -y ros-$ROS_DISTRO-rmf-*-msgs ros-$ROS_DISTRO-rmw-cyclonedds-cpp
 
-# according to rosdep, the messages have no deps so we can just copy the files directly in!
-# this reduces the image size by ~50%.
-COPY --from=base /opt/rmf/include /opt/ros/$ROS_DISTRO/include
-COPY --from=base /opt/rmf/lib /opt/ros/$ROS_DISTRO/lib
-COPY --from=base /opt/rmf/share /opt/ros/$ROS_DISTRO/share
-
-# Copy over ws alongside the python virtual environment
+# Copy over packed package and config file
 RUN mkdir /ws
-COPY --from=base /ws /ws
+COPY --from=base /ws/packages/api-server/dist /ws
+COPY --from=base /ws/packages/api-server/sqlite_local_config.py /ws/sqlite_local_config.py
+
+# install
+RUN pip3 install --break-system-packages --no-cache-dir /ws/api_server-*.whl \
+  && rm /ws/api_server-*.whl
 
 # cleanup
-RUN rm -rf \
-    /var/lib/apt/lists \
-    /dist
+RUN rm -rf /var/lib/apt/lists
 
-ENV RMF_API_SERVER_CONFIG /ws/packages/api-server/sqlite_local_config.py
-WORKDIR /ws/packages/api-server
-ENTRYPOINT ["bash", "-c", ". /opt/ros/$ROS_DISTRO/setup.bash && mkdir -p run/cache && ../../.venv/bin/pipenv run python -m api_server"]
+ENV RMF_API_SERVER_CONFIG=/ws/sqlite_local_config.py
+WORKDIR /ws
+ENTRYPOINT ["bash", "-c", ". /opt/ros/$ROS_DISTRO/setup.bash && mkdir -p run/cache && python3 -m api_server"]

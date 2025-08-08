@@ -1,5 +1,6 @@
 name: Nightly
 on:
+  pull_request:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
@@ -62,6 +63,10 @@ jobs:
       fail-fast: false
       matrix:
         ros_distribution: [jazzy, rolling]
+        include:
+          - branch: ${{ matrix.ros_distribution }}
+          - ros_distribution: rolling
+            branch: main
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
@@ -79,9 +84,10 @@ jobs:
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
             BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+            BRANCH=${{ matrix.branch }}
           tags: |
             ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
-            ${{ matrix.ros_distribution == 'jazzy' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
+            ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
           context: .github/api-server
   # dashboard-e2e:
   #   strategy:

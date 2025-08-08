@@ -32,6 +32,8 @@ jobs:
         working-directory: packages/ros-translator
     steps:
       - uses: actions/checkout@v4
+      - name: dependencies
+        run: apt update && apt install ros-dev-tools -y
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
