@@ -1,5 +1,7 @@
-FROM ubuntu:24.04
-ARG BRANCH=main
+ARG ROS_DISTRO=jazzy
+ARG BASE_IMAGE
+
+FROM $BASE_IMAGE
 
 ### Build dashboard
 
@@ -14,7 +16,8 @@ RUN pnpm env use --global lts
 
 # fetch sources
 RUN mkdir -p /ws \
-  && curl -L https://github.com/open-rmf/rmf-web/archive/$BRANCH.tar.gz -o rmf_web.tar.gz \
+  && BRANCH_NAME=$ROS_DISTRO && if [ "$ROS_DISTRO" = "rolling" ]; then BRANCH_NAME=main; fi \
+  && curl -L https://github.com/open-rmf/rmf-web/archive/$BRANCH_NAME.tar.gz -o rmf_web.tar.gz \
   && tar zxf rmf_web.tar.gz -C /ws --strip-components=1
 
 # install deps

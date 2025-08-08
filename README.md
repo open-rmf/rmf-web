@@ -26,7 +26,7 @@ docker run \
   --network host -it --rm \
   -e RMF_SERVER_URL=http://localhost:8000 \
   -e TRAJECTORY_SERVER_URL=ws://localhost:8006 \
-  ghcr.io/open-rmf/rmf-web/demo-dashboard:latest
+  ghcr.io/open-rmf/rmf-web/demo-dashboard:jazzy-nightly
 ```
 
 > **Note**
@@ -39,10 +39,9 @@ docker run \
   --network host -it --rm \
   -e ROS_DOMAIN_ID=<ROS_DOMAIN_ID> \
   -e RMW_IMPLEMENTATION=<RMW_IMPLEMENTATION> \
-  ghcr.io/open-rmf/rmf-web/api-server:latest
+  ghcr.io/open-rmf/rmf-web/api-server:jazzy-nightly
 
-# The latest tag would be the same as jazzy
-# For ROS 2 Rolling, use ghcr.io/open-rmf/rmf-web/api-server:rolling-nightly
+# Use the appropriate tag for different ROS 2 distributions
 ```
 
 > **Note**
