@@ -25,7 +25,7 @@ FROM docker.io/library/ros:$ROS_DISTRO-ros-core
 
 ARG ROS_DISTRO
 
-RUN apt update && apt install -y ros-$ROS_DISTRO-rmf-*-msgs ros-$ROS_DISTRO-rmw-cyclonedds-cpp
+RUN apt update && apt install -y python3-pip ros-$ROS_DISTRO-rmf-*-msgs ros-$ROS_DISTRO-rmw-cyclonedds-cpp
 
 # Copy over packed package and config file
 RUN mkdir /ws
