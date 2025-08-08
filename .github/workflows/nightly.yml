@@ -1,6 +1,5 @@
 name: Nightly
 on:
-  pull_request:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
