@@ -52,6 +52,8 @@ jobs:
         run: pnpm lint
       - name: unit test
         run: pnpm run test:coverage
+      - name: dependencies for codecov
+        run: apt update && apt install git -y
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
