@@ -32,7 +32,14 @@ jobs:
         shell: bash
         working-directory: packages/api-server
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main for rolling
+        if: matrix.ros_distribution == 'rolling'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Checkout ros_distribution branch
+        if: matrix.ros_distribution != 'rolling'
+        uses: actions/checkout@v4
         with:
           ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
