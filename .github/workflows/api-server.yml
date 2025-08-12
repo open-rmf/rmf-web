@@ -32,19 +32,30 @@ jobs:
         shell: bash
         working-directory: packages/api-server
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main for rolling
+        if: matrix.ros_distribution == 'rolling'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Checkout ros_distribution branch
+        if: matrix.ros_distribution != 'rolling'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
       - name: tests
         run: |
-          . /opt/rmf/setup.bash
+          . /opt/ros/${{ matrix.ros_distribution }}/setup.bash
           pnpm run lint
           pnpm run test:cov -v
           ../../.venv/bin/python -m coverage xml
+      - name: dependencies for codecov
+        run: apt update && apt install git -y
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           flags: api-server
           fail_ci_if_error: true
