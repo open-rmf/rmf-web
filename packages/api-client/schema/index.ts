@@ -1022,36 +1022,6 @@ export default {
         },
       },
     },
-    '/tasks/activity_discovery': {
-      post: {
-        tags: ['Tasks'],
-        summary: 'Post Activity Discovery',
-        operationId: 'post_activity_discovery_tasks_activity_discovery_post',
-        requestBody: {
-          content: {
-            'application/json': {
-              schema: { $ref: '#/components/schemas/ActivityDiscoveryRequest' },
-            },
-          },
-          required: true,
-        },
-        responses: {
-          '200': {
-            description: 'Successful Response',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/ActivityDiscovery' } },
-            },
-          },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
-        },
-        security: [{ OpenIdConnect: [] }],
-      },
-    },
     '/tasks/cancel_task': {
       post: {
         tags: ['Tasks'],
@@ -2519,56 +2489,6 @@ export default {
         enum: ['waiting', 'cancel', 'override', 'resume'],
         title: 'Action',
       },
-      Activity: {
-        properties: {
-          category: {
-            type: 'string',
-            title: 'Category',
-            description:
-              'The category of this activity. There must not be any duplicate activity categories per fleet.',
-          },
-          detail: {
-            type: 'string',
-            title: 'Detail',
-            description: 'Details about the behavior of the activity.',
-          },
-          description_schema: {
-            anyOf: [{ type: 'object' }, { type: 'null' }],
-            title: 'Description Schema',
-            description: 'The schema for this activity description',
-          },
-        },
-        type: 'object',
-        required: ['category', 'detail'],
-        title: 'Activity',
-      },
-      ActivityDiscovery: {
-        properties: {
-          data: {
-            anyOf: [
-              { items: { $ref: '#/components/schemas/Datum' }, type: 'array' },
-              { type: 'null' },
-            ],
-            title: 'Data',
-          },
-        },
-        type: 'object',
-        title: 'ActivityDiscovery',
-      },
-      ActivityDiscoveryRequest: {
-        properties: {
-          type: {
-            type: 'string',
-            enum: ['activitiy_discovery_request'],
-            const: 'activitiy_discovery_request',
-            title: 'Type',
-            description: 'Indicate that this is an activity discovery request',
-          },
-        },
-        type: 'object',
-        required: ['type'],
-        title: 'ActivityDiscoveryRequest',
-      },
       AddExceptDateRequest: {
         properties: { except_date: { type: 'string', format: 'date-time', title: 'Except Date' } },
         type: 'object',
@@ -2804,24 +2724,6 @@ export default {
         },
         type: 'object',
         title: 'Data',
-      },
-      Datum: {
-        properties: {
-          fleet_name: {
-            type: 'string',
-            title: 'Fleet Name',
-            description: 'Name of the fleet that supports these activities',
-          },
-          activities: {
-            items: { $ref: '#/components/schemas/Activity' },
-            type: 'array',
-            title: 'Activities',
-            description: 'List of activities that the fleet supports',
-          },
-        },
-        type: 'object',
-        required: ['fleet_name', 'activities'],
-        title: 'Datum',
       },
       DeliveryAlert: {
         properties: {
