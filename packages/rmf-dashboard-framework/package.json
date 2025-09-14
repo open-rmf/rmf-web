@@ -88,5 +88,10 @@
     "./hooks": "./src/hooks/index.ts",
     "./micro-apps": "./src/micro-apps/index.ts",
     "./services": "./src/services/index.ts"
+  },
+  "dependencies": {
+    "@jsonforms/core": "^3.6.0",
+    "@jsonforms/material-renderers": "^3.6.0",
+    "@jsonforms/react": "^3.6.0"
   }
 }

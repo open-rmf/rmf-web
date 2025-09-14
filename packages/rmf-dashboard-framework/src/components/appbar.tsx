@@ -57,6 +57,7 @@ import {
 } from '../hooks';
 import { AppEvents } from './app-events';
 import { ConfirmationDialog } from './confirmation-dialog';
+import { JsonFormDialog } from './json-form-dialog';
 import { dispatchTask, scheduleTask, TaskForm, TaskFormProps } from './tasks';
 import { DashboardThemes } from './theme';
 
@@ -104,6 +105,7 @@ export const AppBar = React.memo(
     const { showAlert } = useAppController();
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const profile = useUserProfile();
+    const [openJsonForm, setOpenJsonForm] = React.useState(false);
     const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
     const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
     const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
@@ -250,6 +252,41 @@ export const AppBar = React.memo(
     const settings = useSettings();
     const appController = useAppController();
 
+    const jsonFormSchema = {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'A short name for the task',
+        },
+        priority: {
+          type: 'integer',
+          default: 0,
+        },
+      },
+      required: ['name'],
+    };
+
+    const jsonFormUiSchema = {
+      type: 'VerticalLayout',
+      elements: [
+        {
+          type: 'Control',
+          scope: '#/properties/name',
+        },
+        {
+          type: 'Control',
+          scope: '#/properties/priority',
+        },
+      ],
+    };
+
+    const handleJsonFormSubmit = (data: any) => {
+      console.log('JSON Form submitted with data:', data);
+      showAlert('success', `Task "${data.name}" submitted!`);
+      setOpenJsonForm(false);
+    };
+
     return (
       <MuiAppBar position="sticky" sx={{ height: APP_BAR_HEIGHT, zIndex: theme.zIndex.drawer + 1 }}>
         <Grid container alignItems="center" justifyContent="space-between" wrap="nowrap">
@@ -268,6 +305,16 @@ export const AppBar = React.memo(
           <Toolbar variant="dense">
             <Box display="flex" alignItems="center" gap={2}>
               <Typography variant="subtitle1">Powered by Open-RMF</Typography>
+              <Button
+                id="new-create-new-task-button"
+                aria-label="new new task"
+                color="secondary"
+                variant="contained"
+                sx={{ marginRight: 2 }}
+                onClick={() => setOpenJsonForm(true)}
+              >
+                New New Task
+              </Button>
               <Button
                 id="create-new-task-button"
                 aria-label="new task"
@@ -563,6 +610,16 @@ export const AppBar = React.memo(
               resume robot operations.
             </Typography>
           </ConfirmationDialog>
+        )}
+        {openJsonForm && (
+          <JsonFormDialog
+            open={openJsonForm}
+            onClose={() => setOpenJsonForm(false)}
+            schema={jsonFormSchema}
+            uischema={jsonFormUiSchema}
+            initialData={{}}
+            onSubmit={handleJsonFormSubmit}
+          />
         )}
       </MuiAppBar>
     );
