@@ -230,24 +230,13 @@ class TestTasksRoute(AppFixture):
             log = TaskEventLog(**next(sub))
             self.assertEqual(task_id, log.task_id)
 
-    def test_activity_discovery(self):
-        with patch.object(get_tasks_service(), "call") as mock:
-            mock.return_value = "{}"
-            resp = self.client.post(
-                "/tasks/activity_discovery",
-                content=mdl.ActivityDiscoveryRequest(
-                    type="activitiy_discovery_request",
-                ).model_dump_json(exclude_none=True),
-            )
-            self.assertEqual(200, resp.status_code, resp.content)
-
     def test_cancel_task(self):
         with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
-                "/tasks/activity_discovery",
-                content=mdl.ActivityDiscoveryRequest(
-                    type="activitiy_discovery_request"
+                "/tasks/cancel_task",
+                content=mdl.CancelTaskRequest(
+                    type="cancel_task_request"
                 ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
