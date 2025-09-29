@@ -34,7 +34,7 @@ class RmfRepository:
                 filter_params[k] = v
         return filter_params
 
-    async def get_bulding_map(self) -> BuildingMap | None:
+    async def get_building_map(self) -> BuildingMap | None:
         building_map = await ttm.BuildingMap.first()
         if building_map is None:
             return None
@@ -50,7 +50,7 @@ class RmfRepository:
         )
 
     async def get_doors(self) -> list[Door]:
-        building_map = await self.get_bulding_map()
+        building_map = await self.get_building_map()
         if building_map is None:
             return []
         return [door for level in building_map.levels for door in level.doors]
@@ -67,7 +67,7 @@ class RmfRepository:
         )
 
     async def get_lifts(self) -> list[Lift]:
-        building_map = await self.get_bulding_map()
+        building_map = await self.get_building_map()
         if building_map is None:
             return []
         return building_map.lifts
