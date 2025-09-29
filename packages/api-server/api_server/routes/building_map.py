@@ -19,7 +19,7 @@ async def get_building_map(rmf_repo: Annotated[RmfRepository, Depends(RmfReposit
     """
     Available in socket.io
     """
-    building_map = await rmf_repo.get_bulding_map()
+    building_map = await rmf_repo.get_building_map()
     if building_map is None:
         raise HTTPException(status_code=404)
     return building_map
