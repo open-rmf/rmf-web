@@ -1,18 +1,18 @@
 import { Graph } from 'api-client';
 
 import { CubeMaker } from './cube-maker';
-import { graphToWalls } from './utils';
+import { graphToSegments } from './utils';
 
 interface WallProps {
   wallGraph: Graph;
 }
 
 export const WallMaker = ({ wallGraph }: WallProps): JSX.Element => {
-  const walls = graphToWalls(wallGraph);
+  const wallSegments = graphToSegments(wallGraph);
 
   return (
     <>
-      {walls.map((wall, i) => {
+      {wallSegments.map((wall, i) => {
         return (
           <CubeMaker
             key={i}
