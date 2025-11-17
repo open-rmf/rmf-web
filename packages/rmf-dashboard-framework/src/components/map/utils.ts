@@ -83,6 +83,7 @@ export const graphToSegments = (graph: Graph): GraphSegment[] => {
 
 export const findSceneBoundingBoxFromThreeFiber = (level: Level | undefined): Box3 | undefined => {
   if (!level) {
+    console.error('Level is invalid');
     return;
   }
   let minX = Infinity;
@@ -91,6 +92,7 @@ export const findSceneBoundingBoxFromThreeFiber = (level: Level | undefined): Bo
   let maxX = -Infinity;
   let maxY = -Infinity;
   let maxZ = -Infinity;
+  let valid = false;
 
   const wallSegments = graphToSegments(level.wall_graph);
   wallSegments.forEach((segment) => {
@@ -104,6 +106,7 @@ export const findSceneBoundingBoxFromThreeFiber = (level: Level | undefined): Bo
     maxX = Math.max(maxX, x + width / 2);
     maxY = Math.max(maxY, y + width / 2);
     maxZ = Math.max(maxZ, z + height / 2);
+    valid = true;
   });
 
   level.nav_graphs.forEach((navGraph) => {
@@ -119,7 +122,13 @@ export const findSceneBoundingBoxFromThreeFiber = (level: Level | undefined): Bo
       maxX = Math.max(maxX, x + width / 2);
       maxY = Math.max(maxY, y + width / 2);
       maxZ = Math.max(maxZ, z + height / 2);
+      valid = true;
     });
   });
+
+  if (!valid) {
+    console.error('Level has invalid wall graphs and nav graphs');
+    return;
+  }
   return new Box3(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
 };

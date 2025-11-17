@@ -1,7 +1,7 @@
 import { Box, styled, Typography } from '@mui/material';
 import { Line } from '@react-three/drei';
 import { Canvas, useLoader } from '@react-three/fiber';
-import { BuildingMap, FleetState, Level, Lift } from 'api-client';
+import { AlertRequest, BuildingMap, FleetState, Level, Lift } from 'api-client';
 import Debug from 'debug';
 import React, { ChangeEvent, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -519,6 +519,20 @@ export const Map = styled((props: MapProps) => {
       <Canvas
         onCreated={({ camera }) => {
           if (!sceneBoundingBox) {
+            let alertRequest: AlertRequest = {
+              id: `scene-bounding-${new Date().toLocaleTimeString()}`,
+              unix_millis_alert_time: new Date().getTime(),
+              title: 'Missing walls or navigation graphs in Building Map',
+              subtitle: '',
+              message:
+                'Please verify that the Building Map contains valid walls and navigation graphs, for the map to be displayed properly.',
+              display: true,
+              tier: 'error',
+              responses_available: [],
+              alert_parameters: [],
+              task_id: null,
+            };
+            AppEvents.pushAlert.next(alertRequest);
             return;
           }
           const center = sceneBoundingBox.getCenter(new Vector3());
