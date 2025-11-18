@@ -1,7 +1,7 @@
 import { Box, styled, Typography } from '@mui/material';
 import { Line } from '@react-three/drei';
 import { Canvas, useLoader } from '@react-three/fiber';
-import { BuildingMap, FleetState, Level, Lift } from 'api-client';
+import { AlertRequest, BuildingMap, FleetState, Level, Lift } from 'api-client';
 import Debug from 'debug';
 import React, { ChangeEvent, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -518,10 +518,25 @@ export const Map = styled((props: MapProps) => {
       </Box>
       <Canvas
         onCreated={({ camera }) => {
-          if (!sceneBoundingBox) {
-            return;
+          let sceneBoundingBoxToUse = sceneBoundingBox;
+          if (!sceneBoundingBoxToUse) {
+            let alertRequest: AlertRequest = {
+              id: `scene-bounding-${new Date().toLocaleTimeString()}`,
+              unix_millis_alert_time: new Date().getTime(),
+              title: 'Map rendering error',
+              subtitle: 'Missing walls or navigation graphs in Building Map',
+              message:
+                'Please verify that the Building Map contains valid walls and navigation graphs, for the map to be displayed properly. Falling back to a generic scale.',
+              display: true,
+              tier: 'warning',
+              responses_available: [],
+              alert_parameters: [],
+              task_id: null,
+            };
+            AppEvents.pushAlert.next(alertRequest);
+            sceneBoundingBoxToUse = new Box3(new Vector3(-10, -10, 0), new Vector3(10, 10, 10));
           }
-          const center = sceneBoundingBox.getCenter(new Vector3());
+          const center = sceneBoundingBoxToUse.getCenter(new Vector3());
           camera.position.set(center.x, center.y, center.z + distance);
           camera.zoom = zoom;
           camera.updateProjectionMatrix();
