@@ -41,7 +41,7 @@ export function getDoorCenter(door: Door): [x: number, y: number] {
   }
 }
 
-interface WallSegment {
+interface GraphSegment {
   position: number[];
   width: number;
   height: number;
@@ -52,8 +52,8 @@ interface WallSegment {
 const distance = (v1: GraphNode, v2: GraphNode) => Math.hypot(v2.x - v1.x, v2.y - v1.y);
 const midPoint = (v1: GraphNode, v2: GraphNode) => [(v2.x + v1.x) / 2, (v2.y + v1.y) / 2];
 
-export const graphToWalls = (graph: Graph): WallSegment[] => {
-  const walls = [] as WallSegment[];
+export const graphToSegments = (graph: Graph): GraphSegment[] => {
+  const segments = [] as GraphSegment[];
   const { edges, vertices } = graph;
 
   edges.map((edge) => {
@@ -69,7 +69,7 @@ export const graphToWalls = (graph: Graph): WallSegment[] => {
     const angle = Math.atan2(v1.y - v2.y, v1.x - v2.x) - Math.PI / 2;
     const rot = new Euler(0, 0, angle);
 
-    return walls.push({
+    return segments.push({
       position,
       width,
       height,
@@ -78,11 +78,12 @@ export const graphToWalls = (graph: Graph): WallSegment[] => {
     });
   });
 
-  return walls;
+  return segments;
 };
 
 export const findSceneBoundingBoxFromThreeFiber = (level: Level | undefined): Box3 | undefined => {
   if (!level) {
+    console.error('Level is invalid');
     return;
   }
   let minX = Infinity;
@@ -91,12 +92,13 @@ export const findSceneBoundingBoxFromThreeFiber = (level: Level | undefined): Bo
   let maxX = -Infinity;
   let maxY = -Infinity;
   let maxZ = -Infinity;
+  let valid = false;
 
-  const walls = graphToWalls(level.wall_graph);
-  walls.forEach((wall) => {
-    const [x, y, z] = wall.position;
-    const width = wall.width;
-    const height = wall.height;
+  const wallSegments = graphToSegments(level.wall_graph);
+  wallSegments.forEach((segment) => {
+    const [x, y, z] = segment.position;
+    const width = segment.width;
+    const height = segment.height;
 
     minX = Math.min(minX, x - width / 2);
     minY = Math.min(minY, y - width / 2);
@@ -104,7 +106,29 @@ export const findSceneBoundingBoxFromThreeFiber = (level: Level | undefined): Bo
     maxX = Math.max(maxX, x + width / 2);
     maxY = Math.max(maxY, y + width / 2);
     maxZ = Math.max(maxZ, z + height / 2);
+    valid = true;
   });
 
+  level.nav_graphs.forEach((navGraph) => {
+    const navGraphSegments = graphToSegments(navGraph);
+    navGraphSegments.forEach((segment) => {
+      const [x, y, z] = segment.position;
+      const width = segment.width;
+      const height = segment.height;
+
+      minX = Math.min(minX, x - width / 2);
+      minY = Math.min(minY, y - width / 2);
+      minZ = Math.min(minZ, z - height / 2);
+      maxX = Math.max(maxX, x + width / 2);
+      maxY = Math.max(maxY, y + width / 2);
+      maxZ = Math.max(maxZ, z + height / 2);
+      valid = true;
+    });
+  });
+
+  if (!valid) {
+    console.error('Level has invalid wall graphs and nav graphs');
+    return;
+  }
   return new Box3(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
 };
