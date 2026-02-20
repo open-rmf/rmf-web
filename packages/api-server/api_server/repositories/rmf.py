@@ -116,7 +116,7 @@ class RmfRepository:
     async def save_beacon_state(self, beacon_state: BeaconState) -> None:
         d = beacon_state.model_dump()
         del d["id"]
-        await ttm.BeaconState.update_or_create(d, id_=beacon_state.id)
+        await ttm.BeaconState.update_or_create(d, id=beacon_state.id)
 
     async def query_users(
         self,
