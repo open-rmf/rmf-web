@@ -37,6 +37,7 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
+          skip-build: true
       - name: tests
         run: |
           . /opt/rmf/setup.bash
