@@ -520,7 +520,7 @@ export const Map = styled((props: MapProps) => {
         onCreated={({ camera }) => {
           let sceneBoundingBoxToUse = sceneBoundingBox;
           if (!sceneBoundingBoxToUse) {
-            let alertRequest: AlertRequest = {
+            const alertRequest: AlertRequest = {
               id: `scene-bounding-${new Date().toLocaleTimeString()}`,
               unix_millis_alert_time: new Date().getTime(),
               title: 'Map rendering error',

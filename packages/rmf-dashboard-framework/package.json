@@ -7,10 +7,10 @@
     "build:example": "pnpm run --filter {.}^... build && vite -c examples/shared/vite.config.ts build",
     "build-storybook": "storybook build",
     "gen-app-config-schema": "pnpm typescript-json-schema tsconfig.gen.json AppConfig --required -o app-config.schema.json",
-    "lint": "tsc --build && eslint --max-warnings 0 src",
+    "lint": "pnpm --filter=rmf-dashboard-framework^... build && tsc --build && eslint --max-warnings 0 src",
     "start:example": "pnpm --filter=rmf-dashboard-framework^... build && vite -c examples/shared/vite.config.ts",
     "storybook": "storybook dev -p 6006",
-    "test": "vitest",
+    "test": "pnpm --filter=rmf-dashboard-framework^... build && vitest",
     "test:coverage": "vitest --coverage"
   },
   "peerDependencies": {
