@@ -16,5 +16,5 @@ runs:
       shell: bash
     - name: Build
       if: '!${{ inputs.skip-build }}'
-      run: pnpm run --if-present --filter ${{ inputs.package }}... build
+      run: pnpm run --filter ${{ inputs.package }}... build
       shell: bash
