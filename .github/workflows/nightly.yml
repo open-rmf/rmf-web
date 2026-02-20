@@ -114,7 +114,8 @@ jobs:
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
-          ref: ${{ matrix.ros_distribution }}
+          # ref: ${{ matrix.ros_distribution }}
+          ref: fix-jazzy-ci
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -148,7 +149,8 @@ jobs:
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
-          ref: ${{ matrix.ros_distribution }}
+          # ref: ${{ matrix.ros_distribution }}
+          ref: fix-jazzy-ci
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -184,7 +186,8 @@ jobs:
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
-          ref: rolling
+          # ref: ${{ matrix.ros_distribution }}
+          ref: fix-jazzy-ci
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -219,7 +222,8 @@ jobs:
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
-          ref: ${{ matrix.ros_distribution }}
+          # ref: ${{ matrix.ros_distribution }}
+          ref: fix-jazzy-ci
       - name: dependencies
         run: apt update && apt install ros-dev-tools -y
       - name: bootstrap
