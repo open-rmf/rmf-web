@@ -96,7 +96,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [rolling]
+        ros_distribution: [jazzy, rolling]
     container:
       image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
@@ -109,12 +109,10 @@ jobs:
     steps:
       - name: Checkout main for rolling
         if: matrix.ros_distribution == 'rolling'
-        uses: actions/checkout@v4
-        with:
-          ref: main
+        uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
         if: matrix.ros_distribution != 'rolling'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
@@ -146,8 +144,6 @@ jobs:
       - name: Checkout main for rolling
         if: matrix.ros_distribution == 'rolling'
         uses: actions/checkout@v5
-        with:
-          ref: main
       - name: Checkout ros_distribution branch
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
@@ -184,8 +180,6 @@ jobs:
       - name: Checkout main for rolling
         if: matrix.ros_distribution == 'rolling'
         uses: actions/checkout@v5
-        with:
-          ref: main
       - name: Checkout ros_distribution branch
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
@@ -221,8 +215,6 @@ jobs:
       - name: Checkout main for rolling
         if: matrix.ros_distribution == 'rolling'
         uses: actions/checkout@v5
-        with:
-          ref: main
       - name: Checkout ros_distribution branch
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
