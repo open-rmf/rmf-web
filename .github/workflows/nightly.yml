@@ -230,6 +230,7 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           package: ros-translator
+          skip-build: true
       - name: test
         run: . /opt/ros/${{ matrix.ros_distribution }}/setup.bash && pnpm test
   # dashboard-e2e:
