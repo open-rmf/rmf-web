@@ -1,6 +1,11 @@
 name: api-server
 on:
   pull_request:
+    paths:
+      - '.github/workflows/api-server.yml'
+      - '.github/actions/bootstrap/action.yml'
+      - '.github/minimal-rmf/**'
+      - 'packages/api-server/**'
   push:
     branches:
       - main
