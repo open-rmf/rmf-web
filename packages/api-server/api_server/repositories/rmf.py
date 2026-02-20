@@ -117,16 +117,6 @@ class RmfRepository:
         d = beacon_state.model_dump()
         del d["id"]
         await ttm.BeaconState.update_or_create(d, id=beacon_state.id)
-        print("saved!")
-        saved_state = await ttm.BeaconState.get_or_none(id=beacon_state.id)
-        print(saved_state)
-        beacon_state_pydantic = BeaconState.model_validate(beacon_state)
-        print(beacon_state_pydantic)
-        all_states = await ttm.BeaconState.all()
-        print(all_states)
-        for state in all_states:
-            validated = BeaconState.model_validate(state)
-            print(validated)
 
     async def query_users(
         self,
