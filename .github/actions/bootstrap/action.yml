@@ -14,3 +14,7 @@ runs:
     - name: Install dependencies
       run: pnpm install -w --filter ${{ inputs.package }}...
       shell: bash
+    - name: Build
+      if: inputs.skip-build == 'false'
+      run: pnpm run --filter ${{ inputs.package }}... build
+      shell: bash
