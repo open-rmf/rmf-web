@@ -3,94 +3,93 @@ on:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
-  pull_request:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  # build-minimal-rmf-docker-images:
-  #   name: Push minimal-rmf Docker image to GitHub Packages
-  #   runs-on: ubuntu-24.04
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       ros_distribution: [jazzy, rolling]
-  #   steps:
-  #     - uses: actions/checkout@v5
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-  #     - name: Login to docker
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Build and push minimal-rmf
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         push: true
-  #         build-args: |
-  #           ROS_DISTRO=${{ matrix.ros_distribution }}
-  #         tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
-  #         context: .github/minimal-rmf
-  # build-dashboard-image:
-  #   needs: build-minimal-rmf-docker-images
-  #   name: Push Dashboard docker image to GitHub Packages
-  #   runs-on: ubuntu-24.04
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       ros_distribution: [jazzy, rolling]
-  #   steps:
-  #     - uses: actions/checkout@v5
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-  #     - name: Login to docker
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Build and push demo-dashboard
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         push: true
-  #         build-args: |
-  #           BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
-  #           ROS_DISTRO=${{ matrix.ros_distribution }}
-  #         tags: ghcr.io/${{ github.repository }}/demo-dashboard:${{ matrix.ros_distribution }}-nightly
-  #         context: .github/demo-dashboard
-  # build-api-server-image:
-  #   needs: build-minimal-rmf-docker-images
-  #   name: Push API server docker image to GitHub Packages
-  #   runs-on: ubuntu-24.04
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       ros_distribution: [jazzy, rolling]
-  #   steps:
-  #     - uses: actions/checkout@v5
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-  #     - name: Login to docker
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Build and push api-server
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         push: true
-  #         build-args: |
-  #           ROS_DISTRO=${{ matrix.ros_distribution }}
-  #           BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
-  #         tags: |
-  #           ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
-  #           ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
-  #         context: .github/api-server
+  build-minimal-rmf-docker-images:
+    name: Push minimal-rmf Docker image to GitHub Packages
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ros_distribution: [jazzy, rolling]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to docker
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push minimal-rmf
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          build-args: |
+            ROS_DISTRO=${{ matrix.ros_distribution }}
+          tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+          context: .github/minimal-rmf
+  build-dashboard-image:
+    needs: build-minimal-rmf-docker-images
+    name: Push Dashboard docker image to GitHub Packages
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ros_distribution: [jazzy, rolling]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to docker
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push demo-dashboard
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          build-args: |
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+            ROS_DISTRO=${{ matrix.ros_distribution }}
+          tags: ghcr.io/${{ github.repository }}/demo-dashboard:${{ matrix.ros_distribution }}-nightly
+          context: .github/demo-dashboard
+  build-api-server-image:
+    needs: build-minimal-rmf-docker-images
+    name: Push API server docker image to GitHub Packages
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ros_distribution: [jazzy, rolling]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to docker
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push api-server
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          build-args: |
+            ROS_DISTRO=${{ matrix.ros_distribution }}
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+          tags: |
+            ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
+            ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
+          context: .github/api-server
   api-client:
-    # needs: build-minimal-rmf-docker-images
+    needs: build-minimal-rmf-docker-images
     name: Test API client
     runs-on: ubuntu-latest
     strategy:
@@ -114,8 +113,7 @@ jobs:
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
-          # ref: ${{ matrix.ros_distribution }}
-          ref: fix-jazzy-ci
+          ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -125,7 +123,7 @@ jobs:
       - name: test
         run: pnpm test
   api-server:
-    # needs: build-minimal-rmf-docker-images
+    needs: build-minimal-rmf-docker-images
     name: Test API server
     runs-on: ubuntu-24.04
     strategy:
@@ -149,8 +147,7 @@ jobs:
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
-          # ref: ${{ matrix.ros_distribution }}
-          ref: fix-jazzy-ci
+          ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -162,7 +159,7 @@ jobs:
           pnpm run lint
           pnpm run test
   rmf-dashboard-framework:
-    # needs: build-minimal-rmf-docker-images
+    needs: build-minimal-rmf-docker-images
     name: Test dashboard framework
     runs-on: ubuntu-24.04
     strategy:
@@ -186,8 +183,7 @@ jobs:
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
-          # ref: ${{ matrix.ros_distribution }}
-          ref: fix-jazzy-ci
+          ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -198,7 +194,7 @@ jobs:
       - name: unit test
         run: pnpm run test
   ros-translator:
-    # needs: build-minimal-rmf-docker-images
+    needs: build-minimal-rmf-docker-images
     name: Test ros-translator
     runs-on: ubuntu-24.04
     strategy:
@@ -222,8 +218,7 @@ jobs:
         if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
-          # ref: ${{ matrix.ros_distribution }}
-          ref: fix-jazzy-ci
+          ref: ${{ matrix.ros_distribution }}
       - name: dependencies
         run: apt update && apt install ros-dev-tools -y
       - name: bootstrap
