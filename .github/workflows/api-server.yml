@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/api-server.yml'
+      - '.github/actions/bootstrap/action.yml'
       - '.github/minimal-rmf/**'
       - 'packages/api-server/**'
   push:
@@ -18,12 +19,8 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        ros_distribution: [jazzy, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:rolling-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -32,16 +29,7 @@ jobs:
         shell: bash
         working-directory: packages/api-server
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
-        uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ matrix.ros_distribution }}
+      - uses: actions/checkout@v5
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -49,7 +37,7 @@ jobs:
           skip-build: true
       - name: tests
         run: |
-          . /opt/ros/${{ matrix.ros_distribution }}/setup.bash
+          . /opt/ros/rolling/setup.bash
           pnpm run lint
           pnpm run test:cov -v
           ../../.venv/bin/python -m coverage xml
