@@ -34,7 +34,7 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
-          skip-build: true
+          skip-build: 'true'
       - name: tests
         run: |
           . /opt/ros/rolling/setup.bash
