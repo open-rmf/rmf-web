@@ -236,7 +236,7 @@ class TestTasksRoute(AppFixture):
             resp = self.client.post(
                 "/tasks/cancel_task",
                 content=mdl.CancelTaskRequest(
-                    type="cancel_task_request"
+                    type="cancel_task_request", task_id="task_id", labels=None
                 ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
