@@ -57,7 +57,7 @@ import {
 } from '../hooks';
 import { AppEvents } from './app-events';
 import { ConfirmationDialog } from './confirmation-dialog';
-import { dispatchTask, scheduleTask, TaskForm, TaskFormProps } from './tasks';
+import { dispatchTask, FlexibleTaskForm, scheduleTask, TaskForm, TaskFormProps } from './tasks';
 import { DashboardThemes } from './theme';
 
 export const APP_BAR_HEIGHT = '3.5rem';
@@ -106,6 +106,7 @@ export const AppBar = React.memo(
     const profile = useUserProfile();
     const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
     const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
+    const [openCreateFlexibleTaskForm, setOpenCreateFlexibleTaskForm] = React.useState(false);
     const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
     const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
     const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<AlertRequest[]>(
@@ -273,10 +274,19 @@ export const AppBar = React.memo(
                 aria-label="new task"
                 color="secondary"
                 variant="contained"
-                sx={{ marginRight: 2 }}
                 onClick={() => setOpenCreateTaskForm(true)}
               >
                 New Task
+              </Button>
+              <Button
+                id="create-new-flexible-task-button"
+                aria-label="new flexible task"
+                color="secondary"
+                variant="contained"
+                sx={{ marginRight: 2 }}
+                onClick={() => setOpenCreateFlexibleTaskForm(true)}
+              >
+                Create Flexible Task
               </Button>
             </Box>
             <Divider orientation="vertical" flexItem />
@@ -498,6 +508,17 @@ export const AppBar = React.memo(
             onFailScheduling={(e) => {
               console.error(`Failed to create schedule: ${e.message}`);
               showAlert('error', `Failed to submit schedule: ${e.message}`);
+            }}
+          />
+        )}
+
+        {openCreateFlexibleTaskForm && (
+          <FlexibleTaskForm
+            open={openCreateFlexibleTaskForm}
+            onClose={() => setOpenCreateFlexibleTaskForm(false)}
+            onSuccess={() => {
+              setOpenCreateFlexibleTaskForm(false);
+              showAlert('success', 'Generated Flexible Task in Console!');
             }}
           />
         )}

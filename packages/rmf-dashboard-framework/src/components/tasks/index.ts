@@ -1,3 +1,4 @@
+export * from './flexible-task-form';
 export * from './task-booking-label-utils';
 export * from './task-cancellation';
 export * from './task-form';
