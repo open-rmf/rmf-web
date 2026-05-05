@@ -18,6 +18,11 @@ config = {
     "jwt_public_key": None,
     # jwt secret, this is mutually exclusive with `jwt_public_key`.
     "jwt_secret": "rmfisawesome",
+    # JWKS endpoint URL. When set, signing keys are fetched from here and
+    # selected by token `kid` — required for Supabase projects with
+    # asymmetric JWT signing keys (the default since late 2025). Mutually
+    # exclusive with jwt_public_key and jwt_secret.
+    "jwks_url": None,
     # url to the oidc endpoint, used to authenticate rest requests, it should point to the well known endpoint, e.g.
     # http://localhost:8080/auth/realms/rmf-web/.well-known/openid-configuration.
     # NOTE: This is ONLY used for documentation purposes, the "jwt_public_key" will be the

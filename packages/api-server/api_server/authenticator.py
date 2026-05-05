@@ -13,6 +13,12 @@ class AuthenticationError(Exception):
     pass
 
 
+def _claims_grant_admin(claims: dict) -> bool:
+    realm_roles = (claims.get("realm_access") or {}).get("roles") or []
+    app_meta_roles = (claims.get("app_metadata") or {}).get("roles") or []
+    return "superuser" in realm_roles or "superuser" in app_meta_roles
+
+
 class Authenticator(Protocol):
     async def verify_token(self, token: str | None) -> User: ...
 
@@ -25,32 +31,50 @@ class JwtAuthenticator:
 
     def __init__(
         self,
-        key_or_secret: "jwt.algorithms.AllowedPublicKeys | str | bytes",
+        key_or_secret: "jwt.algorithms.AllowedPublicKeys | str | bytes | None",
         aud: str,
         iss: str,
         *,
         oidc_url: str = "",
+        jwks_url: str = "",
     ):
         """
         Authenticates with a JWT token, the client must send an auth params with
         a "token" key.
-        :param pem_file: path to a pem encoded certificate used to verify a token.
+        :param key_or_secret: PEM bytes / public key for RS256/ES256, or a shared
+            secret for HS256. Pass None when using `jwks_url`.
+        :param jwks_url: if set, the verifier fetches signing keys from this
+            JWKS endpoint and selects the right one by token `kid`. Used by
+            Supabase projects with asymmetric JWT signing keys (the default
+            since late 2025).
         """
+        if not jwks_url and key_or_secret is None:
+            raise ValueError("either key_or_secret or jwks_url is required")
         self.aud = aud
         self.iss = iss
         self.oidc_url = oidc_url
         self._key_or_secret = key_or_secret
+        self._jwks_client = jwt.PyJWKClient(jwks_url) if jwks_url else None
 
     async def _get_user(self, claims: dict) -> User:
-        if not "preferred_username" in claims:
+        # Identifier preference: keycloak's `preferred_username`, then standard
+        # OIDC `email`, then the JWT `sub` (Supabase issues a UUID here).
+        username = (
+            claims.get("preferred_username") or claims.get("email") or claims.get("sub")
+        )
+        if not username:
             raise AuthenticationError(
-                "expected 'preferred_username' username claim to be present"
+                "expected one of 'preferred_username', 'email' or 'sub' claims to be present"
             )
 
-        username = claims["preferred_username"]
-        # FIXME(koonpeng): We should use the "userId" as the identifier. Some idP may allow
-        # duplicated usernames.
+        # `User.load_from_db` rejects names starting with '_'. Supabase UUIDs and
+        # emails are safe; nothing to sanitize.
         user = await User.load_or_create_from_db(username)
+
+        # Promote to admin if the IdP marks this user as a superuser. Supports
+        # both keycloak-style realm roles and supabase-style app_metadata roles.
+        if not user.is_admin and _claims_grant_admin(claims):
+            await user.update_admin(True)
 
         return user
 
@@ -58,9 +82,13 @@ class JwtAuthenticator:
         if not token:
             raise AuthenticationError("authentication required")
         try:
+            if self._jwks_client is not None:
+                signing_key = self._jwks_client.get_signing_key_from_jwt(token).key
+            else:
+                signing_key = self._key_or_secret
             claims = jwt.decode(
                 token,
-                self._key_or_secret,
+                signing_key,
                 algorithms=list(self._algorithms),
                 audience=self.aud,
                 issuer=self.iss,
@@ -87,14 +115,27 @@ class JwtAuthenticator:
         return dep
 
 
-if app_config.jwt_public_key and app_config.jwt_secret:
-    raise ValueError("only one of jwt_public_key or jwt_secret must be set")
+_set_keys = sum(
+    1
+    for v in (app_config.jwt_public_key, app_config.jwt_secret, app_config.jwks_url)
+    if v
+)
+if _set_keys > 1:
+    raise ValueError("only one of jwt_public_key, jwt_secret or jwks_url must be set")
 if not app_config.iss:
     raise ValueError("iss is required")
 if not app_config.aud:
     raise ValueError("aud is required")
 
-if app_config.jwt_public_key:
+if app_config.jwks_url:
+    authenticator = JwtAuthenticator(
+        None,
+        app_config.aud,
+        app_config.iss,
+        oidc_url=app_config.oidc_url or "",
+        jwks_url=app_config.jwks_url,
+    )
+elif app_config.jwt_public_key:
     with open(app_config.jwt_public_key, "br") as f:
         authenticator = JwtAuthenticator(
             f.read(),
@@ -110,7 +151,7 @@ elif app_config.jwt_secret:
         oidc_url=app_config.oidc_url or "",
     )
 else:
-    raise ValueError("either jwt_public_key or jwt_secret is required")
+    raise ValueError("one of jwt_public_key, jwt_secret or jwks_url is required")
 
 
 user_dep = authenticator.fastapi_dep()

@@ -18,6 +18,7 @@ class AppConfig:
     builtin_admin: str
     jwt_public_key: str | None
     jwt_secret: str | None
+    jwks_url: str | None
     oidc_url: str | None
     aud: str
     iss: str

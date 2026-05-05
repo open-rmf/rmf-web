@@ -16,6 +16,7 @@
     "generate-docs": "RMF_API_SERVER_CONFIG=scripts/docs_config.py ../../.venv/bin/pipenv run python scripts/extract_docs.py -o docs"
   },
   "devDependencies": {
-    "pipenv-install": "workspace:*"
+    "pipenv-install": "workspace:*",
+    "supabase": "^2.98.2"
   }
 }

@@ -1,0 +1,121 @@
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
+import ReactDOM from 'react-dom/client';
+import {
+  InitialWindow,
+  LocallyPersistentWorkspace,
+  MicroAppManifest,
+  RmfDashboard,
+  Workspace,
+} from 'rmf-dashboard-framework/components';
+import {
+  createMapApp,
+  doorsApp,
+  liftsApp,
+  robotMutexGroupsApp,
+  robotsApp,
+  tasksApp,
+} from 'rmf-dashboard-framework/micro-apps';
+import { SupabaseAuthenticator } from 'rmf-dashboard-framework/services';
+
+// Vite exposes `import.meta.env.VITE_*` env vars to the browser. Set these in
+// `examples/supabase/.env` (see README.md).
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  // Surface this loudly — easier to debug than a silent auth failure later.
+  throw new Error(
+    'VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set (see examples/supabase/README.md)',
+  );
+}
+
+const authenticator = new SupabaseAuthenticator({
+  supabaseUrl: SUPABASE_URL,
+  supabaseAnonKey: SUPABASE_ANON_KEY,
+});
+
+const mapApp = createMapApp({
+  attributionPrefix: 'Open-RMF',
+  defaultMapLevel: 'L1',
+  defaultRobotZoom: 20,
+  defaultZoom: 6,
+});
+
+const appRegistry: MicroAppManifest[] = [
+  mapApp,
+  doorsApp,
+  liftsApp,
+  robotsApp,
+  robotMutexGroupsApp,
+  tasksApp,
+];
+
+const homeWorkspace: InitialWindow[] = [{ layout: { x: 0, y: 0, w: 12, h: 6 }, microApp: mapApp }];
+
+const robotsWorkspace: InitialWindow[] = [
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: robotsApp },
+  { layout: { x: 8, y: 0, w: 5, h: 8 }, microApp: mapApp },
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: doorsApp },
+  { layout: { x: 0, y: 0, w: 7, h: 4 }, microApp: liftsApp },
+  { layout: { x: 8, y: 0, w: 5, h: 4 }, microApp: robotMutexGroupsApp },
+];
+
+const tasksWorkspace: InitialWindow[] = [
+  { layout: { x: 0, y: 0, w: 7, h: 8 }, microApp: tasksApp },
+  { layout: { x: 8, y: 0, w: 5, h: 8 }, microApp: mapApp },
+];
+
+export default function App() {
+  return (
+    <RmfDashboard
+      apiServerUrl="http://localhost:8000"
+      trajectoryServerUrl="http://localhost:8006"
+      authenticator={authenticator}
+      helpLink="https://osrf.github.io/ros2multirobotbook/rmf-core.html"
+      reportIssueLink="https://github.com/open-rmf/rmf-web/issues"
+      resources={{ fleets: {}, logos: { header: '/resources/defaultLogo.png' } }}
+      tasks={{
+        allowedTasks: [
+          { taskDefinitionId: 'patrol' },
+          { taskDefinitionId: 'delivery' },
+          { taskDefinitionId: 'compose-clean' },
+          { taskDefinitionId: 'custom_compose' },
+        ],
+        pickupZones: [],
+        cartIds: [],
+      }}
+      tabs={[
+        { name: 'Map', route: '', element: <Workspace initialWindows={homeWorkspace} /> },
+        {
+          name: 'Robots',
+          route: 'robots',
+          element: <Workspace initialWindows={robotsWorkspace} />,
+        },
+        {
+          name: 'Tasks',
+          route: 'tasks',
+          element: <Workspace initialWindows={tasksWorkspace} />,
+        },
+        {
+          name: 'Custom',
+          route: 'custom',
+          element: (
+            <LocallyPersistentWorkspace
+              defaultWindows={[]}
+              allowDesignMode
+              appRegistry={appRegistry}
+              storageKey="custom-workspace"
+            />
+          ),
+        },
+      ]}
+    />
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+root.render(<App />);

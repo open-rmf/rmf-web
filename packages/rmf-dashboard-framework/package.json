@@ -26,6 +26,7 @@
     "@mui/x-date-pickers": "^6.19.0",
     "@react-three/drei": "^9.103.0",
     "@react-three/fiber": "^8.16.1",
+    "@supabase/supabase-js": "^2.45.0",
     "@types/crc": "^3.4.0",
     "@types/debug": "^4.1.5",
     "@types/react": "^18.2.14",

@@ -39,7 +39,10 @@
     },
     "patchedDependencies": {
       "@react-three/fiber": "patches/@react-three__fiber.patch"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "supabase"
+    ]
   },
   "overrides": {
     "react-error-overlay": "6.0.9"

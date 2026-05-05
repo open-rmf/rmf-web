@@ -6,4 +6,5 @@ export * from './rmf-api';
 export * from './robot-trajectory-manager';
 export * from './settings';
 export * from './stub-authenticator';
+export * from './supabase';
 export * from './trajectory-socket-manager';
