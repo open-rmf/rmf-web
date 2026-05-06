@@ -1,6 +1,8 @@
-import { SvgIconComponent } from '@mui/icons-material';
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import SecurityIcon from '@mui/icons-material/Security';
+import {
+  AccountCircle as AccountCircleIcon,
+  Security as SecurityIcon,
+  SvgIconComponent,
+} from '@mui/icons-material';
 import {
   Drawer,
   List,
@@ -69,7 +71,7 @@ export function AdminDrawer(): JSX.Element {
       <Toolbar />
       <div>
         <List>
-          <DrawerItem text="Users" route={'users'} Icon={AccountIcon} />
+          <DrawerItem text="Users" route={'users'} Icon={AccountCircleIcon} />
           <DrawerItem text="Roles" route={'roles'} Icon={SecurityIcon} />
         </List>
       </div>

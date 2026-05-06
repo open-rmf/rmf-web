@@ -1,7 +1,9 @@
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SearchIcon from '@mui/icons-material/Search';
+import {
+  AccountCircle as AccountIcon,
+  AddCircle as AddIcon,
+  Delete as DeleteIcon,
+  Search as SearchIcon,
+} from '@mui/icons-material';
 import {
   Button,
   Card,

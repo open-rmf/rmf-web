@@ -1,5 +1,4 @@
-import DownloadIcon from '@mui/icons-material/Download';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import { Download as DownloadIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import {
   Box,
   Button,

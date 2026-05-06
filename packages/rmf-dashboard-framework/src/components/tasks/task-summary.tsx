@@ -1,5 +1,9 @@
 import {
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   LinearProgress,
   LinearProgressProps,
@@ -8,10 +12,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
   TaskStateOutput as TaskState,

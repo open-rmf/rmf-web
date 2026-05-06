@@ -1,6 +1,8 @@
 import {
   AccountCircle,
   AdminPanelSettings,
+  Brightness4 as Brightness4Icon,
+  Brightness7 as Brightness7Icon,
   Help,
   LocalFireDepartment,
   Logout,
@@ -8,8 +10,6 @@ import {
   Report,
   Warning as Issue,
 } from '@mui/icons-material';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 import {
   AppBar as MuiAppBar,
   Badge,

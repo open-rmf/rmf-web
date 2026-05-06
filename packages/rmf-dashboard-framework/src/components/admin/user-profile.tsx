@@ -1,5 +1,4 @@
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import MoreIcon from '@mui/icons-material/MoreVert';
+import { AccountCircle as AccountIcon, MoreVert as MoreIcon } from '@mui/icons-material';
 import {
   Card,
   CardHeader,

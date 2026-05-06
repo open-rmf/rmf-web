@@ -1,5 +1,4 @@
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { AddCircle as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import {
   Button,
   IconButton,
@@ -44,8 +43,7 @@ const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme
 }));
 
 export interface PermissionsCardProps
-  extends PaperProps,
-    Pick<AddPermissionDialogProps, 'savePermission'> {
+  extends PaperProps, Pick<AddPermissionDialogProps, 'savePermission'> {
   getPermissions?: () => Promise<Permission[]> | Permission[];
   removePermission?: (permission: Permission) => Promise<void> | void;
 }

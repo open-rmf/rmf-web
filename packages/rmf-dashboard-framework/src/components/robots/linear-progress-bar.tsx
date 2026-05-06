@@ -1,6 +1,4 @@
-import Box from '@mui/material/Box';
-import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
-import Typography from '@mui/material/Typography';
+import { Box, LinearProgress, LinearProgressProps, Typography } from '@mui/material';
 
 export function LinearProgressBar(props: LinearProgressProps & { value: number }): JSX.Element {
   return (

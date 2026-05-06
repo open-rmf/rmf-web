@@ -3,12 +3,14 @@
  * For that RMF needs to support task discovery and UI schemas https://github.com/open-rmf/rmf_api_msgs/issues/32.
  */
 
-import UpdateIcon from '@mui/icons-material/Create';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import SaveIcon from '@mui/icons-material/Save';
-import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
-import SendIcon from '@mui/icons-material/Send';
+import {
+  Delete as DeleteIcon,
+  FavoriteBorder,
+  Save as SaveIcon,
+  ScheduleSend as ScheduleSendIcon,
+  Send as SendIcon,
+  Update as UpdateIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Button,

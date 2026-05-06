@@ -1,5 +1,4 @@
-import AddIcon from '@mui/icons-material/Add';
-import DesignModeIcon from '@mui/icons-material/AutoFixNormal';
+import { Add as AddIcon, AutoFixNormal as DesignModeIcon } from '@mui/icons-material';
 import { Box, Fab, IconButton, Menu, MenuItem, Typography, useTheme } from '@mui/material';
 import React from 'react';
 
@@ -173,8 +172,10 @@ interface SavedWorkspaceLayout {
 /**
  * A workspace that saves the state into `localStorage`.
  */
-export interface LocallyPersistentWorkspaceProps
-  extends Omit<WorkspaceProps, 'initialWindows' | 'onLayoutChange'> {
+export interface LocallyPersistentWorkspaceProps extends Omit<
+  WorkspaceProps,
+  'initialWindows' | 'onLayoutChange'
+> {
   /**
    * Default list of windows when there is nothing saved yet.
    */

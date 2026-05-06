@@ -1,7 +1,9 @@
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SecurityIcon from '@mui/icons-material/Security';
+import {
+  AddCircle as AddIcon,
+  Delete as DeleteIcon,
+  ExpandMore as ExpandMoreIcon,
+  Security as SecurityIcon,
+} from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -39,8 +41,10 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(() => ({
   },
 }));
 
-interface RoleAccordionProps
-  extends Pick<PermissionsCardProps, 'getPermissions' | 'savePermission' | 'removePermission'> {
+interface RoleAccordionProps extends Pick<
+  PermissionsCardProps,
+  'getPermissions' | 'savePermission' | 'removePermission'
+> {
   role: string;
   onDeleteClick?: React.MouseEventHandler;
 }

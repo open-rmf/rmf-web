@@ -1,4 +1,4 @@
-import SecurityIcon from '@mui/icons-material/Security';
+import { Security as SecurityIcon } from '@mui/icons-material';
 import {
   Button,
   Card,
@@ -151,8 +151,7 @@ export function ManageRolesDialog({
 }
 
 export interface ManageRolesCardProps
-  extends CardProps,
-    Pick<ManageRolesDialogProps, 'getAllRoles' | 'saveRoles'> {
+  extends CardProps, Pick<ManageRolesDialogProps, 'getAllRoles' | 'saveRoles'> {
   assignedRoles: string[];
 }
 
