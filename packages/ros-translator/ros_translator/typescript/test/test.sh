@@ -5,6 +5,6 @@ cd $(dirname $0)
 rm -rf out
 python -m ros_translator -t=typescript -o=out ros_translator_test_msgs
 echo 'test build'
-# tsc --noEmit
+npx tsc --ignoreDeprecations 6.0
 echo 'ok'
-ts-node -T ../../../node_modules/jasmine/bin/jasmine.js "$@"
+ts-node --esm -T ../../../node_modules/jasmine/bin/jasmine.js "$@"
