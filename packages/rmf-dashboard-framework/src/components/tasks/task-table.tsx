@@ -172,7 +172,9 @@ export function TaskTable({
           >
             <Button
               variant="text"
-              onClick={(ev) => onDateTitleClick && onDateTitleClick(ev)}
+              onClick={(ev: React.MouseEvent<HTMLButtonElement>) =>
+                onDateTitleClick && onDateTitleClick(ev)
+              }
               sx={{
                 color: 'inherit',
                 textTransform: 'none',

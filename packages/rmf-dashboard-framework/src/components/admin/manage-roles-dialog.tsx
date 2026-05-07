@@ -68,8 +68,8 @@ export function ManageRolesDialog({
 
   React.useEffect(() => {
     if (!open || !getAllRoles) return;
-    setLoading(true);
     (async () => {
+      setLoading(true);
       try {
         const allRoles = await safeAsync(getAllRoles());
         setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());

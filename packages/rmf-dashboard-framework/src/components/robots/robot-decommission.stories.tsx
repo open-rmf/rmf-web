@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 
 import { RobotDecommissionButton } from './robot-decommission';
 import { makeRobot } from './test-utils.test';

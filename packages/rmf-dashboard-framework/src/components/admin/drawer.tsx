@@ -12,6 +12,7 @@ import {
   Toolbar,
   useTheme,
 } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import React from 'react';
 import { RouteProps, useLocation, useNavigate } from 'react-router';
 
@@ -20,6 +21,35 @@ export type AdminDrawerValues = 'Users' | 'Roles';
 const drawerValuesRoutesMap: Record<AdminDrawerValues, RouteProps> = {
   Users: { path: '/users' },
   Roles: { path: '/roles' },
+};
+
+interface DrawerItemProps {
+  Icon: SvgIconComponent;
+  text: AdminDrawerValues;
+  route: string;
+  activeItem: AdminDrawerValues;
+  navigate: (route: string) => void;
+  theme: Theme;
+}
+
+const DrawerItem = ({ Icon, text, route, activeItem, navigate, theme }: DrawerItemProps) => {
+  return (
+    <ListItem
+      sx={
+        activeItem === text
+          ? { backgroundColor: `${theme.palette.primary.light} !important` }
+          : undefined
+      }
+      onClick={() => {
+        navigate(route);
+      }}
+    >
+      <ListItemIcon>
+        <Icon sx={{ color: theme.palette.getContrastText(theme.palette.primary.dark) }} />
+      </ListItemIcon>
+      <ListItemText>{text}</ListItemText>
+    </ListItem>
+  );
 };
 
 export function AdminDrawer(): JSX.Element {
@@ -33,29 +63,6 @@ export function AdminDrawer(): JSX.Element {
     return matched ? (matched[0] as AdminDrawerValues) : 'Users';
   }, [location.pathname]);
   const theme = useTheme();
-
-  const DrawerItem = React.useCallback(
-    ({ Icon, text, route }: { Icon: SvgIconComponent; text: AdminDrawerValues; route: string }) => {
-      return (
-        <ListItem
-          sx={
-            activeItem === text
-              ? { backgroundColor: `${theme.palette.primary.light} !important` }
-              : undefined
-          }
-          onClick={() => {
-            navigate(route);
-          }}
-        >
-          <ListItemIcon>
-            <Icon sx={{ color: theme.palette.getContrastText(theme.palette.primary.dark) }} />
-          </ListItemIcon>
-          <ListItemText>{text}</ListItemText>
-        </ListItem>
-      );
-    },
-    [activeItem, navigate, theme],
-  );
 
   return (
     <Drawer
@@ -71,8 +78,22 @@ export function AdminDrawer(): JSX.Element {
       <Toolbar />
       <div>
         <List>
-          <DrawerItem text="Users" route={'users'} Icon={AccountCircleIcon} />
-          <DrawerItem text="Roles" route={'roles'} Icon={SecurityIcon} />
+          <DrawerItem
+            text="Users"
+            route={'users'}
+            Icon={AccountCircleIcon}
+            activeItem={activeItem}
+            navigate={navigate}
+            theme={theme}
+          />
+          <DrawerItem
+            text="Roles"
+            route={'roles'}
+            Icon={SecurityIcon}
+            activeItem={activeItem}
+            navigate={navigate}
+            theme={theme}
+          />
         </List>
       </div>
     </Drawer>

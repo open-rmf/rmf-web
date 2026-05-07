@@ -203,8 +203,12 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
           }}
         />
       </DialogActions>
-      {openTaskDetailsLogs && (
-        <TaskInspector task={taskState} onClose={() => setOpenTaskDetailsLogs(false)} />
+      {openTaskDetailsLogs && taskState && (
+        <TaskInspector
+          key={taskState.booking.id}
+          task={taskState}
+          onClose={() => setOpenTaskDetailsLogs(false)}
+        />
       )}
     </Dialog>
   );

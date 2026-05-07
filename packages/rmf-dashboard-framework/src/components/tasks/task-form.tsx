@@ -621,10 +621,12 @@ export function TaskForm({
       onFail && onFail(err);
       return;
     }
-    currentTaskRequest.category = category;
-
     const description = getDefaultTaskDescription(newTaskDefinitionId) ?? '';
-    currentTaskRequest.description = description;
+    setCurrentTaskRequest((prev) => ({
+      ...prev,
+      category,
+      description,
+    }));
 
     if (
       newTaskDefinitionId !== CustomComposeTaskDefinition.taskDefinitionId &&
@@ -789,15 +791,17 @@ export function TaskForm({
     try {
       setSavingFavoriteTask(true);
 
-      const favoriteTask = favoriteTaskBuffer;
-      favoriteTask.task_definition_id = taskDefinitionId ?? tasksToDisplay[0].taskDefinitionId;
+      const favoriteTask = {
+        ...favoriteTaskBuffer,
+        task_definition_id: taskDefinitionId ?? tasksToDisplay[0].taskDefinitionId,
+      };
 
       await submitFavoriteTask(favoriteTask);
       setSavingFavoriteTask(false);
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask(
           `${!favoriteTaskBuffer.id ? `Created` : `Edited`}  favorite task successfully`,
-          favoriteTaskBuffer,
+          favoriteTask,
         );
       setOpenFavoriteDialog(false);
       setCallToUpdateFavoriteTask(false);
@@ -1139,7 +1143,7 @@ export function TaskForm({
               variant="outlined"
               disabled={submitting}
               className={classes.actionBtn}
-              onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
+              onClick={(ev: React.MouseEvent) => onClose && onClose(ev, 'escapeKeyDown')}
               size="medium"
             >
               Cancel

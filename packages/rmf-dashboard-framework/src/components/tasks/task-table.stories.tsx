@@ -1,5 +1,5 @@
 import { Paper, TableContainer, TablePagination } from '@mui/material';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
 
 import { TaskTable } from './task-table';
@@ -44,7 +44,7 @@ export const Table: Story = {
           rowsPerPage={10}
           rowsPerPageOptions={[10]}
           page={page}
-          onPageChange={(_ev, newPage) => setPage(newPage)}
+          onPageChange={(_ev: React.MouseEvent, newPage: number) => setPage(newPage)}
         />
       </Paper>
     );

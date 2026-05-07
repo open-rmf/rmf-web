@@ -82,6 +82,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
   }, [camera, gl.domElement]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
     camera.zoom = zoom;
     if (AppEvents.cameraPosition.value) {
       camera.position.set(

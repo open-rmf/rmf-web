@@ -111,23 +111,38 @@ export function RoleListCard({
   const [selectedDeleteRole, setSelectedDeleteRole] = React.useState<string | null>(null);
   const [deleting, setDeleting] = React.useState(false);
   const { showAlert } = useAppController();
+  const [refreshCount, setRefreshCount] = React.useState(0);
 
-  const refresh = React.useCallback(async () => {
-    if (!getRoles) return;
-    setLoading(true);
-    try {
-      const newRoles = await safeAsync(getRoles());
-      setRoles(newRoles.sort());
-    } catch (e) {
-      showAlert('error', `Failed to get roles: ${(e as Error).message}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [getRoles, showAlert, safeAsync]);
+  const refresh = React.useCallback(() => {
+    setRefreshCount((c) => c + 1);
+  }, []);
 
   React.useEffect(() => {
-    refresh();
-  }, [refresh]);
+    if (!getRoles) return;
+    let ignore = false;
+
+    (async () => {
+      setLoading(true);
+      try {
+        const newRoles = await safeAsync(getRoles());
+        if (!ignore) {
+          setRoles(newRoles.sort());
+        }
+      } catch (e) {
+        if (!ignore) {
+          showAlert('error', `Failed to get roles: ${(e as Error).message}`);
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [getRoles, showAlert, safeAsync, refreshCount]);
 
   const getRolePermissions = React.useMemo(
     () => roles.map((r) => getPermissions && (() => getPermissions(r))),

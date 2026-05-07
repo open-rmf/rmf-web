@@ -1,5 +1,5 @@
 import { IconButton } from '@mui/material';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 
 import OpenInFullIcon from '../icons/OpenInFull';
 import { WindowToolbar } from './window-toolbar';

@@ -15,8 +15,8 @@ import {
   TextField,
 } from '@mui/material';
 import { Level } from 'api-client';
-import { ChangeEvent } from 'react';
 import React from 'react';
+import { ChangeEvent } from 'react';
 
 import { AppEvents } from '../app-events';
 

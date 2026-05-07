@@ -55,35 +55,49 @@ export function PermissionsCard({
   ...otherProps
 }: PermissionsCardProps): JSX.Element {
   const safeAsync = useAsync();
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [permissions, setPermissions] = React.useState<Permission[]>([]);
   const [openDialog, setOpenDialog] = React.useState(false);
   const { showAlert } = useAppController();
 
-  const refresh = React.useCallback(async () => {
-    if (!getPermissions) return;
-    setLoading(true);
-    try {
-      const newPermissions = await safeAsync(getPermissions());
-      // sort by action first, then by authorization group
-      newPermissions.sort((a, b) => {
-        if (a.action < b.action) return -1;
-        if (a.action > b.action) return 1;
-        if (a.authz_grp < b.authz_grp) return -1;
-        if (a.authz_grp > b.authz_grp) return 1;
-        return 0;
-      });
-      setPermissions(newPermissions);
-    } catch (e) {
-      showAlert('error', `Failed to get permissions: ${(e as Error).message}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [getPermissions, showAlert, safeAsync]);
+  const [refreshCount, setRefreshCount] = React.useState(0);
+  const refresh = React.useCallback(() => {
+    setRefreshCount((c) => c + 1);
+  }, []);
 
   React.useEffect(() => {
-    refresh();
-  }, [refresh]);
+    if (!getPermissions) return;
+    let ignore = false;
+
+    (async () => {
+      setLoading(true);
+      try {
+        const newPermissions = await safeAsync(getPermissions());
+        if (!ignore) {
+          newPermissions.sort((a, b) => {
+            if (a.action < b.action) return -1;
+            if (a.action > b.action) return 1;
+            if (a.authz_grp < b.authz_grp) return -1;
+            if (a.authz_grp > b.authz_grp) return 1;
+            return 0;
+          });
+          setPermissions(newPermissions);
+        }
+      } catch (e) {
+        if (!ignore) {
+          showAlert('error', `Failed to get permissions: ${(e as Error).message}`);
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [getPermissions, showAlert, safeAsync, refreshCount]);
 
   return (
     <StyledPaper elevation={0} {...otherProps}>

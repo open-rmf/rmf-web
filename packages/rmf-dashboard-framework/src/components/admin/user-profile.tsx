@@ -45,7 +45,7 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
         avatar={<AccountIcon className={classes.avatar} />}
         action={
           <IconButton
-            onClick={(ev) => setAnchorEl(ev.currentTarget as HTMLElement)}
+            onClick={(ev: React.MouseEvent) => setAnchorEl(ev.currentTarget as HTMLElement)}
             aria-label="more actions"
           >
             <MoreIcon />

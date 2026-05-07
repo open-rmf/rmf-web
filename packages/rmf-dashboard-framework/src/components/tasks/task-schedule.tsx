@@ -104,7 +104,7 @@ export const TaskSchedule = () => {
   React.useEffect(() => {
     const sub = AppEvents.refreshTaskSchedule.subscribe({
       next: () => {
-        setRefreshTaskScheduleCount((oldValue) => ++oldValue);
+        setRefreshTaskScheduleCount((oldValue) => oldValue + 1);
       },
     });
     return () => sub.unsubscribe();
