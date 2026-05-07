@@ -155,7 +155,10 @@ export const Workspace = React.memo(
                     const newLayout = [...layout, { i: newKey, x: 0, y: 0, w: 2, h: 2 }];
                     onLayoutChange &&
                       onLayoutChange(
-                        newLayout.map((l) => ({ layout: l, microApp: windowApps[l.i] })),
+                        newLayout.map((l) => ({
+                          layout: l,
+                          microApp: l.i === newKey ? manifest : windowApps[l.i],
+                        })),
                       );
                     React.startTransition(() => setLayout(newLayout));
                     setAddMenuAnchor(null);
