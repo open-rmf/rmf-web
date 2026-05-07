@@ -80,7 +80,7 @@
     "storybook": "^10.3.6",
     "typescript": "~6.0.3",
     "typescript-json-schema": "^0.67.2",
-    "vite": "^8.0.10",
+    "vite": "^7.3.2",
     "vitest": "^4.1.5"
   },
   "exports": {
