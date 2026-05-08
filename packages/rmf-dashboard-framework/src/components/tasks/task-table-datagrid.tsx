@@ -2,7 +2,7 @@ import {
   InsertInvitation as ScheduleIcon,
   LowPriority,
   Person as UserIcon,
-} from '@mui/icons-material/';
+} from '@mui/icons-material';
 import { Box, Stack, styled, Tooltip, Typography } from '@mui/material';
 import {
   DataGrid,

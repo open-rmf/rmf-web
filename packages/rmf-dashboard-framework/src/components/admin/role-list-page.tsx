@@ -17,28 +17,28 @@ export function RoleListPage(): JSX.Element | null {
           try {
             await adminApi.createRoleAdminRolesPost({ name: role });
           } catch (e) {
-            throw new Error(getApiErrorMessage(e));
+            throw new Error(getApiErrorMessage(e), { cause: e });
           }
         }}
         deleteRole={async (role) => {
           try {
             await adminApi.deleteRoleAdminRolesRoleDelete(role);
           } catch (e) {
-            throw new Error(getApiErrorMessage(e));
+            throw new Error(getApiErrorMessage(e), { cause: e });
           }
         }}
         getPermissions={async (role) => {
           try {
             return (await adminApi.getRolePermissionsAdminRolesRolePermissionsGet(role)).data;
           } catch (e) {
-            throw new Error(getApiErrorMessage(e));
+            throw new Error(getApiErrorMessage(e), { cause: e });
           }
         }}
         savePermission={async (role, permission) => {
           try {
             await adminApi.addRolePermissionAdminRolesRolePermissionsPost(role, permission);
           } catch (e) {
-            throw new Error(getApiErrorMessage(e));
+            throw new Error(getApiErrorMessage(e), { cause: e });
           }
         }}
         removePermission={async (role, permission) => {
@@ -48,7 +48,7 @@ export function RoleListPage(): JSX.Element | null {
               permission,
             );
           } catch (e) {
-            throw new Error(getApiErrorMessage(e));
+            throw new Error(getApiErrorMessage(e), { cause: e });
           }
         }}
       />

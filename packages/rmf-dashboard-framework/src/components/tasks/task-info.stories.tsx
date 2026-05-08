@@ -1,5 +1,5 @@
 import { Paper } from '@mui/material';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 
 import { TaskInfo } from './task-info';
 import { makeTaskState } from './test-data.test';

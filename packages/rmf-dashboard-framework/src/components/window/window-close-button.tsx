@@ -1,4 +1,4 @@
-import CloseIcon from '@mui/icons-material/Close';
+import { Close as CloseIcon } from '@mui/icons-material';
 import { IconButton, IconButtonProps } from '@mui/material';
 import React from 'react';
 

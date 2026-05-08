@@ -1,5 +1,4 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
+import { Delete as DeleteIcon, PlaceOutlined } from '@mui/icons-material';
 import {
   Autocomplete,
   Grid,

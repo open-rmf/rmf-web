@@ -87,7 +87,6 @@ describe('Delivery task form', () => {
     await userEvent.type(input, '1');
     expect(onChange).toHaveBeenCalledTimes(triggerCount);
     expect(onValidate).toHaveBeenCalledTimes(triggerCount);
-    triggerCount += 1;
   });
 
   it('booking label', () => {

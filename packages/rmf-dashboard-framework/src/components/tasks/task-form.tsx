@@ -3,12 +3,14 @@
  * For that RMF needs to support task discovery and UI schemas https://github.com/open-rmf/rmf_api_msgs/issues/32.
  */
 
-import UpdateIcon from '@mui/icons-material/Create';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import SaveIcon from '@mui/icons-material/Save';
-import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
-import SendIcon from '@mui/icons-material/Send';
+import {
+  Delete as DeleteIcon,
+  FavoriteBorder,
+  Save as SaveIcon,
+  ScheduleSend as ScheduleSendIcon,
+  Send as SendIcon,
+  Update as UpdateIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -619,10 +621,12 @@ export function TaskForm({
       onFail && onFail(err);
       return;
     }
-    currentTaskRequest.category = category;
-
     const description = getDefaultTaskDescription(newTaskDefinitionId) ?? '';
-    currentTaskRequest.description = description;
+    setCurrentTaskRequest((prev) => ({
+      ...prev,
+      category,
+      description,
+    }));
 
     if (
       newTaskDefinitionId !== CustomComposeTaskDefinition.taskDefinitionId &&
@@ -787,15 +791,17 @@ export function TaskForm({
     try {
       setSavingFavoriteTask(true);
 
-      const favoriteTask = favoriteTaskBuffer;
-      favoriteTask.task_definition_id = taskDefinitionId ?? tasksToDisplay[0].taskDefinitionId;
+      const favoriteTask = {
+        ...favoriteTaskBuffer,
+        task_definition_id: taskDefinitionId ?? tasksToDisplay[0].taskDefinitionId,
+      };
 
       await submitFavoriteTask(favoriteTask);
       setSavingFavoriteTask(false);
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask(
           `${!favoriteTaskBuffer.id ? `Created` : `Edited`}  favorite task successfully`,
-          favoriteTaskBuffer,
+          favoriteTask,
         );
       setOpenFavoriteDialog(false);
       setCallToUpdateFavoriteTask(false);
@@ -1137,7 +1143,7 @@ export function TaskForm({
               variant="outlined"
               disabled={submitting}
               className={classes.actionBtn}
-              onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
+              onClick={(ev: React.MouseEvent) => onClose && onClose(ev, 'escapeKeyDown')}
               size="medium"
             >
               Cancel

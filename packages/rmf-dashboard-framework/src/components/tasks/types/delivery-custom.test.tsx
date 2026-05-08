@@ -43,7 +43,7 @@ const mockPickupZones = {
 
 describe('Custom deliveries', () => {
   it('delivery pickup', () => {
-    let deliveryPickupTaskDescription: DeliveryPickupTaskDescription | null = null;
+    let deliveryPickupTaskDescription: DeliveryPickupTaskDescription | null;
     try {
       deliveryPickupTaskDescription = JSON.parse(`{
         "category": "delivery_pickup",
@@ -204,7 +204,6 @@ describe('Custom deliveries', () => {
     fireEvent.keyDown(dropoffPlace, { key: 'Enter' });
     expect(onChange).toHaveBeenCalledTimes(triggerCount);
     expect(onValidate).toHaveBeenCalledTimes(triggerCount);
-    triggerCount += 1;
   });
 
   it('delivery pickup booking label', () => {
@@ -243,7 +242,7 @@ describe('Custom deliveries', () => {
   });
 
   it('delivery_sequential_lot_pickup', () => {
-    let deliveryCustomTaskDescription: DeliveryCustomTaskDescription | null = null;
+    let deliveryCustomTaskDescription: DeliveryCustomTaskDescription | null;
     try {
       deliveryCustomTaskDescription = JSON.parse(`{
         "category": "delivery_sequential_lot_pickup",
@@ -362,7 +361,7 @@ describe('Custom deliveries', () => {
   });
 
   it('delivery_area_pickup', () => {
-    let deliveryCustomTaskDescription: DeliveryCustomTaskDescription | null = null;
+    let deliveryCustomTaskDescription: DeliveryCustomTaskDescription | null;
     try {
       deliveryCustomTaskDescription = JSON.parse(`{
         "category": "delivery_area_pickup",
@@ -524,7 +523,6 @@ describe('Custom deliveries', () => {
     fireEvent.keyDown(dropoffPlace, { key: 'Enter' });
     expect(onChange).toHaveBeenCalledTimes(triggerCount);
     expect(onValidate).toHaveBeenCalledTimes(triggerCount);
-    triggerCount += 1;
   });
 
   it('delivery custom booking label', () => {

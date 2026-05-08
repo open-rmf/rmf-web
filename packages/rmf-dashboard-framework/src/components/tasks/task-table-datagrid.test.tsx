@@ -26,8 +26,8 @@ describe('Tasks table', () => {
     root = render(
       <TaskDataGridTable
         tasks={tasks}
-        onPageChange={mockAddMoreRows}
-        onPageSizeChange={mockAddMoreRows}
+        onPageChange={mockAddMoreRows as unknown as (newPage: number) => void}
+        onPageSizeChange={mockAddMoreRows as unknown as (newPageSize: number) => void}
         setFilterFields={() => setFilterFields}
         setSortFields={() => {}}
       />,

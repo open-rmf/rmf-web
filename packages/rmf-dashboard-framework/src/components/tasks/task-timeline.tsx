@@ -1,5 +1,7 @@
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+  ChevronRight as ChevronRightIcon,
+  ExpandMore as ExpandMoreIcon,
+} from '@mui/icons-material';
 import {
   Timeline,
   TimelineConnector,
@@ -12,8 +14,7 @@ import {
   TreeItem,
   TreeView,
 } from '@mui/lab';
-import { styled } from '@mui/material';
-import Typography from '@mui/material/Typography';
+import { styled, Typography } from '@mui/material';
 import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
   EventStateOutput as EventState,

@@ -80,7 +80,7 @@ export function ConfirmationDialog({
         <DialogActions>
           <Button
             variant="outlined"
-            onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
+            onClick={(ev: React.MouseEvent) => onClose && onClose(ev, 'escapeKeyDown')}
             disabled={submitting}
             className={clsx(dialogClasses.actionBtn, classes?.button)}
             size="medium"

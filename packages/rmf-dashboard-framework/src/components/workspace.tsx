@@ -1,5 +1,4 @@
-import AddIcon from '@mui/icons-material/Add';
-import DesignModeIcon from '@mui/icons-material/AutoFixNormal';
+import { Add as AddIcon, AutoFixNormal as DesignModeIcon } from '@mui/icons-material';
 import { Box, Fab, IconButton, Menu, MenuItem, Typography, useTheme } from '@mui/material';
 import React from 'react';
 
@@ -41,15 +40,19 @@ export const Workspace = React.memo(
   }: WorkspaceProps) => {
     const theme = useTheme();
     const appController = useAppController();
-    const windowId = React.useRef(0);
-    const windowApps = React.useRef<Record<string, MicroAppManifest>>({});
+    const windowId = React.useRef(initialWindows.length);
+    const [windowApps, setWindowApps] = React.useState<Record<string, MicroAppManifest>>(() => {
+      const apps: Record<string, MicroAppManifest> = {};
+      initialWindows.forEach((w, index) => {
+        apps[`window-${index}`] = w.microApp;
+      });
+      return apps;
+    });
     const [layout, setLayout] = React.useState(() =>
-      initialWindows.map<WindowLayout>((w) => {
-        const l = { i: `window-${windowId.current}`, ...w.layout };
-        windowApps.current[l.i] = w.microApp;
-        ++windowId.current;
-        return l;
-      }),
+      initialWindows.map<WindowLayout>((w, index) => ({
+        i: `window-${index}`,
+        ...w.layout,
+      })),
     );
     const [designMode, setDesignMode] = React.useState(false);
     const [addMenuAnchor, setAddMenuAnchor] = React.useState<HTMLElement | null>(null);
@@ -77,15 +80,13 @@ export const Workspace = React.memo(
           layout={layout}
           onLayoutChange={(newLayout) => {
             onLayoutChange &&
-              onLayoutChange(
-                newLayout.map((l) => ({ layout: l, microApp: windowApps.current[l.i] })),
-              );
+              onLayoutChange(newLayout.map((l) => ({ layout: l, microApp: windowApps[l.i] })));
             setLayout(newLayout);
           }}
           designMode={designMode}
         >
           {layout.map((l) => {
-            const microApp: MicroAppManifest | undefined = windowApps.current[l.i];
+            const microApp: MicroAppManifest | undefined = windowApps[l.i];
             if (!microApp) {
               return null;
             }
@@ -97,10 +98,14 @@ export const Workspace = React.memo(
                   console.log(layout, newLayout);
                   onLayoutChange &&
                     onLayoutChange(
-                      newLayout.map((l) => ({ layout: l, microApp: windowApps.current[l.i] })),
+                      newLayout.map((l) => ({ layout: l, microApp: windowApps[l.i] })),
                     );
                   setLayout(newLayout);
-                  delete windowApps.current[l.i];
+                  setWindowApps((prev) => {
+                    const next = { ...prev };
+                    delete next[l.i];
+                    return next;
+                  });
                 }}
               />
             );
@@ -127,7 +132,9 @@ export const Workspace = React.memo(
             <Fab
               color="primary"
               sx={{ position: 'fixed', right: '2vw', bottom: '2vw' }}
-              onClick={(e) => setAddMenuAnchor(e.currentTarget)}
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                setAddMenuAnchor(e.currentTarget)
+              }
             >
               <AddIcon />
             </Fab>
@@ -143,12 +150,15 @@ export const Workspace = React.memo(
                   key={manifest.appId}
                   onClick={() => {
                     const newKey = `window-${windowId.current}`;
-                    windowApps.current[newKey] = manifest;
-                    ++windowId.current;
+                    setWindowApps((prev) => ({ ...prev, [newKey]: manifest }));
+                    windowId.current++;
                     const newLayout = [...layout, { i: newKey, x: 0, y: 0, w: 2, h: 2 }];
                     onLayoutChange &&
                       onLayoutChange(
-                        newLayout.map((l) => ({ layout: l, microApp: windowApps.current[l.i] })),
+                        newLayout.map((l) => ({
+                          layout: l,
+                          microApp: l.i === newKey ? manifest : windowApps[l.i],
+                        })),
                       );
                     React.startTransition(() => setLayout(newLayout));
                     setAddMenuAnchor(null);
@@ -173,8 +183,10 @@ interface SavedWorkspaceLayout {
 /**
  * A workspace that saves the state into `localStorage`.
  */
-export interface LocallyPersistentWorkspaceProps
-  extends Omit<WorkspaceProps, 'initialWindows' | 'onLayoutChange'> {
+export interface LocallyPersistentWorkspaceProps extends Omit<
+  WorkspaceProps,
+  'initialWindows' | 'onLayoutChange'
+> {
   /**
    * Default list of windows when there is nothing saved yet.
    */
