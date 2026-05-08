@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react-vite';
 import React from 'react';
 
 import { makeLayout } from './test-utils.test';

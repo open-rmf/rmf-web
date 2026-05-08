@@ -1,5 +1,4 @@
-import { Autocomplete, styled } from '@mui/material';
-import TextField from '@mui/material/TextField';
+import { Autocomplete, styled, TextField } from '@mui/material';
 import React from 'react';
 import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 

@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router';
 
 import { UserListCard } from './user-list-card';

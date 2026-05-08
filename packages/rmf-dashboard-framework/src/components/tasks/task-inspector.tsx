@@ -23,8 +23,6 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
 
   React.useEffect(() => {
     if (!task) {
-      setTaskState(null);
-      setTaskLogs(null);
       return;
     }
     const sub = rmfApi.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {

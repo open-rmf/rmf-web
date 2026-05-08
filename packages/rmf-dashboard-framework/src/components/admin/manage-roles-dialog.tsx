@@ -1,4 +1,4 @@
-import SecurityIcon from '@mui/icons-material/Security';
+import { Security as SecurityIcon } from '@mui/icons-material';
 import {
   Button,
   Card,
@@ -68,8 +68,8 @@ export function ManageRolesDialog({
 
   React.useEffect(() => {
     if (!open || !getAllRoles) return;
-    setLoading(true);
     (async () => {
+      setLoading(true);
       try {
         const allRoles = await safeAsync(getAllRoles());
         setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());
@@ -151,8 +151,7 @@ export function ManageRolesDialog({
 }
 
 export interface ManageRolesCardProps
-  extends CardProps,
-    Pick<ManageRolesDialogProps, 'getAllRoles' | 'saveRoles'> {
+  extends CardProps, Pick<ManageRolesDialogProps, 'getAllRoles' | 'saveRoles'> {
   assignedRoles: string[];
 }
 

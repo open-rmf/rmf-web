@@ -1,29 +1,31 @@
-import { BoundedSequence } from '../out/ros_translator_test_msgs/msg/BoundedSequence';
+import { BoundedSequence } from '../out/ros_translator_test_msgs/msg/BoundedSequence.js';
 
-it('success with length === capacity', () => {
-  expect(() =>
-    BoundedSequence.validate({
-      data: [1, 2, 3],
-    }),
-  ).not.toThrow();
-});
+describe('BoundedSequence', () => {
+  it('success with length === capacity', () => {
+    expect(() =>
+      BoundedSequence.validate({
+        data: [1, 2, 3],
+      }),
+    ).not.toThrow();
+  });
 
-it('success with field < capacity', () => {
-  expect(() =>
-    BoundedSequence.validate({
-      data: [1, 2],
-    }),
-  ).not.toThrow();
-});
+  it('success with field < capacity', () => {
+    expect(() =>
+      BoundedSequence.validate({
+        data: [1, 2],
+      }),
+    ).not.toThrow();
+  });
 
-it('fails with missing field', () => {
-  expect(() => BoundedSequence.validate({})).toThrow();
-});
+  it('fails with missing field', () => {
+    expect(() => BoundedSequence.validate({})).toThrow();
+  });
 
-it('fails with length > capacity', () => {
-  expect(() =>
-    BoundedSequence.validate({
-      data: [1, 2, 3, 4],
-    }),
-  ).toThrow();
+  it('fails with length > capacity', () => {
+    expect(() =>
+      BoundedSequence.validate({
+        data: [1, 2, 3, 4],
+      }),
+    ).toThrow();
+  });
 });

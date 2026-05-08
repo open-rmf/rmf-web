@@ -1,5 +1,4 @@
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import MoreIcon from '@mui/icons-material/MoreVert';
+import { AccountCircle as AccountIcon, MoreVert as MoreIcon } from '@mui/icons-material';
 import {
   Card,
   CardHeader,
@@ -46,7 +45,7 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
         avatar={<AccountIcon className={classes.avatar} />}
         action={
           <IconButton
-            onClick={(ev) => setAnchorEl(ev.currentTarget as HTMLElement)}
+            onClick={(ev: React.MouseEvent) => setAnchorEl(ev.currentTarget as HTMLElement)}
             aria-label="more actions"
           >
             <MoreIcon />

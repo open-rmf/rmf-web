@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 
 import { TaskTimeline } from './task-timeline';
 import { makeTaskState } from './test-data.test';

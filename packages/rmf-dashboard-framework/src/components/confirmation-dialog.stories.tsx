@@ -1,5 +1,5 @@
 import { Button, Paper, Typography } from '@mui/material';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 
 import { ConfirmationDialog } from './confirmation-dialog';
 

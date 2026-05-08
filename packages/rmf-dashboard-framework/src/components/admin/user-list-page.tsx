@@ -16,21 +16,21 @@ export function UserListPage(): JSX.Element | null {
           try {
             return (await adminApi.getUsersAdminUsersGet(search, undefined, limit, offset)).data;
           } catch (e) {
-            throw new Error(getApiErrorMessage(e));
+            throw new Error(getApiErrorMessage(e), { cause: e });
           }
         }}
         deleteUser={async (user) => {
           try {
             await adminApi.deleteUserAdminUsersUsernameDelete(user);
           } catch (e) {
-            throw new Error(getApiErrorMessage(e));
+            throw new Error(getApiErrorMessage(e), { cause: e });
           }
         }}
         createUser={async (user) => {
           try {
             await adminApi.createUserAdminUsersPost({ username: user });
           } catch (e) {
-            throw new Error(getApiErrorMessage(e));
+            throw new Error(getApiErrorMessage(e), { cause: e });
           }
         }}
       />

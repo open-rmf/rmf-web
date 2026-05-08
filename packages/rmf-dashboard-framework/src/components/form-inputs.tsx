@@ -1,8 +1,10 @@
 import { TextField, TextFieldProps } from '@mui/material';
 import React from 'react';
 
-export interface PositiveIntField
-  extends Omit<TextFieldProps, 'type' | 'value' | 'inputProps' | 'onChange'> {
+export interface PositiveIntField extends Omit<
+  TextFieldProps,
+  'type' | 'value' | 'inputProps' | 'onChange'
+> {
   value?: number;
   onChange?(ev: React.ChangeEvent, int: number): void;
   error?: boolean;
@@ -15,10 +17,11 @@ export function PositiveIntField({
   ...props
 }: PositiveIntField): JSX.Element {
   const [valueInput, setValueInput] = React.useState(value.toString());
-
-  React.useEffect(() => {
+  const [prevValue, setPrevValue] = React.useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
     setValueInput(value.toString());
-  }, [value]);
+  }
 
   return (
     <TextField

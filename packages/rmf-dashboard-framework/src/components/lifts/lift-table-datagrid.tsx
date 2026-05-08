@@ -1,5 +1,7 @@
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import {
+  ArrowDownward as ArrowDownwardIcon,
+  ArrowUpward as ArrowUpwardIcon,
+} from '@mui/icons-material';
 import { Box, SxProps, Typography, useTheme } from '@mui/material';
 import {
   DataGrid,

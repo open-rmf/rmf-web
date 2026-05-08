@@ -24,7 +24,7 @@ export function UserProfilePage(): JSX.Element | null {
         setUser((await safeAsync(adminApi.getUserAdminUsersUsernameGet(username))).data);
       } catch (e) {
         if ((e as AxiosError).response?.status !== 404) {
-          throw new Error(getApiErrorMessage(e));
+          throw new Error(getApiErrorMessage(e), { cause: e });
         }
         setNotFound(true);
       }
@@ -51,7 +51,7 @@ export function UserProfilePage(): JSX.Element | null {
                   await adminApi.makeAdminAdminUsersUsernameMakeAdminPost(user.username, { admin });
                   refresh();
                 } catch (e) {
-                  throw new Error(getApiErrorMessage(e));
+                  throw new Error(getApiErrorMessage(e), { cause: e });
                 }
               }}
             />
@@ -62,7 +62,7 @@ export function UserProfilePage(): JSX.Element | null {
                 try {
                   return (await adminApi.getRolesAdminRolesGet()).data;
                 } catch (e) {
-                  throw new Error(getApiErrorMessage(e));
+                  throw new Error(getApiErrorMessage(e), { cause: e });
                 }
               }}
               saveRoles={async (roles) => {
@@ -75,7 +75,7 @@ export function UserProfilePage(): JSX.Element | null {
                   );
                   refresh();
                 } catch (e) {
-                  throw new Error(getApiErrorMessage(e));
+                  throw new Error(getApiErrorMessage(e), { cause: e });
                 }
               }}
             />

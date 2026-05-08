@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 
 import { RobotDataGridTable } from './robot-table-datagrid';

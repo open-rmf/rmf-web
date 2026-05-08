@@ -109,9 +109,6 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
-  const [navigationStart, setNavigationStart] = React.useState<string | null>(null);
-  const [navigationDestination, setNavigationDestination] = React.useState<string | null>(null);
-
   React.useEffect(() => {
     const sub = rmfApi
       .getFleetStateObs(robot.fleet)
@@ -150,11 +147,9 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
     );
   }, [taskState]);
 
-  React.useEffect(() => {
+  const [navigationStart, navigationDestination] = React.useMemo(() => {
     if (!taskState || !taskState.phases || !taskState.active) {
-      setNavigationStart(null);
-      setNavigationDestination(null);
-      return;
+      return [null, null];
     }
 
     const message = Object.values(taskState.phases)[taskState.active - 1]?.detail;
@@ -165,17 +160,14 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       let match;
       const waypoints = [];
 
-      // Iterate over all matches found by the regular expression
       while ((match = regex.exec(message.toString()))) {
         waypoints.push(match[1]);
       }
 
-      setNavigationStart(waypoints[0]);
-      setNavigationDestination(waypoints[1]);
+      return [waypoints[0] || '-', waypoints[1] || '-'];
     } else {
-      setNavigationStart('-');
-      setNavigationDestination('-');
       console.error("Failed to retrieve robot's current navigation start and destination.");
+      return ['-', '-'];
     }
   }, [taskState]);
 
