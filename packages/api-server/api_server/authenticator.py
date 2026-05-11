@@ -30,24 +30,40 @@ class JwtAuthenticator:
         iss: str,
         *,
         oidc_url: str = "",
+        preferred_username_claim_namespace: str | None = None,
     ):
         """
         Authenticates with a JWT token, the client must send an auth params with
         a "token" key.
         :param pem_file: path to a pem encoded certificate used to verify a token.
+        :param preferred_username_claim_namespace: optional namespace prefix used
+            as a fallback when looking up the `preferred_username` claim. Some
+            identity providers (e.g. Auth0, Okta, AWS Cognito) silently filter
+            non-namespaced standard OIDC claims from access tokens issued via
+            the OAuth 2.0 `client_credentials` (M2M) flow, in line with
+            RFC 9068 §2.2's "namespaced naming scheme" guidance for private
+            claims. When set, the authenticator will look up
+            `f"{preferred_username_claim_namespace}preferred_username"` if the
+            bare `preferred_username` claim is absent.
         """
         self.aud = aud
         self.iss = iss
         self.oidc_url = oidc_url
+        self.preferred_username_claim_namespace = preferred_username_claim_namespace
         self._key_or_secret = key_or_secret
 
     async def _get_user(self, claims: dict) -> User:
-        if not "preferred_username" in claims:
+        username = claims.get("preferred_username")
+        if not username and self.preferred_username_claim_namespace:
+            namespaced_claim = (
+                f"{self.preferred_username_claim_namespace}preferred_username"
+            )
+            username = claims.get(namespaced_claim)
+        if not username:
             raise AuthenticationError(
                 "expected 'preferred_username' username claim to be present"
             )
 
-        username = claims["preferred_username"]
         # FIXME(koonpeng): We should use the "userId" as the identifier. Some idP may allow
         # duplicated usernames.
         user = await User.load_or_create_from_db(username)
@@ -101,6 +117,7 @@ if app_config.jwt_public_key:
             app_config.aud,
             app_config.iss,
             oidc_url=app_config.oidc_url or "",
+            preferred_username_claim_namespace=app_config.preferred_username_claim_namespace,
         )
 elif app_config.jwt_secret:
     authenticator = JwtAuthenticator(
@@ -108,6 +125,7 @@ elif app_config.jwt_secret:
         app_config.aud,
         app_config.iss,
         oidc_url=app_config.oidc_url or "",
+        preferred_username_claim_namespace=app_config.preferred_username_claim_namespace,
     )
 else:
     raise ValueError("either jwt_public_key or jwt_secret is required")

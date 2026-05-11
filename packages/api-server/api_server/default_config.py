@@ -29,6 +29,18 @@ config = {
     # url or string that identifies the entity that issued the jwt token
     # Used to verify the "iss" claim
     "iss": "stub",
+    # Optional namespace prefix used as a fallback when looking up the
+    # `preferred_username` claim. Some identity providers (e.g. Auth0, Okta,
+    # AWS Cognito) silently filter non-namespaced standard OIDC claims from
+    # access tokens issued via the OAuth 2.0 `client_credentials` (M2M) flow,
+    # in line with RFC 9068 §2.2's "namespaced naming scheme" guidance for
+    # private claims. When set, the authenticator will look up
+    # `f"{preferred_username_claim_namespace}preferred_username"` if the
+    # bare `preferred_username` claim is absent. The trailing slash (or `/`
+    # separator) should be included in the namespace value if desired, e.g.
+    # `"https://example.com/"` so the resolved claim becomes
+    # `"https://example.com/preferred_username"`.
+    "preferred_username_claim_namespace": None,
     # list of arguments passed to the ros node, "--ros-args" is automatically prepended to the list.
     # e.g.
     #   Run with sim time: ["-p", "use_sim_time:=true"]

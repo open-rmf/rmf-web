@@ -121,6 +121,8 @@ OpenID Connect does not define the format of the access token, the canonical way
 
 The access token must include the `preferred_username` claim. It will be used to determine an user's authorization levels.
 
+If your identity provider issues access tokens that namespace standard OIDC claims (e.g. Auth0, Okta, and AWS Cognito do this for the `client_credentials` flow, in line with [RFC 9068 §2.2](https://www.rfc-editor.org/rfc/rfc9068.html#section-2.2)), set the optional `preferred_username_claim_namespace` config value to the namespace prefix used by your provider. The authenticator will then check `f"{namespace}preferred_username"` as a fallback when the bare `preferred_username` claim is absent.
+
 ## Roles, Actions and Authorization Group
 
 An user's permission to perform certain actions on a protected resource is determined by 3 values, role, action, and authorization group of the resource. A resource belongs to one authorization group and an user can belong to multiple roles. An user has access to perform an action on a resource if any of their roles has permission to perform the action on the authorization group which the resource belongs to. An admin always have permission to perform any action on any group.
