@@ -121,7 +121,9 @@ OpenID Connect does not define the format of the access token, the canonical way
 
 The access token must include the `preferred_username` claim. It will be used to determine an user's authorization levels.
 
-If your identity provider issues access tokens that namespace standard OIDC claims (e.g. Auth0, Okta, and AWS Cognito do this for the `client_credentials` flow, in line with [RFC 9068 §2.2](https://www.rfc-editor.org/rfc/rfc9068.html#section-2.2)), set the optional `preferred_username_claim_namespace` config value to the namespace prefix used by your provider. The authenticator will then check `f"{namespace}preferred_username"` as a fallback when the bare `preferred_username` claim is absent.
+If your identity provider strips standard OIDC claims (such as `preferred_username`) from access tokens issued via the OAuth 2.0 `client_credentials` (M2M) flow and requires custom claims to use a collision-resistant namespaced name, set the optional `preferred_username_claim_namespace` config value to the namespace prefix used by your provider. The authenticator will then check `f"{namespace}preferred_username"` as a fallback when the bare `preferred_username` claim is absent.
+
+This pattern aligns with [RFC 9068 §2.2.2](https://www.rfc-editor.org/rfc/rfc9068.html#section-2.2.2) (which requires that arbitrary attributes in JWT access tokens have "collision resistant" names) and [RFC 7519 §4.2](https://www.rfc-editor.org/rfc/rfc7519.html#section-4.2) (which defines "Collision-Resistant Name" via Public Claim Names). [Auth0 enforces this policy explicitly](https://auth0.com/docs/secure/tokens/json-web-tokens/create-namespaced-custom-claims) for access tokens with a custom API audience — non-namespaced custom claims on standard OIDC names are silently dropped. Operators on other providers with comparable collision-avoidance policies may also benefit; leaving the value unset preserves the current behavior.
 
 ## Roles, Actions and Authorization Group
 

@@ -38,11 +38,11 @@ class JwtAuthenticator:
         :param pem_file: path to a pem encoded certificate used to verify a token.
         :param preferred_username_claim_namespace: optional namespace prefix used
             as a fallback when looking up the `preferred_username` claim. Some
-            identity providers (e.g. Auth0, Okta, AWS Cognito) silently filter
-            non-namespaced standard OIDC claims from access tokens issued via
-            the OAuth 2.0 `client_credentials` (M2M) flow, in line with
-            RFC 9068 §2.2's "namespaced naming scheme" guidance for private
-            claims. When set, the authenticator will look up
+            identity providers (verified for Auth0) silently filter non-
+            namespaced custom claims on standard OIDC names from access tokens
+            issued via the OAuth 2.0 `client_credentials` (M2M) flow, in line
+            with the collision-resistant-name guidance in RFC 9068 §2.2.2 and
+            RFC 7519 §4.2. When set, the authenticator will look up
             `f"{preferred_username_claim_namespace}preferred_username"` if the
             bare `preferred_username` claim is absent.
         """
