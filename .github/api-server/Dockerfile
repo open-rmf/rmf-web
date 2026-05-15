@@ -11,7 +11,7 @@ RUN mkdir -p /ws \
 
 # install deps
 RUN cd /ws \
-  && pnpm install --filter api-server...
+  && (pnpm install --filter api-server... || (pnpm approve-builds --all && pnpm install --filter api-server...))
 
 # prepack
 RUN cd /ws/packages/api-server \

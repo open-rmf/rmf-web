@@ -12,7 +12,7 @@ runs:
   using: composite
   steps:
     - name: Install dependencies
-      run: pnpm install -w --filter ${{ inputs.package }}...
+      run: (pnpm install --filter ${{ inputs.package }}... || (pnpm approve-builds --all && pnpm install --filter ${{ inputs.package }}...))
       shell: bash
     - name: Build
       if: inputs.skip-build == 'false'

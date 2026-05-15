@@ -9,10 +9,10 @@ RUN apt update && apt install -y curl \
   # required for api-server, which is a dev dependency of rmf-dashboard-framework
   python3 python3-venv
 RUN curl -fsSL https://get.pnpm.io/install.sh | bash -
-  # shell runs in non-interactive mode, which does not source .bashrc so we need to set the PATH manually
-ENV PNPM_HOME /root/.local/share/pnpm
-ENV PATH "$PNPM_HOME:$PATH"
-RUN pnpm env use --global lts
+# shell runs in non-interactive mode, which does not source .bashrc so we need to set the PATH manually
+ENV PNPM_HOME=/root/.local/share/pnpm
+ENV PATH="$PNPM_HOME/bin:$PATH"
+RUN pnpm runtime set node lts -g
 
 # fetch sources
 RUN mkdir -p /ws \
@@ -21,8 +21,9 @@ RUN mkdir -p /ws \
   && tar zxf rmf_web.tar.gz -C /ws --strip-components=1
 
 # install deps
+# fallback to approve builds if pnpm install fails due to ignored scripts in non-interactive environment
 RUN cd /ws \
-  && pnpm install --filter rmf-dashboard-framework...
+  && (pnpm install --filter rmf-dashboard-framework... || (pnpm approve-builds --all && pnpm install --filter rmf-dashboard-framework...))
 
 # replace configs and build
 RUN cd /ws/packages/rmf-dashboard-framework \
@@ -33,13 +34,14 @@ RUN cd /ws/packages/rmf-dashboard-framework \
 FROM docker.io/ubuntu:24.04
 COPY --from=0 /ws/packages/rmf-dashboard-framework/examples/demo/dist /opt/dashboard
 
-RUN apt update && apt install -y curl
+# libatomic1 is required by pnpm binary on clean ubuntu images
+RUN apt update && apt install -y curl libatomic1
 
 RUN curl -fsSL https://get.pnpm.io/install.sh | bash -
 # shell runs in non-interactive mode, which does not source .bashrc so we need to set the PATH manually
-ENV PNPM_HOME /root/.local/share/pnpm
-ENV PATH "$PNPM_HOME:$PATH"
-RUN pnpm env use --global lts
+ENV PNPM_HOME=/root/.local/share/pnpm
+ENV PATH="$PNPM_HOME/bin:$PATH"
+RUN pnpm runtime set node lts -g
 
 RUN pnpm add --global serve
 
