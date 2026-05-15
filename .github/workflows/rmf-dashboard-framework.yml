@@ -21,7 +21,7 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:rolling-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:jazzy-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
