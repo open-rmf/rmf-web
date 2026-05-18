@@ -129,7 +129,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        # Sandboxing rolling due to https://github.com/open-rmf/rmf-web/issues/1086
+        # ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy]
     container:
       image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
