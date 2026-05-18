@@ -10,19 +10,19 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.20.0",
-    "eslint": "^9.20.0",
-    "eslint-plugin-react": "^7.35.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-storybook": "^0.11.6",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5",
-    "pyright": "1.1.369",
-    "typescript": "~5.5.4",
-    "typescript-eslint": "^8.27.0"
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "eslint-plugin-storybook": "^10.3.6",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
+    "pyright": "1.1.409",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.59.2"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,css,scss}": [
@@ -35,10 +35,25 @@
   },
   "pnpm": {
     "overrides": {
-      "typescript-json-schema>@types/node": "*"
-    },
-    "patchedDependencies": {
-      "@react-three/fiber": "patches/@react-three__fiber.patch"
+      "typescript-json-schema>@types/node": "*",
+      "form-data@<4.0.4": "^4.0.4",
+      "axios@<1.12.0": "^1.16.0",
+      "qs": "^6.14.2",
+      "min-document": "^2.19.1",
+      "follow-redirects": "^1.16.0",
+      "lodash": "^4.18.0",
+      "yaml": "^1.10.3",
+      "serialize-javascript": "^7.0.5",
+      "react-router": "^6.30.2",
+      "@babel/runtime": "^7.26.10",
+      "file-type": "^21.3.1",
+      "@remix-run/router": "^1.23.2",
+      "rollup": "^4.59.0",
+      "phin": "^3.7.1",
+      "node-fetch": "^2.6.7",
+      "ws": "^7.5.10",
+      "cross-spawn": "^7.0.5",
+      "tar-fs": "^2.1.4"
     }
   },
   "overrides": {

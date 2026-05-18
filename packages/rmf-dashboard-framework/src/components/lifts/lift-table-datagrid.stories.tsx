@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 import { LiftDataGridTable, LiftTableData } from './lift-table-datagrid';

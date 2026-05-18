@@ -190,16 +190,6 @@ async def sub_task_log(_req: SubscriptionRequest, task_id: str):
     )
 
 
-@router.post("/activity_discovery", response_model=mdl.ActivityDiscovery)
-async def post_activity_discovery(
-    request: Annotated[mdl.ActivityDiscoveryRequest, Body(...)],
-    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
-):
-    return RawJSONResponse(
-        await tasks_service.call(request.model_dump_json(exclude_none=True))
-    )
-
-
 @router.post("/cancel_task", response_model=mdl.TaskCancelResponse)
 async def post_cancel_task(
     request: Annotated[mdl.CancelTaskRequest, Body(...)],

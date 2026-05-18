@@ -1,7 +1,9 @@
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SearchIcon from '@mui/icons-material/Search';
+import {
+  AccountCircle as AccountIcon,
+  AddCircle as AddIcon,
+  Delete as DeleteIcon,
+  Search as SearchIcon,
+} from '@mui/icons-material';
 import {
   Button,
   Card,
@@ -71,26 +73,39 @@ export function UserListCard({
   const [deleting, setDeleting] = React.useState(false);
   const [openCreateDialog, setOpenCreateDialog] = React.useState(false);
   const { showAlert } = useAppController();
+  const [refreshCount, setRefreshCount] = React.useState(0);
 
-  const refresh = React.useCallback(async () => {
-    if (!searchUsers) return;
-    setSearching(true);
-    (async () => {
-      try {
-        const results = await safeAsync(searchUsers(search, ItemsPerPage + 1, ItemsPerPage * page));
-        setHasMore(results.length > ItemsPerPage);
-        setUsers(results.slice(0, ItemsPerPage));
-      } catch (e) {
-        showAlert('error', `Failed to get users: ${(e as Error).message}`);
-      } finally {
-        setSearching(false);
-      }
-    })();
-  }, [page, search, searchUsers, showAlert, safeAsync]);
+  const refresh = React.useCallback(() => {
+    setRefreshCount((c) => c + 1);
+  }, []);
 
   React.useEffect(() => {
-    refresh();
-  }, [refresh]);
+    if (!searchUsers) return;
+    let ignore = false;
+
+    (async () => {
+      setSearching(true);
+      try {
+        const results = await safeAsync(searchUsers(search, ItemsPerPage + 1, ItemsPerPage * page));
+        if (!ignore) {
+          setHasMore(results.length > ItemsPerPage);
+          setUsers(results.slice(0, ItemsPerPage));
+        }
+      } catch (e) {
+        if (!ignore) {
+          showAlert('error', `Failed to get users: ${(e as Error).message}`);
+        }
+      } finally {
+        if (!ignore) {
+          setSearching(false);
+        }
+      }
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [page, search, searchUsers, showAlert, safeAsync, refreshCount]);
 
   return (
     <StyledCard variant="outlined">
@@ -144,7 +159,7 @@ export function UserListCard({
                       color="secondary"
                       startIcon={<DeleteIcon />}
                       className={classes.controlsButton}
-                      onClick={(ev) => {
+                      onClick={(ev: React.MouseEvent) => {
                         ev.stopPropagation();
                         setSelectedUser(u);
                         setOpenDeleteDialog(true);
@@ -164,7 +179,7 @@ export function UserListCard({
           page={page}
           rowsPerPage={ItemsPerPage}
           rowsPerPageOptions={[ItemsPerPage]}
-          onPageChange={(_, newPage) => setPage(newPage)}
+          onPageChange={(_: unknown, newPage: number) => setPage(newPage)}
         />
       </TableContainer>
       {openDeleteDialog && (

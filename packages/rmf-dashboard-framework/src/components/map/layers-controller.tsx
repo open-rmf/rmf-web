@@ -1,7 +1,9 @@
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import LayersIcon from '@mui/icons-material/Layers';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import {
+  Fullscreen as FullscreenIcon,
+  Layers as LayersIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Checkbox,
@@ -13,8 +15,8 @@ import {
   TextField,
 } from '@mui/material';
 import { Level } from 'api-client';
-import { ChangeEvent } from 'react';
 import React from 'react';
+import { ChangeEvent } from 'react';
 
 import { AppEvents } from '../app-events';
 

@@ -1,9 +1,3 @@
-from pydantic import BaseModel
+from .ros_pydantic import rmf_fleet_msgs
 
-
-class BeaconState(BaseModel):
-    id: str
-    online: bool
-    category: str
-    activated: bool
-    level: str
+BeaconState = rmf_fleet_msgs.msg.BeaconState

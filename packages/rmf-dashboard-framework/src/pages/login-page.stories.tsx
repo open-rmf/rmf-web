@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-vite';
 
 import { LoginCardProps } from '../components/login-card';
 import { LoginPage } from './login-page';

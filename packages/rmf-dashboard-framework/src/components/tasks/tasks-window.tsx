@@ -1,5 +1,4 @@
-import DownloadIcon from '@mui/icons-material/Download';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import { Download as DownloadIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -76,6 +75,15 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+const classes = {
+  typography: 'MuiTypography-root',
+  button: 'MuiButton-text',
+};
+const StyledDiv = styled('div')(() => ({
+  [`& .${classes.typography}`]: { fontSize: 'inherit' },
+  [`& .${classes.button}`]: { fontSize: 'inherit' },
+}));
+
 export const TasksWindow = React.memo(
   React.forwardRef(
     (
@@ -101,19 +109,10 @@ export const TasksWindow = React.memo(
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
-      const classes = {
-        typography: 'MuiTypography-root',
-        button: 'MuiButton-text',
-      };
-      const StyledDiv = styled('div')(() => ({
-        [`& .${classes.typography}`]: { fontSize: 'inherit' },
-        [`& .${classes.button}`]: { fontSize: 'inherit' },
-      }));
-
       React.useEffect(() => {
         const sub = AppEvents.refreshTaskApp.subscribe({
           next: () => {
-            setRefreshTaskAppCount((oldValue) => ++oldValue);
+            setRefreshTaskAppCount((oldValue) => oldValue + 1);
           },
         });
         return () => sub.unsubscribe();
@@ -231,7 +230,7 @@ export const TasksWindow = React.memo(
         const currentMillis = timestamp.getTime();
         const oneMonthMillis = 31 * 24 * 60 * 60 * 1000;
         const allTasks: TaskState[] = [];
-        let queries: TaskState[] = [];
+        let queries: TaskState[];
         let queryIndex = 0;
         do {
           queries = (
