@@ -94,6 +94,18 @@ class RmfService(contextlib.AbstractContextManager):
                 f"Received response for unknown request id: {msg.request_id}"
             )
             return
+        if fut.done():
+            # RMF's request/response is a pub/sub pseudo-service, so more than
+            # one node may answer the same request_id (see the class docstring:
+            # clients must drop duplicated response ids). Calling set_result on
+            # an already-resolved future raises asyncio.InvalidStateError inside
+            # this subscription callback, which runs in the rclpy.spin() thread
+            # (see ros.py) and would terminate it -- after which the node stops
+            # processing every subscription and all later calls time out.
+            logging.warning(
+                f"Ignoring duplicate response for request id: {msg.request_id}"
+            )
+            return
         fut.set_result(msg.json_msg)
 
 
