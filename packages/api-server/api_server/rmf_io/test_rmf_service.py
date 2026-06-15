@@ -122,3 +122,26 @@ class TestRmfService(unittest.TestCase):
             self.assertListEqual(["hello", "world"], list(results))
 
         self.loop.run_until_complete(run())
+
+    def test_duplicate_response_is_ignored(self):
+        # Regression: RMF's request/response is a pub/sub pseudo-service, so
+        # more than one node may answer the same request_id. A duplicate
+        # ApiResponse for an already-resolved future used to raise
+        # asyncio.InvalidStateError inside the subscription callback, which runs
+        # in the rclpy spin thread and would terminate it -- silently breaking
+        # every later task-api call. The handler must drop the duplicate.
+        req_id = self._create_node_id()
+        fut: asyncio.Future = self.loop.create_future()
+        self.rmf_service._requests[req_id] = fut
+        try:
+            self.rmf_service._handle_response(
+                ApiResponse(request_id=req_id, json_msg="first")
+            )
+            # second, duplicate delivery of the same request_id must not raise
+            self.rmf_service._handle_response(
+                ApiResponse(request_id=req_id, json_msg="second")
+            )
+        finally:
+            self.rmf_service._requests.pop(req_id, None)
+        self.assertTrue(fut.done())
+        self.assertEqual("first", fut.result())
