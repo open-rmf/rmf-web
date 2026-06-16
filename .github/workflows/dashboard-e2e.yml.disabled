@@ -9,7 +9,7 @@ env:
 jobs:
   dashboard-e2e:
     name: Dashboard e2e
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/e2e
       credentials:
