@@ -6,6 +6,8 @@ on:
       - '.github/actions/bootstrap/action.yml'
       - '.github/minimal-rmf/**'
       - 'packages/api-server/**'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
   push:
     branches:
       - main

@@ -8,6 +8,8 @@ on:
       - 'packages/rmf-dashboard-framework/**'
       - 'packages/rmf-models/**'
       - 'packages/api-client/**'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
   push:
     branches:
       - main
