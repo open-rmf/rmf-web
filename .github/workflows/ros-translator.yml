@@ -38,5 +38,8 @@ jobs:
         with:
           package: ros-translator
           skip-build: true
+      - name: set up npx
+        run: |
+          pnpm add -g npm
       - name: test
         run: . /opt/ros/rolling/setup.bash && pnpm test
