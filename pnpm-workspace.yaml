@@ -1,3 +1,38 @@
 packages:
   - 'packages/*'
   - 'pipenv-install'
+
+allowBuilds:
+  '@nestjs/core': true
+  '@openapitools/openapi-generator-cli': true
+  '@swc/core': true
+  edgedriver: true
+  esbuild: true
+  geckodriver: true
+  protobufjs: true
+
+# These overrides were produced mostly during https://github.com/open-rmf/rmf-web/pull/1083 when
+# resolving security vulnerabilities. This is considered technical debt and should be progressively
+# resolved by updating the dependencies to versions that use fixed versions of further upstream
+# dependencies.
+overrides:
+  "typescript-json-schema>@types/node": "*"
+  "form-data@<4.0.4": "^4.0.4"
+  "axios@<1.12.0": "^1.16.0"
+  qs: ^6.14.2
+  min-document: ^2.19.1
+  follow-redirects: ^1.16.0
+  lodash: ^4.18.0
+  yaml: ^1.10.3
+  serialize-javascript: ^7.0.5
+  react-router: ^6.30.2
+  "@babel/runtime": ^7.26.10
+  file-type: ^21.3.1
+  "@remix-run/router": ^1.23.2
+  rollup: ^4.59.0
+  phin: ^3.7.1
+  node-fetch: ^2.6.7
+  ws: ^7.5.10
+  cross-spawn: ^7.0.5
+  tar-fs: ^2.1.4
+  react-error-overlay: 6.0.9
