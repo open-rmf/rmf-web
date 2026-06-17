@@ -6,8 +6,15 @@ allowBuilds:
   '@nestjs/core': true
   '@openapitools/openapi-generator-cli': true
   '@swc/core': true
+  edgedriver: true
+  esbuild: true
+  geckodriver: true
   protobufjs: true
 
+# These overrides were produced mostly during https://github.com/open-rmf/rmf-web/pull/1083 when
+# resolving security vulnerabilities. This is considered technical debt and should be progressively
+# resolved by updating the dependencies to versions that use fixed versions of further upstream
+# dependencies.
 overrides:
   "typescript-json-schema>@types/node": "*"
   "form-data@<4.0.4": "^4.0.4"
