@@ -8,6 +8,8 @@ on:
       - 'packages/rmf-dashboard-framework/**'
       - 'packages/rmf-models/**'
       - 'packages/api-client/**'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
   push:
     branches:
       - main
@@ -19,7 +21,7 @@ env:
 jobs:
   unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/minimal-rmf:rolling-nightly
       credentials:

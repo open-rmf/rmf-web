@@ -9,7 +9,7 @@ concurrency:
 jobs:
   build-minimal-rmf-docker-images:
     name: Push minimal-rmf Docker image to GitHub Packages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -35,7 +35,7 @@ jobs:
   build-dashboard-image:
     needs: build-minimal-rmf-docker-images
     name: Push Dashboard docker image to GitHub Packages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -62,7 +62,7 @@ jobs:
   build-api-server-image:
     needs: build-minimal-rmf-docker-images
     name: Push API server docker image to GitHub Packages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -125,7 +125,7 @@ jobs:
   api-server:
     needs: build-minimal-rmf-docker-images
     name: Test API server
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -163,7 +163,7 @@ jobs:
   rmf-dashboard-framework:
     needs: build-minimal-rmf-docker-images
     name: Test dashboard framework
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -198,7 +198,7 @@ jobs:
   ros-translator:
     needs: build-minimal-rmf-docker-images
     name: Test ros-translator
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -237,7 +237,7 @@ jobs:
   #     fail-fast: false
   #   needs: build-docker-images
   #   name: Dashboard e2e
-  #   runs-on: ubuntu-24.04
+  #   runs-on: ubuntu-latest
   #   container:
   #     image: ghcr.io/${{ github.repository }}/e2e
   #     options: --privileged --ipc=host

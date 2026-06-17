@@ -6,6 +6,8 @@ on:
       - '.github/actions/bootstrap/action.yml'
       - '.github/minimal-rmf/**'
       - 'packages/api-server/**'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
   push:
     branches:
       - main
@@ -18,7 +20,7 @@ env:
 jobs:
   tests:
     name: Tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/minimal-rmf:rolling-nightly
       credentials:
