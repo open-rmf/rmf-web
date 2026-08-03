@@ -3,6 +3,7 @@ on:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
+  pull_request:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -27,7 +28,8 @@ jobs:
       - name: Build and push minimal-rmf
         uses: docker/build-push-action@v5
         with:
-          push: true
+          # push: true
+          push: false
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
           tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
@@ -53,7 +55,8 @@ jobs:
       - name: Build and push demo-dashboard
         uses: docker/build-push-action@v5
         with:
-          push: true
+          # push: true
+          push: false
           build-args: |
             BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
             ROS_DISTRO=${{ matrix.ros_distribution }}
@@ -80,7 +83,8 @@ jobs:
       - name: Build and push api-server
         uses: docker/build-push-action@v5
         with:
-          push: true
+          # push: true
+          push: false
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
             BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
