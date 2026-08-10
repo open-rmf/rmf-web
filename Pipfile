@@ -5,18 +5,19 @@ name = "pypi"
 
 [dev-packages]
 black = ">=26.3.1"
-isort = "==5.13.2"
-pylint = "==3.1.0"
+isort = ">=5.13.2"
+pylint = ">=3.1.0"
 coverage = ">=7.14.0"
 # api-server
 api-server = {editable = true, path = "./packages/api-server", extras = ["postgres"]}
-httpx = "~=0.26.0"
-datamodel-code-generator = "==0.25.7"
+httpx = ">=0.26.0"
+datamodel-code-generator = ">=0.25.7"
 requests = ">=2.32.0"
 fastapi = ">=0.109.1"
 Jinja2 = ">=3.1.6"
 Werkzeug = ">=3.1.6"
-websocket-client = "~=1.7.0"
-freezegun = "~=1.5.1"
+websocket-client = ">=1.7.0"
+freezegun = ">=1.5.1"
+pytz = ">=2024.1"
 # ros-translator
 ros-translator = {editable = true, path = "./packages/ros-translator"}

@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Docker Buildx

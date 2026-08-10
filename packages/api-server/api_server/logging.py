@@ -4,12 +4,11 @@ from logging import LoggerAdapter
 
 from fastapi.requests import HTTPConnection
 from termcolor import colored
-from termcolor._types import Color
 
 from .app_config import app_config
 from .models import User
 
-log_colors: dict[str, Color] = {
+log_colors: dict[str, str] = {
     "DEBUG": "grey",
     "INFO": "blue",
     "WARNING": "yellow",

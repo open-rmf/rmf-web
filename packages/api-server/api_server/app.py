@@ -83,6 +83,7 @@ async def lifespan(_app: FastIO):
     await Tortoise.init(
         db_url=app_config.db_url,
         modules={"models": ["api_server.models.tortoise_models"]},
+        _enable_global_fallback=True,
     )
     # FIXME: do this outside the app as recommended by the docs
     await Tortoise.generate_schemas()
