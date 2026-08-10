@@ -3,7 +3,6 @@ on:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
-  pull_request:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -31,7 +30,7 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+          tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
           context: .github/minimal-rmf
   build-dashboard-image:
     needs: build-minimal-rmf-docker-images
@@ -56,9 +55,9 @@ jobs:
         with:
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
             ROS_DISTRO=${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/demo-dashboard:testing-${{ matrix.ros_distribution }}-nightly
+          tags: ghcr.io/${{ github.repository }}/demo-dashboard:${{ matrix.ros_distribution }}-nightly
           context: .github/demo-dashboard
   build-api-server-image:
     needs: build-minimal-rmf-docker-images
@@ -84,10 +83,10 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
           tags: |
-            ghcr.io/${{ github.repository }}/api-server:testing-${{ matrix.ros_distribution }}-nightly
-            ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:testing-latest', github.repository) || null}}
+            ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
+            ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
           context: .github/api-server
   api-client:
     needs: build-minimal-rmf-docker-images
@@ -98,7 +97,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -107,16 +106,14 @@ jobs:
         shell: bash
         working-directory: packages/api-client
     steps:
-      - name: Checkout current feature branch
+      - name: Checkout main for rolling (and lyrical for now)
+        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
         uses: actions/checkout@v5
-      # - name: Checkout main for rolling
-      #   if: matrix.ros_distribution == 'rolling'
-      #   uses: actions/checkout@v5
-      # - name: Checkout ros_distribution branch
-      #   if: matrix.ros_distribution != 'rolling'
-      #   uses: actions/checkout@v5
-      #   with:
-      #     ref: ${{ matrix.ros_distribution }}
+      - name: Checkout ros_distribution branch
+        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -134,7 +131,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -143,16 +140,14 @@ jobs:
         shell: bash
         working-directory: packages/api-server
     steps:
-      - name: Checkout current feature branch
+      - name: Checkout main for rolling / lyrical
+        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
         uses: actions/checkout@v5
-      # - name: Checkout main for rolling
-      #   if: matrix.ros_distribution == 'rolling'
-      #   uses: actions/checkout@v5
-      # - name: Checkout ros_distribution branch
-      #   if: matrix.ros_distribution != 'rolling'
-      #   uses: actions/checkout@v5
-      #   with:
-      #     ref: ${{ matrix.ros_distribution }}
+      - name: Checkout ros_distribution branch
+        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -172,7 +167,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -181,16 +176,14 @@ jobs:
         shell: bash
         working-directory: packages/rmf-dashboard-framework
     steps:
-      - name: Checkout current feature branch
+      - name: Checkout main for rolling / lyrical
+        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
         uses: actions/checkout@v5
-      # - name: Checkout main for rolling
-      #   if: matrix.ros_distribution == 'rolling'
-      #   uses: actions/checkout@v5
-      # - name: Checkout ros_distribution branch
-      #   if: matrix.ros_distribution != 'rolling'
-      #   uses: actions/checkout@v5
-      #   with:
-      #     ref: ${{ matrix.ros_distribution }}
+      - name: Checkout ros_distribution branch
+        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -209,7 +202,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -218,16 +211,14 @@ jobs:
         shell: bash
         working-directory: packages/ros-translator
     steps:
-      - name: Checkout current feature branch
+      - name: Checkout main for rolling / lyrical
+        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
         uses: actions/checkout@v5
-      # - name: Checkout main for rolling
-      #   if: matrix.ros_distribution == 'rolling'
-      #   uses: actions/checkout@v5
-      # - name: Checkout ros_distribution branch
-      #   if: matrix.ros_distribution != 'rolling'
-      #   uses: actions/checkout@v5
-      #   with:
-      #     ref: ${{ matrix.ros_distribution }}
+      - name: Checkout ros_distribution branch
+        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ matrix.ros_distribution }}
       - name: dependencies
         run: apt update && apt install ros-dev-tools -y
       - name: bootstrap
