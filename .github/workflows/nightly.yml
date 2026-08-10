@@ -28,11 +28,10 @@ jobs:
       - name: Build and push minimal-rmf
         uses: docker/build-push-action@v5
         with:
-          # push: true
-          push: false
+          push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+          tags: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
           context: .github/minimal-rmf
   build-dashboard-image:
     needs: build-minimal-rmf-docker-images
@@ -41,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Docker Buildx
@@ -55,12 +54,11 @@ jobs:
       - name: Build and push demo-dashboard
         uses: docker/build-push-action@v5
         with:
-          # push: true
-          push: false
+          push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
             ROS_DISTRO=${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/demo-dashboard:${{ matrix.ros_distribution }}-nightly
+          tags: ghcr.io/${{ github.repository }}/demo-dashboard:testing-${{ matrix.ros_distribution }}-nightly
           context: .github/demo-dashboard
   build-api-server-image:
     needs: build-minimal-rmf-docker-images
@@ -69,7 +67,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Docker Buildx
@@ -83,14 +81,13 @@ jobs:
       - name: Build and push api-server
         uses: docker/build-push-action@v5
         with:
-          # push: true
-          push: false
+          push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
           tags: |
-            ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
-            ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
+            ghcr.io/${{ github.repository }}/api-server:testing-${{ matrix.ros_distribution }}-nightly
+            ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:testing-latest', github.repository) || null}}
           context: .github/api-server
   api-client:
     needs: build-minimal-rmf-docker-images
@@ -99,9 +96,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -133,9 +130,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -169,9 +166,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -204,9 +201,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
