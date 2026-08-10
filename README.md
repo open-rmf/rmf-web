@@ -51,7 +51,7 @@ docker run \
 
 ### Prerequisites
 
-We currently support [Ubuntu 24.04](https://releases.ubuntu.com/noble/), [ROS 2 Lyrical](https://docs.ros.org/en/lyrical/index.html) and the latest Open-RMF release. Other distributions may work as well, but is not guaranteed.
+We currently support [Ubuntu 26.04](https://releases.ubuntu.com/resolute/), [ROS 2 Lyrical](https://docs.ros.org/en/lyrical/index.html) and the latest Open-RMF release. Other distributions may work as well, but is not guaranteed.
 
 For other ROS distributions, check out to the respective branches, e.g. `jazzy`.
 
