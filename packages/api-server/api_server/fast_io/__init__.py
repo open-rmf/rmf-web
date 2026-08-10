@@ -225,9 +225,7 @@ The message must be of the form:
 {docstring.strip()}
 {response_schema}
 """
-            self._sio_route.description += (
-                room_descriptions  # pylint: disable=no-member
-            )
+            self._sio_route.description += room_descriptions
 
     @staticmethod
     def _parse_sub_data(data: dict) -> SubscriptionData:
