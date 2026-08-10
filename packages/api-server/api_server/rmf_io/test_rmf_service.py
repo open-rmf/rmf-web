@@ -124,6 +124,7 @@ class TestRmfService(unittest.TestCase):
         self.loop.run_until_complete(run())
 
     def test_duplicate_response_is_ignored(self):
+        # pylint: disable=protected-access
         # Regression: RMF's request/response is a pub/sub pseudo-service, so
         # more than one node may answer the same request_id. A duplicate
         # ApiResponse for an already-resolved future used to raise

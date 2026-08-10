@@ -94,6 +94,9 @@ async def lifespan(_app: FastIO):
     await stack.enter_async_context(gateway.get_rmf_gateway)
     await stack.enter_async_context(get_tasks_service)
 
+    prev_sigint = None
+    prev_sigterm = None
+
     # shutdown event is not called when the app crashes, this can cause the app to be
     # "locked up" as some dependencies like tortoise does not allow python to exit until
     # it is closed "gracefully".
