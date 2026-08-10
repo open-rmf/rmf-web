@@ -107,14 +107,16 @@ jobs:
         shell: bash
         working-directory: packages/api-client
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
+      - name: Checkout current feature branch
         uses: actions/checkout@v5
-      - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ matrix.ros_distribution }}
+      # - name: Checkout main for rolling
+      #   if: matrix.ros_distribution == 'rolling'
+      #   uses: actions/checkout@v5
+      # - name: Checkout ros_distribution branch
+      #   if: matrix.ros_distribution != 'rolling'
+      #   uses: actions/checkout@v5
+      #   with:
+      #     ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -141,14 +143,16 @@ jobs:
         shell: bash
         working-directory: packages/api-server
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
+      - name: Checkout current feature branch
         uses: actions/checkout@v5
-      - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ matrix.ros_distribution }}
+      # - name: Checkout main for rolling
+      #   if: matrix.ros_distribution == 'rolling'
+      #   uses: actions/checkout@v5
+      # - name: Checkout ros_distribution branch
+      #   if: matrix.ros_distribution != 'rolling'
+      #   uses: actions/checkout@v5
+      #   with:
+      #     ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -177,14 +181,16 @@ jobs:
         shell: bash
         working-directory: packages/rmf-dashboard-framework
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
+      - name: Checkout current feature branch
         uses: actions/checkout@v5
-      - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ matrix.ros_distribution }}
+      # - name: Checkout main for rolling
+      #   if: matrix.ros_distribution == 'rolling'
+      #   uses: actions/checkout@v5
+      # - name: Checkout ros_distribution branch
+      #   if: matrix.ros_distribution != 'rolling'
+      #   uses: actions/checkout@v5
+      #   with:
+      #     ref: ${{ matrix.ros_distribution }}
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
@@ -212,14 +218,16 @@ jobs:
         shell: bash
         working-directory: packages/ros-translator
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
+      - name: Checkout current feature branch
         uses: actions/checkout@v5
-      - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ matrix.ros_distribution }}
+      # - name: Checkout main for rolling
+      #   if: matrix.ros_distribution == 'rolling'
+      #   uses: actions/checkout@v5
+      # - name: Checkout ros_distribution branch
+      #   if: matrix.ros_distribution != 'rolling'
+      #   uses: actions/checkout@v5
+      #   with:
+      #     ref: ${{ matrix.ros_distribution }}
       - name: dependencies
         run: apt update && apt install ros-dev-tools -y
       - name: bootstrap
