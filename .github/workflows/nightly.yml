@@ -107,10 +107,10 @@ jobs:
         working-directory: packages/api-client
     steps:
       - name: Checkout main for rolling (and lyrical for now)
-        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
+        if: matrix.ros_distribution == 'rolling'
         uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
+        if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
@@ -141,10 +141,10 @@ jobs:
         working-directory: packages/api-server
     steps:
       - name: Checkout main for rolling / lyrical
-        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
+        if: matrix.ros_distribution == 'rolling'
         uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
+        if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
@@ -177,10 +177,10 @@ jobs:
         working-directory: packages/rmf-dashboard-framework
     steps:
       - name: Checkout main for rolling / lyrical
-        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
+        if: matrix.ros_distribution == 'rolling'
         uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
+        if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
@@ -212,10 +212,10 @@ jobs:
         working-directory: packages/ros-translator
     steps:
       - name: Checkout main for rolling / lyrical
-        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
+        if: matrix.ros_distribution == 'rolling'
         uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
+        if: matrix.ros_distribution != 'rolling'
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
