@@ -56,11 +56,27 @@ class FleetRepository:
             return None
         robots = {}
         for db_robot in result.robots:
-            robot = [LogEntry(**dict(db_log)) for db_log in db_robot.log]
+            robot = [
+                LogEntry(
+                    seq=db_log.seq,
+                    tier=db_log.tier,
+                    unix_millis_time=db_log.unix_millis_time,
+                    text=db_log.text,
+                )
+                for db_log in db_robot.log
+            ]
             robots[db_robot.name] = robot
         return FleetLog(
             name=result.name,
-            log=[LogEntry(**dict(db_log)) for db_log in result.log],
+            log=[
+                LogEntry(
+                    seq=db_log.seq,
+                    tier=db_log.tier,
+                    unix_millis_time=db_log.unix_millis_time,
+                    text=db_log.text,
+                )
+                for db_log in result.log
+            ],
             robots=robots,
         )
 

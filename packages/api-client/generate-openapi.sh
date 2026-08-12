@@ -33,4 +33,4 @@ pnpm exec prettier -w lib
 cat << EOF > schema/index.ts
 export default $(cat build/openapi.json)
 EOF
-npx prettier -w schema
+pnpm exec prettier -w schema

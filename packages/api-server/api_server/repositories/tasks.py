@@ -237,15 +237,39 @@ class TaskRepository:
         phases = {}
         for db_phase in result.phases:
             phase = Phases(log=None, events=None)
-            phase.log = [LogEntry(**dict(x)) for x in db_phase.log]
+            phase.log = [
+                LogEntry(
+                    seq=x.seq,
+                    tier=x.tier,
+                    unix_millis_time=x.unix_millis_time,
+                    text=x.text,
+                )
+                for x in db_phase.log
+            ]
             events = {}
             for db_event in db_phase.events:
-                events[db_event.event] = [LogEntry(**dict(x)) for x in db_event.log]
+                events[db_event.event] = [
+                    LogEntry(
+                        seq=x.seq,
+                        tier=x.tier,
+                        unix_millis_time=x.unix_millis_time,
+                        text=x.text,
+                    )
+                    for x in db_event.log
+                ]
             phase.events = events
             phases[db_phase.phase] = phase
         return TaskEventLog(
             task_id=result.task_id,
-            log=[LogEntry(**dict(x)) for x in result.log],
+            log=[
+                LogEntry(
+                    seq=x.seq,
+                    tier=x.tier,
+                    unix_millis_time=x.unix_millis_time,
+                    text=x.text,
+                )
+                for x in result.log
+            ],
             phases=phases,
         )
 

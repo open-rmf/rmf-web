@@ -1,4 +1,9 @@
 import os
+import time
+
+os.environ["TZ"] = "UTC"
+if hasattr(time, "tzset"):
+    time.tzset()
 
 os.environ["RMF_API_SERVER_CONFIG"] = f"{os.path.dirname(__file__)}/test_config.py"
 
