@@ -83,6 +83,7 @@ async def lifespan(_app: FastIO):
     await Tortoise.init(
         db_url=app_config.db_url,
         modules={"models": ["api_server.models.tortoise_models"]},
+        _enable_global_fallback=True,
     )
     # FIXME: do this outside the app as recommended by the docs
     await Tortoise.generate_schemas()
@@ -92,6 +93,9 @@ async def lifespan(_app: FastIO):
     await stack.enter_async_context(ros.get_ros_node)
     await stack.enter_async_context(gateway.get_rmf_gateway)
     await stack.enter_async_context(get_tasks_service)
+
+    prev_sigint = None
+    prev_sigterm = None
 
     # shutdown event is not called when the app crashes, this can cause the app to be
     # "locked up" as some dependencies like tortoise does not allow python to exit until

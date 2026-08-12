@@ -16,7 +16,7 @@ RUN pnpm runtime set node lts -g
 
 # fetch sources
 RUN mkdir -p /ws \
-  && BRANCH_NAME=$ROS_DISTRO && if [ "$ROS_DISTRO" = "rolling" ]; then BRANCH_NAME=main; fi \
+  && BRANCH_NAME=$ROS_DISTRO && if [ "$ROS_DISTRO" = "rolling" ] || [ "$ROS_DISTRO" = "lyrical" ]; then BRANCH_NAME=main; fi \
   && curl -L https://github.com/open-rmf/rmf-web/archive/$BRANCH_NAME.tar.gz -o rmf_web.tar.gz \
   && tar zxf rmf_web.tar.gz -C /ws --strip-components=1
 

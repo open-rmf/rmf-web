@@ -114,11 +114,16 @@ class AppFixture(unittest.TestCase):
     def setUpApp(cls):
         async def clean_db():
             # connect to the db to drop it
-            await Tortoise.init(db_url=app_config.db_url, modules={"models": []})
+            await Tortoise.init(
+                db_url=app_config.db_url,
+                modules={"models": ["api_server.models.tortoise_models"]},
+            )
             await Tortoise._drop_databases()  # pylint: disable=protected-access
             # connect to it again to recreate it
             await Tortoise.init(
-                db_url=app_config.db_url, modules={"models": []}, _create_db=True
+                db_url=app_config.db_url,
+                modules={"models": ["api_server.models.tortoise_models"]},
+                _create_db=True,
             )
             await Tortoise.close_connections()
 

@@ -225,6 +225,9 @@ The message must be of the form:
 {docstring.strip()}
 {response_schema}
 """
+            # Route's description is initialized at runtime, so it doesn't exist
+            # at the time of linting
+            # pylint: disable=no-member
             self._sio_route.description += room_descriptions
 
     @staticmethod

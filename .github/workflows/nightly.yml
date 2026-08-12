@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Docker Buildx
@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Docker Buildx
@@ -66,7 +66,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Docker Buildx
@@ -95,7 +95,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     container:
       image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
@@ -106,11 +106,11 @@ jobs:
         shell: bash
         working-directory: packages/api-client
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
+      - name: Checkout main for rolling (and lyrical for now)
+        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
         uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
+        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
@@ -129,9 +129,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Sandboxing rolling due to https://github.com/open-rmf/rmf-web/issues/1086
-        # ros_distribution: [jazzy, rolling]
-        ros_distribution: [jazzy]
+        ros_distribution: [jazzy, lyrical, rolling]
     container:
       image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
@@ -142,11 +140,11 @@ jobs:
         shell: bash
         working-directory: packages/api-server
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
+      - name: Checkout main for rolling / lyrical
+        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
         uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
+        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
@@ -167,7 +165,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     container:
       image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
@@ -178,11 +176,11 @@ jobs:
         shell: bash
         working-directory: packages/rmf-dashboard-framework
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
+      - name: Checkout main for rolling / lyrical
+        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
         uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
+        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
@@ -202,7 +200,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ros_distribution: [jazzy, rolling]
+        ros_distribution: [jazzy, lyrical, rolling]
     container:
       image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
@@ -213,11 +211,11 @@ jobs:
         shell: bash
         working-directory: packages/ros-translator
     steps:
-      - name: Checkout main for rolling
-        if: matrix.ros_distribution == 'rolling'
+      - name: Checkout main for rolling / lyrical
+        if: matrix.ros_distribution == 'rolling' || matrix.ros_distribution == 'lyrical'
         uses: actions/checkout@v5
       - name: Checkout ros_distribution branch
-        if: matrix.ros_distribution != 'rolling'
+        if: matrix.ros_distribution != 'rolling' && matrix.ros_distribution != 'lyrical'
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.ros_distribution }}
