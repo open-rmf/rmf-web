@@ -3,7 +3,6 @@ on:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
-  pull_request:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -31,7 +30,7 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+          tags: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
           context: .github/minimal-rmf
   build-dashboard-image:
     needs: build-minimal-rmf-docker-images
@@ -56,9 +55,9 @@ jobs:
         with:
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
             ROS_DISTRO=${{ matrix.ros_distribution }}
-          tags: ghcr.io/${{ github.repository }}/demo-dashboard:testing-${{ matrix.ros_distribution }}-nightly
+          tags: ghcr.io/${{ github.repository }}/demo-dashboard:${{ matrix.ros_distribution }}-nightly
           context: .github/demo-dashboard
   build-api-server-image:
     needs: build-minimal-rmf-docker-images
@@ -84,9 +83,9 @@ jobs:
           push: true
           build-args: |
             ROS_DISTRO=${{ matrix.ros_distribution }}
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
           tags: |
-            ghcr.io/${{ github.repository }}/api-server:testing-${{ matrix.ros_distribution }}-nightly
+            ghcr.io/${{ github.repository }}/api-server:${{ matrix.ros_distribution }}-nightly
             ${{ matrix.ros_distribution == 'rolling' && format('ghcr.io/{0}/api-server:latest', github.repository) || null}}
           context: .github/api-server
   api-client:
@@ -98,7 +97,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -132,7 +131,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -168,7 +167,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -203,7 +202,7 @@ jobs:
       matrix:
         ros_distribution: [jazzy, lyrical, rolling]
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf:testing-${{ matrix.ros_distribution }}-nightly
+      image: ghcr.io/${{ github.repository }}/minimal-rmf:${{ matrix.ros_distribution }}-nightly
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
