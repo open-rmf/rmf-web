@@ -23,6 +23,4 @@ overrides:
   deepmerge-ts: ^8.0.1
   serialize-javascript: ^7.0.5
   uuid: ^11.1.1
-  esbuild: ^0.28.2
-  undici: ^7.29.0
   "@puppeteer/browsers": ^3.2.1
