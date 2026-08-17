@@ -1,8 +1,5 @@
-// FIXME(koonpeng): 'crc' and 'node-vibrant' are designed for node,
-// although the features that we use works on the browser, importing these causes
-// typescript to import @types/node, causing some type inaccuracies in the codebase.
 import { crc32 } from 'crc';
-import Vibrant from 'node-vibrant';
+import { Vibrant } from 'node-vibrant/browser';
 import React from 'react';
 
 import { robotHash } from '../components/robots/utils';
@@ -18,7 +15,7 @@ export class ColorManager {
     fleet: string,
     name: string,
     model: string,
-    image?: string | HTMLImageElement | Buffer,
+    image?: string | HTMLImageElement,
   ): Promise<string> {
     const key = robotHash(name, fleet);
     if (this._robotColorCache[key]) {
@@ -30,9 +27,8 @@ export class ColorManager {
       return this._robotColorCache[key];
     } else {
       try {
-        const palette = await Vibrant.from(image).getSwatches();
-        // TODO: remove usage of deprecated method
-        const rgb = palette.Vibrant?.getRgb();
+        const palette = await Vibrant.from(image).getPalette();
+        const rgb = palette.Vibrant?.rgb;
         if (rgb) {
           const colorHolder = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
           this._robotColorCache[key] = colorHolder;

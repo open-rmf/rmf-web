@@ -21,27 +21,17 @@ minimumReleaseAgeExclude:
 overrides:
   deepmerge-ts: ^8.0.1
   form-data: ^4.0.6
-  axios: ^1.18.1
-  qs: ^6.15.3
   min-document: ^2.19.1
   follow-redirects: ^1.16.0
   lodash: ^4.18.0
   yaml: ^1.10.3
   serialize-javascript: ^7.0.5
-  react-router: ^7.18.2
-  react-router-dom: ^7.18.2
   "@babel/runtime": ^7.26.10
-  "@babel/core": ^7.29.1
   file-type: ^21.3.1
-  "@remix-run/router": ^1.23.3
   rollup: ^4.59.0
-  phin: ^3.7.1
   node-fetch: ^2.6.7
   ws: ^8.21.3
   cross-spawn: ^7.0.5
-  tar-fs: ^2.1.4
-  react-error-overlay: 6.0.9
-  protobufjs: ^8.7.2
   uuid: ^11.1.1
   "brace-expansion@1": "^1.1.18"
   "brace-expansion@2": "^2.1.4"
@@ -52,7 +42,6 @@ overrides:
   tmp: ^0.2.7
   esbuild: ^0.28.2
   tar: ^7.5.22
-  vite: ^7.3.5
   "undici@6": "^6.28.0"
   "undici@7": "^7.29.0"
   undici: ^7.29.0
@@ -62,6 +51,5 @@ overrides:
   socket.io-parser: ^4.2.7
   ip-address: ^10.3.1
   nanoid: ^3.3.18
-  webdriverio: 9.30.1
   "@puppeteer/browsers": ^3.2.1
   puppeteer-core: ^24.0.0
