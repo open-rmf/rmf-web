@@ -21,7 +21,7 @@
     "@openapitools/openapi-generator-cli": "^2.32.0",
     "@typescript-eslint/eslint-plugin": "^8.59.2",
     "@typescript-eslint/parser": "^8.59.2",
-    "axios": "1.16.0",
+    "axios": "1.18.1",
     "eslint": "^10.3.0",
     "typescript": "~6.0.3",
     "vitest": "^4.1.5"
@@ -31,6 +31,6 @@
     "openapi/schema/"
   ],
   "peerDependencies": {
-    "axios": "1.16.0"
+    "axios": "1.18.1"
   }
 }
