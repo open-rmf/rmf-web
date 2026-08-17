@@ -42,7 +42,6 @@
     "debug": "^4.2.0",
     "eventemitter3": "^4.0.7",
     "keycloak-js": "^25.0.2",
-    "node-vibrant": "^4.0.4",
     "react": "^18.2.0",
     "react-customizable-progressbar": "^1.2.0",
     "react-dom": "^18.2.0",
@@ -55,7 +54,11 @@
     "rmf-models": "workspace:*",
     "rxjs": "^7.5.5",
     "shallowequal": "^1.1.0",
-    "three": "^0.166.1"
+    "three": "^0.166.1",
+    "@vibrant/core": "^4.0.4",
+    "@vibrant/image-browser": "^4.0.4",
+    "@vibrant/generator-default": "^4.0.4",
+    "@vibrant/quantizer-mmcq": "^4.0.4"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.6.14",

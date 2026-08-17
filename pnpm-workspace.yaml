@@ -9,7 +9,6 @@ allowBuilds:
   edgedriver: true
   esbuild: true
   geckodriver: true
-  protobufjs: true
 
 minimumReleaseAgeExclude:
   - '@puppeteer/browsers@3.2.1'
@@ -19,24 +18,11 @@ minimumReleaseAgeExclude:
 # resolved by updating the dependencies to versions that use fixed versions of further upstream
 # dependencies.
 overrides:
+  "@grpc/grpc-js": ^1.14.4
+  ws: ^8.21.3
   deepmerge-ts: ^8.0.1
-  form-data: ^4.0.6
-  file-type: ^21.3.1
   serialize-javascript: ^7.0.5
   uuid: ^11.1.1
-  ws: ^8.21.3
-  protobufjs: ^8.7.2
-  "brace-expansion@1": "^1.1.18"
-  "brace-expansion@2": "^2.1.4"
-  "brace-expansion@5": "^5.0.9"
-  "@grpc/grpc-js": ^1.14.4
-  tmp: ^0.2.7
   esbuild: ^0.28.2
-  tar: ^7.5.22
-  "undici@6": "^6.28.0"
-  "undici@7": "^7.29.0"
   undici: ^7.29.0
-  fast-uri: ^3.1.5
-  ip-address: ^10.3.1
   "@puppeteer/browsers": ^3.2.1
-  puppeteer-core: ^24.0.0

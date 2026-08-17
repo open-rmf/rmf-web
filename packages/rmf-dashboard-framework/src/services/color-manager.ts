@@ -1,8 +1,17 @@
+import '@vibrant/generator-default';
+import '@vibrant/quantizer-mmcq';
+
+import { Vibrant } from '@vibrant/core';
+import { BrowserImage } from '@vibrant/image-browser';
 import { crc32 } from 'crc';
-import { Vibrant } from 'node-vibrant/browser';
 import React from 'react';
 
 import { robotHash } from '../components/robots/utils';
+
+Vibrant.DefaultOpts.ImageClass = BrowserImage;
+Vibrant.DefaultOpts.quantizer = 'mmcq';
+Vibrant.DefaultOpts.generators = ['default'];
+Vibrant.DefaultOpts.filters = ['default'];
 
 function _hash(s: string): number {
   return crc32(s);
