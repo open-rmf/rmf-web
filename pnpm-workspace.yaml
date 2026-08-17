@@ -19,7 +19,7 @@ minimumReleaseAgeExclude:
 # resolved by updating the dependencies to versions that use fixed versions of further upstream
 # dependencies.
 overrides:
-  "typescript-json-schema>@types/node": "*"
+  deepmerge-ts: ^8.0.1
   form-data: ^4.0.6
   axios: ^1.18.1
   qs: ^6.15.3
@@ -41,7 +41,6 @@ overrides:
   cross-spawn: ^7.0.5
   tar-fs: ^2.1.4
   react-error-overlay: 6.0.9
-  vm2: ^3.11.6
   protobufjs: ^8.7.2
   uuid: ^11.1.1
   "brace-expansion@1": "^1.1.18"

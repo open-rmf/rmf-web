@@ -6,7 +6,6 @@
   "scripts": {
     "build:example": "pnpm run --filter {.}^... build && vite -c examples/shared/vite.config.ts build",
     "build-storybook": "storybook build",
-    "gen-app-config-schema": "pnpm typescript-json-schema tsconfig.gen.json AppConfig --required -o app-config.schema.json",
     "lint": "pnpm --filter=rmf-dashboard-framework^... build && tsc --build && eslint --max-warnings 0 src",
     "start:example": "pnpm --filter=rmf-dashboard-framework^... build && vite -c examples/shared/vite.config.ts",
     "storybook": "storybook dev -p 6006",
@@ -79,7 +78,6 @@
     "jsdom": "^29.1.1",
     "storybook": "^10.3.6",
     "typescript": "~6.0.3",
-    "typescript-json-schema": "^0.67.2",
     "vite": "^7.3.5",
     "vitest": "^4.1.5"
   },
