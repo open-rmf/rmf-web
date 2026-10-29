@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { MockRmfApi } from '../../utils/test-utils.test';
 import { Schedule } from './task-form';
+import { toISOStringWithTimezone } from './task-schedule-utils';
 import { makeTaskRequest } from './test-data.test';
 import {
   createTaskPriority,
@@ -37,7 +38,7 @@ describe('toApiSchedule', () => {
     };
 
     const result = toApiSchedule(taskRequest, schedule);
-    expect(result).toEqual(expected);
+    expect(result).toMatchObject(expected);
   });
 
   it('should handle an empty days array', () => {
@@ -57,7 +58,7 @@ describe('toApiSchedule', () => {
     };
 
     const result = toApiSchedule(taskRequest, schedule);
-    expect(result).toEqual(expected);
+    expect(result).toMatchObject(expected);
   });
 
   it('should format the time correctly', () => {
@@ -80,7 +81,26 @@ describe('toApiSchedule', () => {
     };
 
     const result = toApiSchedule(taskRequest, schedule);
-    expect(result).toEqual(expected);
+    expect(result).toMatchObject(expected);
+  });
+
+  it('should include start_from and until', () => {
+    const startOn = new Date('2023-10-27T10:30:00');
+    const until = new Date('2023-12-31T23:59:00');
+    const days: Schedule['days'] = [true, false, false, false, false, false, false];
+    const at = new Date();
+
+    const withUntil = toApiSchedule(makeTaskRequest(), { startOn, days, until, at });
+    expect(withUntil.start_from).toEqual(toISOStringWithTimezone(startOn));
+    expect(withUntil.until).toEqual(toISOStringWithTimezone(until));
+
+    const withoutUntil = toApiSchedule(makeTaskRequest(), {
+      startOn,
+      days,
+      until: undefined,
+      at,
+    });
+    expect(withoutUntil.until).toBeNull();
   });
 });
 
