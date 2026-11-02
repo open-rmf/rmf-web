@@ -9,30 +9,24 @@ allowBuilds:
   edgedriver: true
   esbuild: true
   geckodriver: true
-  protobufjs: true
+
+minimumReleaseAgeExclude:
+  - '@puppeteer/browsers@3.2.1'
 
 # These overrides were produced mostly during https://github.com/open-rmf/rmf-web/pull/1083 when
 # resolving security vulnerabilities. This is considered technical debt and should be progressively
 # resolved by updating the dependencies to versions that use fixed versions of further upstream
 # dependencies.
 overrides:
-  "typescript-json-schema>@types/node": "*"
-  "form-data@<4.0.4": "^4.0.4"
-  "axios@<1.12.0": "^1.16.0"
-  qs: ^6.14.2
-  min-document: ^2.19.1
-  follow-redirects: ^1.16.0
-  lodash: ^4.18.0
-  yaml: ^1.10.3
+  # @wdio/browserstack-service hard-pins "@grpc/grpc-js": "1.13.3" (vulnerable to DoS in <1.13.5)
+  "@grpc/grpc-js": ^1.14.4
+  # engine.io-client@6.6.4 (via socket.io-client@4.8.3) pins "ws": "~8.17.1" (vulnerable to DoS in <8.21.0)
+  ws: ^8.21.3
+  # @wdio/utils and @wdio/config pin "deepmerge-ts": "^7.0.3" (vulnerable to stack exhaustion in <8.0.0)
+  deepmerge-ts: ^8.0.1
+  # mocha@10.8.2 (via @wdio/mocha-framework) pins "serialize-javascript": "^6.0.2" (vulnerable to RCE in <7.0.5)
   serialize-javascript: ^7.0.5
-  react-router: ^6.30.2
-  "@babel/runtime": ^7.26.10
-  file-type: ^21.3.1
-  "@remix-run/router": ^1.23.2
-  rollup: ^4.59.0
-  phin: ^3.7.1
-  node-fetch: ^2.6.7
-  ws: ^7.5.10
-  cross-spawn: ^7.0.5
-  tar-fs: ^2.1.4
-  react-error-overlay: 6.0.9
+  # @react-three/drei and @storybook/addon-actions pin "uuid": "^9.0.1" (vulnerable to buffer bounds check in <11.1.1)
+  uuid: ^11.1.1
+  # @wdio/utils pins "@puppeteer/browsers": "^2.2.0" which pulls extract-zip <=2.0.1 (vulnerable to path traversal)
+  "@puppeteer/browsers": ^3.2.1

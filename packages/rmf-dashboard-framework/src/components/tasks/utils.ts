@@ -125,6 +125,8 @@ export const toApiSchedule = (
   return {
     task_request: taskRequest,
     schedules: apiSchedules,
+    start_from: toISOStringWithTimezone(start),
+    until: schedule.until ? toISOStringWithTimezone(schedule.until) : null,
   };
 };
 
