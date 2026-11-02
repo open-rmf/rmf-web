@@ -144,17 +144,19 @@ export function RobotDecommissionButton({
         </Button>
       ) : (
         <Tooltip title={`Robot from fleet ${fleet} cannot be decommissioned/recommissioned.`}>
-          <Button
-            disabled
-            sx={{
-              '&.Mui-disabled': {
-                pointerEvents: 'auto',
-              },
-            }}
-            {...otherProps}
-          >
-            {'Decommission'}
-          </Button>
+          <span>
+            <Button
+              disabled
+              sx={{
+                '&.Mui-disabled': {
+                  pointerEvents: 'auto',
+                },
+              }}
+              {...otherProps}
+            >
+              {'Decommission'}
+            </Button>
+          </span>
         </Tooltip>
       )}
       {openConfirmDialog && (

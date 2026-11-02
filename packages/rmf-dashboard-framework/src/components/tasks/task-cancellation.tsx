@@ -73,17 +73,19 @@ export function TaskCancelButton({
         </Button>
       ) : isTaskCancellable(taskState) && !userCanCancelTask ? (
         <Tooltip title="You don't have permission to cancel tasks.">
-          <Button
-            disabled
-            sx={{
-              '&.Mui-disabled': {
-                pointerEvents: 'auto',
-              },
-            }}
-            {...otherProps}
-          >
-            {buttonText ?? 'Cancel Task'}
-          </Button>
+          <span>
+            <Button
+              disabled
+              sx={{
+                '&.Mui-disabled': {
+                  pointerEvents: 'auto',
+                },
+              }}
+              {...otherProps}
+            >
+              {buttonText ?? 'Cancel Task'}
+            </Button>
+          </span>
         </Tooltip>
       ) : (
         <Tooltip
@@ -93,17 +95,19 @@ export function TaskCancelButton({
               : `Task cannot be cancelled.`
           }
         >
-          <Button
-            disabled
-            sx={{
-              '&.Mui-disabled': {
-                pointerEvents: 'auto',
-              },
-            }}
-            {...otherProps}
-          >
-            {buttonText ?? 'Cancel Task'}
-          </Button>
+          <span>
+            <Button
+              disabled
+              sx={{
+                '&.Mui-disabled': {
+                  pointerEvents: 'auto',
+                },
+              }}
+              {...otherProps}
+            >
+              {buttonText ?? 'Cancel Task'}
+            </Button>
+          </span>
         </Tooltip>
       )}
       {openConfirmDialog && (
