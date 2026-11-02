@@ -1,6 +1,6 @@
 import { Period, ScheduledTask, ScheduledTaskScheduleOutput } from 'api-client';
 import { addMinutes, endOfDay, endOfMinute, startOfDay } from 'date-fns';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { RecurringDays } from './task-form';
 import {
@@ -333,20 +333,33 @@ describe('scheduleWithSelectedDay', () => {
   });
 
   it('should use the current date if scheduleTask[0].at is undefined', () => {
-    const date = new Date(2023, 0, 1); // Sunday
-    const scheduleTask: ScheduledTaskScheduleOutput[] = [
-      {
-        every: null,
-        period: 'day',
-        at: '',
-      },
-    ];
-    const result = scheduleWithSelectedDay(scheduleTask, date);
-    expect(result.at.setMilliseconds(0)).toEqual(new Date().setMilliseconds(0));
+    vi.useFakeTimers();
+    try {
+      const date = new Date(2023, 0, 1); // Sunday
+      const scheduleTask: ScheduledTaskScheduleOutput[] = [
+        {
+          every: null,
+          period: 'day',
+          at: '',
+        },
+      ];
+      const result = scheduleWithSelectedDay(scheduleTask, date);
+      expect(result.at).toEqual(new Date());
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
 describe('apiScheduleToSchedule', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should convert a single day schedule', () => {
     const apiSchedule: ScheduledTaskScheduleOutput = {
       every: null,
