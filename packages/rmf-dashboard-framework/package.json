@@ -9,8 +9,8 @@
     "lint": "pnpm --filter=rmf-dashboard-framework^... build && tsc --build && eslint --max-warnings 0 src",
     "start:example": "pnpm --filter=rmf-dashboard-framework^... build && vite -c examples/shared/vite.config.ts",
     "storybook": "storybook dev -p 6006",
-    "test": "pnpm --filter=rmf-dashboard-framework^... build && vitest",
-    "test:coverage": "vitest --coverage"
+    "test": "pnpm --filter=rmf-dashboard-framework^... build && NODE_OPTIONS='--no-experimental-webstorage' vitest",
+    "test:coverage": "NODE_OPTIONS='--no-experimental-webstorage' vitest --coverage"
   },
   "peerDependencies": {
     "@aldabil/react-scheduler": "~2.7.8",
