@@ -30,7 +30,7 @@ docker run \
 ```
 
 > **Note**
-> The demo dashboard assumes that the api server is hosted locally on the default ports.
+> `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` are applied when the container starts, and default to `http://localhost:8000` and `http://localhost:8006`. They are used by the browser, so to open the dashboard from another machine, set them to an address that machine can reach, e.g. `-e RMF_SERVER_URL=http://192.168.1.100:8000`. The API server also needs to be reachable from that machine, see the note on configuring the API server below (`host` and `public_url`).
 
 Start the API server with host network access, and set up the correct `ROS_DOMAIN_ID` and ROS 2 RMW implementation (The images currently have `rmw_fastrtps_cpp` and `rmw_cyclonedds_cpp` installed and supported) that will be used in the rest of the Open-RMF system. The API server will use the default port at `localhost:8000`.
 
@@ -45,7 +45,7 @@ docker run \
 ```
 
 > **Note**
-> Users can also [configure the API server](packages/api-server/README.md/#configuration) using a mounted configuration file and setting the environment variable `RMF_API_SERVER_CONFIG`. In the default scenario, the API server will use an internal non-persistent database.
+> Users can also [configure the API server](packages/api-server/README.md/#configuration) using a mounted configuration file and setting the environment variable `RMF_API_SERVER_CONFIG`. In the default scenario, the API server will use an internal non-persistent database. By default it only listens on `127.0.0.1`, so to access it from other machines, set `host` to `0.0.0.0` and `public_url` to the address used in `RMF_SERVER_URL`.
 
 # Getting started from source
 

@@ -10,6 +10,11 @@
     />
     <link rel="shortcut icon" type="image/x-icon" href="%BASE_URL%favicon.ico" />
     <title>RMF Dashboard</title>
+    <script>
+      // Replaced when the demo-dashboard docker container starts, see .github/demo-dashboard.
+      window.RMF_SERVER_URL = '__RMF_SERVER_URL__';
+      window.TRAJECTORY_SERVER_URL = '__TRAJECTORY_SERVER_URL__';
+    </script>
   </head>
   <body>
     <div id="root"></div>
