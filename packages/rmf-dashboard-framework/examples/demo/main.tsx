@@ -21,6 +21,21 @@ import {
 } from 'rmf-dashboard-framework/micro-apps';
 import { StubAuthenticator } from 'rmf-dashboard-framework/services';
 
+declare global {
+  interface Window {
+    RMF_SERVER_URL?: string;
+    TRAJECTORY_SERVER_URL?: string;
+  }
+}
+
+// The docker image injects these at container start (see index.html), otherwise
+// the placeholders are left as-is and we fall back to the default local ports.
+function serverUrl(injected: string | undefined, fallback: string): string {
+  return injected && !injected.startsWith('__') ? injected : fallback;
+}
+const apiServerUrl = serverUrl(window.RMF_SERVER_URL, 'http://localhost:8000');
+const trajectoryServerUrl = serverUrl(window.TRAJECTORY_SERVER_URL, 'http://localhost:8006');
+
 const mapApp = createMapApp({
   attributionPrefix: 'Open-RMF',
   defaultMapLevel: 'L1',
@@ -63,8 +78,8 @@ const tasksWorkspace: InitialWindow[] = [
 export default function App() {
   return (
     <RmfDashboard
-      apiServerUrl="http://localhost:8000"
-      trajectoryServerUrl="http://localhost:8006"
+      apiServerUrl={apiServerUrl}
+      trajectoryServerUrl={trajectoryServerUrl}
       authenticator={new StubAuthenticator()}
       helpLink="https://osrf.github.io/ros2multirobotbook/rmf-core.html"
       reportIssueLink="https://github.com/open-rmf/rmf-web/issues"

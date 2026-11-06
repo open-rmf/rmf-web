@@ -45,4 +45,8 @@ RUN pnpm runtime set node lts -g
 
 RUN pnpm add --global serve
 
-ENTRYPOINT ["serve", "-sn", "/opt/dashboard"]
+# Keep an untouched copy of index.html, the entrypoint renders the server urls into it on every start
+RUN cp /opt/dashboard/index.html /opt/index.html.template
+COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
