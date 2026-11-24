@@ -63,11 +63,9 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
        * with positive values indicating downward scroll (toward the user)
        * and negative values indicating upward scroll (away from the user).
        */
-      const newZoom =
-        event.deltaY > 0
-          ? camera.zoom * DEFAULT_ZOOM_OUT_CONSTANT
-          : camera.zoom * DEFAULT_ZOOM_IN_CONSTANT;
-      AppEvents.zoom.next(newZoom * SENSITIVITY);
+      const zoomStep = DEFAULT_ZOOM_IN_CONSTANT * SENSITIVITY;
+      const newZoom = event.deltaY > 0 ? camera.zoom / zoomStep : camera.zoom * zoomStep;
+      AppEvents.zoom.next(newZoom);
     };
 
     gl.domElement.addEventListener('wheel', handleScroll);
@@ -84,6 +82,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
     camera.zoom = zoom;
+    camera.updateProjectionMatrix();
     if (AppEvents.cameraPosition.value) {
       camera.position.set(
         AppEvents.cameraPosition.value.x,
